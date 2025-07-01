@@ -5,6 +5,8 @@ import (
 	"app/internal/loader"
 	"app/internal/repository/buyer_repository"
 	employee_repository "app/internal/repository/employee_repository"
+	"app/internal/repository/product_repository"
+	"app/internal/repository/product_type_repository"
 	"app/internal/service"
 	"net/http"
 
@@ -87,6 +89,17 @@ func (a *ServerChi) Run() (err error) {
 	buyer_sv := service.NewBuyerDefault(buyer_rp)
 	buyer_hd := handler.NewBuyerDefault(buyer_sv)
 
+	// Product - repository
+	product_rp := product_repository.NewProductTypeRepositoryMap(nil)           //aca deberiamos agregar el archivo de productos
+	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(nil) //aca deberiamos agregar el archivo de tipos de productos
+
+	// Product - service
+	product_type_sv := service.NewProductTypeService(&product_type_rp)
+	product_sv := service.NewProductService(product_rp, &product_type_sv)
+
+	// Product - handler
+	product_hd := handler.NewProductController(&product_sv)
+
 	rt := chi.NewRouter()
 	// - middlewares
 	rt.Use(middleware.Logger)
@@ -109,7 +122,11 @@ func (a *ServerChi) Run() (err error) {
 		})
 		//4
 		rt.Route("/products", func(rt chi.Router) {
-			rt.Get("/EXAMPLE", nil)
+			rt.Get("/", product_hd.GetAllProducts())
+			rt.Get("/{id}", product_hd.GetProductById())
+			rt.Post("/", product_hd.CreateProduct())
+			rt.Patch("/{id}", product_hd.UpdateProduct())
+			rt.Delete("/{id}", product_hd.DeleteProduct())
 		})
 		//5
 		rt.Route("/employees", func(rt chi.Router) {
