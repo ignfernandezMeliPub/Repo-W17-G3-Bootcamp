@@ -118,7 +118,7 @@ func (c *EmployeesController) UpdateEmployee(w http.ResponseWriter, r *http.Requ
 
 	if err != nil {
 
-		utils.ResponseHttpError(w, idError)
+		utils.ResponseHttpError(w, err)
 		return
 
 	}

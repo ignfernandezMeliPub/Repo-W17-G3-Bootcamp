@@ -3,7 +3,6 @@ package service
 import (
 	employee_repository "app/internal/repository/employee_repository"
 	"app/pkg/models"
-	"fmt"
 )
 
 type EmployeeServiceInterface interface {
@@ -50,11 +49,10 @@ func (s *EmployeeService) CreateEmployee(attributes models.EmployeeRequestBody) 
 
 	// add validation wharehouse id
 
-	_, err = s.svWahrehouse.FindWarehouseById(newEmployee.Id)
+	_, err = s.svWahrehouse.FindWarehouseById(*attributes.WarehouseId)
 
 	if err != nil {
 
-		fmt.Println("patata")
 		return
 
 	}
