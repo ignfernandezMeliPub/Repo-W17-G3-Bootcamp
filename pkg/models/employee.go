@@ -3,7 +3,7 @@ package models
 import "app/pkg/custom_errors"
 
 type EmployeeAttributes struct {
-	CardNumberId int    `json:"card_number_id"`
+	CardNumberId string `json:"card_number_id"`
 	FirstName    string `json:"first_name"`
 	LastName     string `json:"last_name"`
 	WarehouseId  int    `json:"warehouse_id"`
@@ -30,7 +30,7 @@ func (e *Employee) Patch(patch EmployeeRequestBody) {
 }
 
 type EmployeeRequestBody struct {
-	CardNumberId *int    `json:"card_number_id"`
+	CardNumberId *string `json:"card_number_id"`
 	FirstName    *string `json:"first_name"`
 	LastName     *string `json:"last_name"`
 	WarehouseId  *int    `json:"warehouse_id"`

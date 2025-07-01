@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"app/internal/handler/utils"
 	"app/internal/service"
 	"app/pkg/models"
 	"encoding/json"
@@ -8,20 +9,19 @@ import (
 	"strconv"
 
 	"github.com/bootcamp-go/web/response"
-	"github.com/go-chi/chi/v5"
 )
 
 type EmployeesController struct {
-	sv service.EmployeeServiceInterface
+	svEmployee service.EmployeeServiceInterface
 }
 
-func NewEmployeeController(sv service.EmployeeServiceInterface) *EmployeesController {
-	return &EmployeesController{sv: sv}
+func NewEmployeeController(svEmployee service.EmployeeServiceInterface) *EmployeesController {
+	return &EmployeesController{svEmployee: svEmployee}
 }
 
 func (c *EmployeesController) GetEmployeesList(w http.ResponseWriter, r *http.Request) {
 
-	res, err := c.sv.GetEmployeesList()
+	res, err := c.svEmployee.GetEmployeesList()
 	if err != nil {
 		response.Error(w, http.StatusNotFound, err.Error())
 		return
@@ -33,25 +33,21 @@ func (c *EmployeesController) GetEmployeesList(w http.ResponseWriter, r *http.Re
 
 func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
 
-	id, idError := strconv.Atoi(chi.URLParam(r, "id"))
+	id, idError := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
+	// id format invalid
 	if idError != nil {
 
-		response.JSON(w, http.StatusBadRequest, map[string]any{
-			"message": "el formto del id debe ser un entero",
-			"error":   idError.Error(),
-		})
+		utils.ResponseHttpError(w, idError)
 		return
 
 	}
 
-	employee, err := c.sv.GetEmployeeById(id)
+	employee, err := c.svEmployee.GetEmployeeById(id)
 
 	if err != nil {
 
-		response.JSON(w, http.StatusNotFound, map[string]any{
-			"data": err.Error(),
-		})
+		utils.ResponseHttpError(w, err)
 		return
 
 	}
@@ -66,33 +62,26 @@ func (c *EmployeesController) SaveEmployee(w http.ResponseWriter, r *http.Reques
 
 	var newEmployeeAttributes models.EmployeeRequestBody
 
-	if err := json.NewDecoder(r.Body).Decode(&newEmployeeAttributes); err != nil {
+	newEmployeeAttributes, err := utils.InstantiateVarFromBody(&r.Body, newEmployeeAttributes)
 
-		response.JSON(w, http.StatusBadRequest, map[string]any{
-			"message": "Some of the fields sent have the wrong type",
-			"data":    err.Error(),
-		})
+	if err != nil {
+		utils.ResponseHttpError(w, err)
 		return
-
 	}
 
+	// A field is missing
 	if validationError := newEmployeeAttributes.VerifyMandatoryFieldsPresence(); validationError != nil {
 
-		response.JSON(w, http.StatusBadRequest, map[string]any{
-			"message": "A field is missing",
-			"data":    validationError.Error(),
-		})
+		utils.ResponseHttpError(w, validationError)
 		return
 
 	}
 
-	employee, err := c.sv.CreateEmployee(newEmployeeAttributes)
+	employee, err := c.svEmployee.CreateEmployee(newEmployeeAttributes)
 
 	if err != nil {
 
-		response.JSON(w, http.StatusInternalServerError, map[string]any{
-			"data": err.Error(),
-		})
+		utils.ResponseHttpError(w, err)
 		return
 
 	}
@@ -107,35 +96,29 @@ func (c *EmployeesController) UpdateEmployee(w http.ResponseWriter, r *http.Requ
 
 	var newEmployeeAttributes models.EmployeeRequestBody
 
-	id, idError := strconv.Atoi(chi.URLParam(r, "id"))
+	id, idError := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
+	// id format invalid
 	if idError != nil {
 
-		response.JSON(w, http.StatusBadRequest, map[string]any{
-			"message": "el formto del id debe ser un entero",
-			"error":   idError.Error(),
-		})
+		utils.ResponseHttpError(w, idError)
 		return
 
 	}
 
+	// Some of the fields sent have the wrong type
 	if err := json.NewDecoder(r.Body).Decode(&newEmployeeAttributes); err != nil {
 
-		response.JSON(w, http.StatusBadRequest, map[string]any{
-			"message": "Some of the fields sent have the wrong type",
-			"data":    err.Error(),
-		})
+		utils.ResponseHttpError(w, idError)
 		return
 
 	}
 
-	employee, err := c.sv.UpdateEmployee(id, newEmployeeAttributes)
+	employee, err := c.svEmployee.UpdateEmployee(id, newEmployeeAttributes)
 
 	if err != nil {
 
-		response.JSON(w, http.StatusInternalServerError, map[string]any{
-			"data": err.Error(),
-		})
+		utils.ResponseHttpError(w, idError)
 		return
 
 	}
@@ -148,25 +131,21 @@ func (c *EmployeesController) UpdateEmployee(w http.ResponseWriter, r *http.Requ
 
 func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Request) {
 
-	id, idError := strconv.Atoi(chi.URLParam(r, "id"))
+	id, idError := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
+	// id format invalid
 	if idError != nil {
 
-		response.JSON(w, http.StatusBadRequest, map[string]any{
-			"message": "el formto del id debe ser un entero",
-			"error":   idError.Error(),
-		})
+		utils.ResponseHttpError(w, idError)
 		return
 
 	}
 
-	err := c.sv.DeleteEmployee(id)
+	err := c.svEmployee.DeleteEmployee(id)
 
 	if err != nil {
 
-		response.JSON(w, http.StatusInternalServerError, map[string]any{
-			"data": err.Error(),
-		})
+		utils.ResponseHttpError(w, idError)
 		return
 
 	}

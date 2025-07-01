@@ -86,7 +86,8 @@ func (a *ServerChi) Run() (err error) {
 	//Employee - repository
 	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
 	//Employee - service
-	svEmployee := service.NewEmployeeService(rpEmployee)
+	svEmployee := service.NewEmployeeService(rpEmployee, *svWarehouse)
+	//svEmployee := service.NewEmployeeService(rpEmployee, svWarehouse)
 	//Employee - handler
 	hdEmployee := handler.NewEmployeeController(svEmployee)
 

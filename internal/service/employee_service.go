@@ -3,6 +3,7 @@ package service
 import (
 	employee_repository "app/internal/repository/employee_repository"
 	"app/pkg/models"
+	"fmt"
 )
 
 type EmployeeServiceInterface interface {
@@ -13,12 +14,13 @@ type EmployeeServiceInterface interface {
 	DeleteEmployee(id int) (err error)
 }
 
-func NewEmployeeService(repository employee_repository.EmployeeRepository) *EmployeeService {
-	return &EmployeeService{repository: repository}
+func NewEmployeeService(repository employee_repository.EmployeeRepository, svWahrehouse WarehouseDefault) *EmployeeService {
+	return &EmployeeService{repository: repository, svWahrehouse: svWahrehouse}
 }
 
 type EmployeeService struct {
-	repository employee_repository.EmployeeRepository
+	repository   employee_repository.EmployeeRepository
+	svWahrehouse WarehouseDefault
 }
 
 func (s *EmployeeService) GetEmployeesList() (employees []models.Employee, err error) {
@@ -47,6 +49,15 @@ func (s *EmployeeService) CreateEmployee(attributes models.EmployeeRequestBody) 
 	}
 
 	// add validation wharehouse id
+
+	_, err = s.svWahrehouse.FindWarehouseById(newEmployee.Id)
+
+	if err != nil {
+
+		fmt.Println("patata")
+		return
+
+	}
 
 	newAttributes := models.EmployeeAttributes{
 		CardNumberId: *attributes.CardNumberId,
@@ -82,6 +93,18 @@ func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeeReque
 	}
 
 	// add validation wharehouse id
+
+	if attributes.WarehouseId != nil {
+
+		_, err = s.svWahrehouse.FindWarehouseById(*attributes.WarehouseId)
+
+		if err != nil {
+
+			return
+
+		}
+
+	}
 
 	employee.Patch(attributes)
 	updatedEmployee, err = s.repository.UpdateEmployee(employee)

@@ -52,7 +52,7 @@ func (m *EmployeeMap) GetEmployeeById(id int) (employee models.Employee, err err
 
 }
 
-func (m *EmployeeMap) ValidateUniqueCardNumberID(cardNumber int) (err error) {
+func (m *EmployeeMap) ValidateUniqueCardNumberID(cardNumber string) (err error) {
 
 	for _, employee := range m.db {
 
