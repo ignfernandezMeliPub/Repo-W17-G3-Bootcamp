@@ -2,6 +2,7 @@ package service
 
 import (
 	"app/internal/repository/product_repository"
+	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"fmt"
 )
@@ -10,8 +11,8 @@ type ProductServiceI interface {
 	GetAllProducts() ([]models.Product, error)
 	GetProductById(int) (models.Product, error)
 	CreateProduct(models.ProductRequest) (models.Product, error)
-	UpdateProduct(models.Product) (models.Product, error)
-	DeleteProduct(models.Product) (models.Product, error)
+	UpdateProduct(models.ProductRequest) (models.Product, error)
+	DeleteProduct(int) error
 }
 
 type ProductService struct {
@@ -39,11 +40,11 @@ func (p *ProductService) DeleteProduct(id int) error {
 func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Product, error) {
 	//validar que productType exista
 	if !p.isValidateProductType(*product.ProductTypeId) {
-		return models.Product{}, fmt.Errorf("product type with id %d not exist", *product.ProductTypeId)
+		return models.Product{}, &custom_errors.ResourceNotFoundError{}
 	}
 	//validar que el producto con productCode no exista
 	if !p.isValidateProductCode(*product.ProductCode) {
-		return models.Product{}, fmt.Errorf("product with code %s already exist", *product.ProductCode)
+		return models.Product{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "product_code", Value: *product.ProductCode}
 	}
 	//validar que el seller exista (NECESITO LO DE GUIDO)
 
@@ -75,28 +76,31 @@ func (p *ProductService) UpdateProduct(updateProduct models.ProductRequest) (mod
 	product, err := p.ProductRepo.FindProductById(updateProduct.Id)
 
 	if err != nil {
-		return models.Product{}, nil
+		return models.Product{}, err
 	}
 
-	p.patchProduct(product, updateProduct)
+	updatedProduct, err := p.patchProduct(product, updateProduct)
+	if err != nil {
+		return models.Product{}, err
+	}
 
-	return p.ProductRepo.UpdateProduct(product)
+	return p.ProductRepo.UpdateProduct(updatedProduct)
 }
 
 func (p *ProductService) patchProduct(product models.Product, updateProduct models.ProductRequest) (models.Product, error) {
 	if updateProduct.ProductCode != nil {
-		if *updateProduct.ProductCode != "" {
+		if *updateProduct.ProductCode == "" {
 			return models.Product{}, fmt.Errorf("invalid product code #%s", *updateProduct.ProductCode)
 		}
 
-		if p.isValidateProductCode(*updateProduct.ProductCode) {
+		if !p.isValidateProductCode(*updateProduct.ProductCode) {
 			return models.Product{}, fmt.Errorf("product code #%s already exists", *updateProduct.ProductCode)
 		}
 		product.ProductCode = *updateProduct.ProductCode
 	}
 
 	if updateProduct.Description != nil {
-		if *updateProduct.Description != "" {
+		if *updateProduct.Description == "" {
 			return models.Product{}, fmt.Errorf("invalid description code #%s", *updateProduct.Description)
 		}
 		product.Description = *updateProduct.Description
@@ -136,7 +140,7 @@ func (p *ProductService) patchProduct(product models.Product, updateProduct mode
 	}
 	if updateProduct.FreezingRate != nil {
 		if *updateProduct.FreezingRate <= 0 {
-			return models.Product{}, fmt.Errorf("invalid freezing_rate code #%d", *updateProduct.ExpirationRate)
+			return models.Product{}, fmt.Errorf("invalid freezing_rate code #%d", *updateProduct.FreezingRate)
 		}
 		product.FreezingRate = *updateProduct.FreezingRate
 	}

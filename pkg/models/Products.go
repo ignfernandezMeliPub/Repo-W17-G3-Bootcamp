@@ -45,24 +45,27 @@ func (c ProductRequest) VerifyMandatoryFieldsPresence() error {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "width"}
 	}
 
-	if c.Length == nil {
+	if c.Height == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "height"}
 	}
 
-	if c.NetWeight == nil {
+	if c.Length == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "length"}
 	}
 
-	if c.ExpirationRate == nil {
+	if c.NetWeight == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "net_weight"}
 	}
-	if c.RecommendedFreezingTemperature == nil {
+
+	if c.ExpirationRate == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "expiration_rate"}
 	}
-	if c.FreezingRate == nil {
+
+	if c.RecommendedFreezingTemperature == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "recommended_freezing_temperature"}
 	}
-	if c.NetWeight == nil {
+
+	if c.FreezingRate == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "freezing_rate"}
 	}
 	if c.ProductTypeId == nil {
