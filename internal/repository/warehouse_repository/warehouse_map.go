@@ -1,0 +1,70 @@
+package warehouserepository
+
+import (
+	"app/pkg/custom_errors"
+	"app/pkg/models"
+	"strings"
+)
+
+type WarehouseRepositoryMap struct {
+	db map[int]models.Warehouse
+}
+
+func NewWarehouseMap(db map[int]models.Warehouse) *WarehouseRepositoryMap {
+
+	data := make(map[int]models.Warehouse)
+	if db != nil {
+		data = db
+	}
+	return &WarehouseRepositoryMap{db: data}
+}
+
+func (r *WarehouseRepositoryMap) CreateWarehouse(wh models.Warehouse) (models.Warehouse, error) {
+
+	var newId int
+	for id, w := range r.db {
+		if id >= newId {
+			newId = id + 1
+		}
+		if strings.EqualFold(w.Warehouse_code, wh.Warehouse_code) {
+			return models.Warehouse{}, &custom_errors.ResourceConflictError{}
+		}
+	}
+	wh.Id = newId
+	r.db[newId] = wh
+	return wh, nil
+}
+
+func (r *WarehouseRepositoryMap) FindWarehouse() ([]models.Warehouse, error) {
+
+	w := make([]models.Warehouse, len(r.db))
+
+	if len(w) == 0 {
+		return nil, &custom_errors.ResourceNotFoundError{}
+	}
+	i := 0
+	for _, value := range r.db {
+		w[i] = value
+		i++
+	}
+
+	return w, nil
+}
+
+func (r *WarehouseRepositoryMap) FindWarehouseById(id int) (models.Warehouse, error) {
+	wh, exist := r.db[id]
+	if !exist {
+		return models.Warehouse{}, &custom_errors.ResourceNotFoundError{}
+	}
+	return wh, nil
+}
+
+func (r *WarehouseRepositoryMap) UpdateWarehouse(id int, w models.Warehouse) (models.Warehouse, error) {
+	r.db[id] = w
+	return w, nil
+}
+
+func (r *WarehouseRepositoryMap) DeleteWarehouse(id int) error {
+	delete(r.db, id)
+	return nil
+}
