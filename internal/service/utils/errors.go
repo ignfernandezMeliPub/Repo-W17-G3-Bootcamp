@@ -2,7 +2,7 @@ package utils
 
 import "errors"
 
-func ExpectError(actual error, expectedError interface{}, onNoError error) error {
+func ExpectError(actual error, expectedError any, onNoError error) error {
 	if actual == nil {
 		return onNoError
 	} else if !errors.As(actual, expectedError) {
@@ -11,7 +11,7 @@ func ExpectError(actual error, expectedError interface{}, onNoError error) error
 	return nil
 }
 
-func ExpectErrorOrNilCondition(actual error, condition bool, expectedError interface{}, onNoError error) error {
+func ExpectErrorOrNilCondition(actual error, condition bool, expectedError any, onNoError error) error {
 	if actual == nil && condition {
 		return onNoError
 	} else if !errors.As(actual, expectedError) {
