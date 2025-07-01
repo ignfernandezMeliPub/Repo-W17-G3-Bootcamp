@@ -5,6 +5,7 @@ import (
 	"app/internal/loader"
 	"app/internal/repository/buyer_repository"
 	employee_repository "app/internal/repository/employee_repository"
+	warehouse_repository "app/internal/repository/warehouse_repository"
 	"app/internal/service"
 	"net/http"
 
@@ -76,6 +77,12 @@ func (a *ServerChi) Run() (err error) {
 		return
 	}
 
+	warehouse_lb := loader.NewWarehouseJSONFile(a.warehouseFilePath)
+	warehouse_db, err := warehouse_lb.Load()
+	if err != nil {
+		return
+	}
+
 	//Employee - repository
 	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
 	//Employee - service
@@ -86,6 +93,11 @@ func (a *ServerChi) Run() (err error) {
 	buyer_rp := buyer_repository.NewBuyerMap(buyer_db)
 	buyer_sv := service.NewBuyerDefault(buyer_rp)
 	buyer_hd := handler.NewBuyerDefault(buyer_sv)
+
+	//warehouse
+	warehouse_rp := warehouse_repository.NewWarehouseMap(warehouse_db)
+	warehouse_sv := service.NewWarehouseDefault(warehouse_rp)
+	warehouse_hd := handler.NewWarehouseDefault(warehouse_sv)
 
 	rt := chi.NewRouter()
 	// - middlewares
@@ -100,8 +112,13 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/EXAMPLE", nil)
 		})
 		//2
-		rt.Route("/warehouse", func(rt chi.Router) {
-			rt.Get("/EXAMPLE", nil)
+		rt.Route("/warehouses", func(rt chi.Router) {
+			rt.Get("/", warehouse_hd.FindWarehouse())
+			rt.Get("/{id}", warehouse_hd.FindWarehouseById())
+			rt.Post("/", warehouse_hd.CreateWarehouse())
+			rt.Patch("/{id}", warehouse_hd.UpdateWarehouse())
+			rt.Delete("/{id}", warehouse_hd.DeleteWarehouse())
+
 		})
 		//3
 		rt.Route("/sections", func(rt chi.Router) {
