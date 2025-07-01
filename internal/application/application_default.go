@@ -17,10 +17,12 @@ import (
 // ConfigServerChi is a struct that represents the configuration for ServerChi
 type ConfigServerChi struct {
 	// ServerAddress is the address where the server will be listening
-	ServerAddress       string
-	EmployeesFilePath   string
-	BuyerLoaderFilePath string
-	WarehouseFilePath   string
+	ServerAddress        string
+	EmployeesFilePath    string
+	BuyerLoaderFilePath  string
+	WarehouseFilePath    string
+	ProductTypesFilePath string
+	ProductsFilePath     string
 }
 
 // NewServerChi is a function that returns a new instance of ServerChi
@@ -42,6 +44,12 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		if cfg.WarehouseFilePath != "" {
 			defaultConfig.WarehouseFilePath = cfg.WarehouseFilePath
 		}
+		if cfg.ProductTypesFilePath != "" {
+			defaultConfig.ProductTypesFilePath = cfg.ProductTypesFilePath
+		}
+		if cfg.ProductsFilePath != "" {
+			defaultConfig.ProductsFilePath = cfg.ProductsFilePath
+		}
 	}
 
 	return &ServerChi{
@@ -49,6 +57,8 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		employeesFilePath:   defaultConfig.EmployeesFilePath,
 		buyerLoaderFilePath: defaultConfig.BuyerLoaderFilePath,
 		warehouseFilePath:   defaultConfig.WarehouseFilePath,
+		productTypeFilePath: defaultConfig.ProductTypesFilePath,
+		productsFilePath:    defaultConfig.ProductsFilePath,
 	}
 }
 
@@ -59,6 +69,8 @@ type ServerChi struct {
 	employeesFilePath   string
 	buyerLoaderFilePath string
 	warehouseFilePath   string
+	productTypeFilePath string
+	productsFilePath    string
 }
 
 // Run is a method that runs the server
@@ -78,6 +90,19 @@ func (a *ServerChi) Run() (err error) {
 		return
 	}
 
+	//load products_type
+	product_ld := loader.NewProductLoaderJSONFile(a.productsFilePath)
+	product_db, err := product_ld.Load()
+	if err != nil {
+		return
+	}
+
+	product_type_ld := loader.NewProductTypeLoaderJSONFile(a.productsFilePath)
+	product_type_db, err := product_type_ld.Load()
+	if err != nil {
+		return
+	}
+
 	//Employee - repository
 	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
 	//Employee - service
@@ -90,8 +115,8 @@ func (a *ServerChi) Run() (err error) {
 	buyer_hd := handler.NewBuyerDefault(buyer_sv)
 
 	// Product - repository
-	product_rp := product_repository.NewProductTypeRepositoryMap(nil)           //aca deberiamos agregar el archivo de productos
-	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(nil) //aca deberiamos agregar el archivo de tipos de productos
+	product_rp := product_repository.NewProductTypeRepositoryMap(product_db)                //aca deberiamos agregar el archivo de productos
+	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(product_type_db) //aca deberiamos agregar el archivo de tipos de productos
 
 	// Product - service
 	product_type_sv := service.NewProductTypeService(&product_type_rp)
