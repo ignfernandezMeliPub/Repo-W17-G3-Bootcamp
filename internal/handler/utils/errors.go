@@ -8,17 +8,6 @@ import (
 	"github.com/bootcamp-go/web/response"
 )
 
-func MapErrorToHttpStatus(err error) int {
-	switch {
-	case errors.As(err, &custom_errors.ErrNotFound):
-		return http.StatusNotFound
-	case errors.As(err, &custom_errors.ErrNotFound) || errors.As(err, &custom_errors.ErrInvalidArgs) || errors.As(err, &custom_errors.ErrDecodeError):
-		return http.StatusBadRequest
-	default:
-		return http.StatusInternalServerError
-	}
-}
-
 func ResponseHttpError(w http.ResponseWriter, err error) {
 	var status int
 	var message string
@@ -29,9 +18,12 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 	case errors.As(err, &custom_errors.ErrNotFound):
 		status = http.StatusNotFound
 		message = "Not found"
-	case errors.As(err, &custom_errors.ErrNotFound) || errors.As(err, &custom_errors.ErrInvalidArgs) || errors.As(err, &custom_errors.ErrDecodeError):
+	case errors.As(err, &custom_errors.ErrInvalidArgs) || errors.As(err, &custom_errors.ErrDecodeError) || errors.As(err, &custom_errors.ErrMandatoryArgMissing):
 		status = http.StatusBadRequest
 		message = "Bad request"
+	case errors.As(err, &custom_errors.ErrConflictError) || errors.As(err, &custom_errors.ErrUniqueAttributeViolationError):
+		status = http.StatusConflict
+		message = "Conflict"
 	default:
 		status = http.StatusInternalServerError
 		message = "Internal server error"
