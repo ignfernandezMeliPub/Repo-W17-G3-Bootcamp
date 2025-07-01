@@ -22,6 +22,9 @@ func MapErrorToHttpStatus(err error) int {
 func ResponseHttpError(w http.ResponseWriter, err error) {
 	var status int
 	var message string
+
+	error_msg := err.Error()
+
 	switch {
 	case errors.As(err, &custom_errors.ErrNotFound):
 		status = http.StatusNotFound
@@ -32,10 +35,11 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 	default:
 		status = http.StatusInternalServerError
 		message = "Internal server error"
+		error_msg = "Internal server error" // Don't expose unhandled error
 	}
 
 	response.JSON(w, status, map[string]any{
 		"message": message,
-		"error":   err.Error(),
+		"error":   error_msg,
 	})
 }
