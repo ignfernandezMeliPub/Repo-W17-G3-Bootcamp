@@ -26,7 +26,7 @@ func (h *BuyerDefault) GetAllBuyers() http.HandlerFunc {
 		// process
 		b, err := h.sv.FindAllBuyers()
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, nil)
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
@@ -48,14 +48,14 @@ func (h *BuyerDefault) GetBuyerByID() http.HandlerFunc {
 		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, nil)
+			utils.ResponseHttpError(w, err)
 			return
 		}
 		// process
 
 		b, err := h.sv.FindBuyerByID(id)
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, nil)
+			utils.ResponseHttpError(w, err)
 			return
 		}
 		// response
@@ -71,29 +71,91 @@ func (h *BuyerDefault) GetBuyerByID() http.HandlerFunc {
 func (h *BuyerDefault) CreateBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
+		var _buyer_request models.BuyerCreateRequest
+
+		buyer_request, err := utils.InstantiateVarFromBody(&r.Body, _buyer_request)
+
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 
 		// process
 
+		_b := buyer_request.ToBuyer()
+
+		b, err := h.sv.CreateBuyer(_b)
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+
 		// response
+		data := b
+		response.JSON(w, http.StatusCreated, map[string]any{
+			"message": "success",
+			"data":    data,
+		})
 	}
 }
 
 func (h *BuyerDefault) PatchBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
+		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
+
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+
+		var _buyer_patch models.BuyerPatch
+
+		buyer_patch, err := utils.InstantiateVarFromBody(&r.Body, _buyer_patch)
+
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 
 		// process
+		b, err := h.sv.UpdateBuyerByID(id, buyer_patch)
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 
 		// response
+		data := b
+		response.JSON(w, http.StatusCreated, map[string]any{
+			"message": "success",
+			"data":    data,
+		})
 	}
 }
 
 func (h *BuyerDefault) DeleteBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
+		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 		// process
 
+		err = h.sv.DeleteBuyerByID(id)
+
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 		// response
+
+		response.JSON(w, http.StatusNoContent, map[string]any{
+			"message": "success",
+			"data":    nil,
+		})
 	}
 }

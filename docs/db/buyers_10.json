@@ -1,61 +1,61 @@
 [
   {
     "id": 1,
-    "card_number_id": 1001,
+    "card_number_id": "1001",
     "first_name": "Juan",
     "last_name": "Pérez"
   },
   {
     "id": 2,
-    "card_number_id": 1002,
+    "card_number_id": "1002",
     "first_name": "Ana",
     "last_name": "García"
   },
   {
     "id": 3,
-    "card_number_id": 1003,
+    "card_number_id": "1003",
     "first_name": "Luis",
     "last_name": "Rodríguez"
   },
   {
     "id": 4,
-    "card_number_id": 1004,
+    "card_number_id": "1004",
     "first_name": "Laura",
     "last_name": "Martínez"
   },
   {
     "id": 5,
-    "card_number_id": 1005,
+    "card_number_id": "1005",
     "first_name": "Carlos",
     "last_name": "Pérez"
   },
   {
     "id": 6,
-    "card_number_id": 1006,
+    "card_number_id": "1006",
     "first_name": "Ana",
     "last_name": "López"
   },
   {
     "id": 7,
-    "card_number_id": 1007,
+    "card_number_id": "1007",
     "first_name": "Mario",
     "last_name": "García"
   },
   {
     "id": 8,
-    "card_number_id": 1008,
+    "card_number_id": "1008",
     "first_name": "Elena",
     "last_name": "Hernández"
   },
   {
     "id": 9,
-    "card_number_id": 1009,
+    "card_number_id": "1009",
     "first_name": "Carmen",
     "last_name": "Martínez"
   },
   {
     "id": 10,
-    "card_number_id": 1010,
+    "card_number_id": "1010",
     "first_name": "Luis",
     "last_name": "Alonso"
   }
