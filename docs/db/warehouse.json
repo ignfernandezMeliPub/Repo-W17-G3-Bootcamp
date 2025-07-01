@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "warehouse_code": "WH-001",
+    "address": "Direccion ficticia 100",
+    "telephone": "011-1000000",
+    "minimum_capacity": 100,
+    "minimum_temperature": 1.5
+  },
+  {
+    "id": 2,
+    "warehouse_code": "WH-002",
+    "address": "Direccion ficticia 101",
+    "telephone": "011-1000001",
+    "minimum_capacity": 110,
+    "minimum_temperature": 2.0
+  },
+  {
+    "id": 3,
+    "warehouse_code": "WH-003",
+    "address": "Direccion ficticia 102",
+    "telephone": "011-1000002",
+    "minimum_capacity": 120,
+    "minimum_temperature": 2.5
+  },
+  {
+    "id": 4,
+    "warehouse_code": "WH-004",
+    "address": "Direccion ficticia 103",
+    "telephone": "011-1000003",
+    "minimum_capacity": 130,
+    "minimum_temperature": 3.0
+  },
+  {
+    "id": 5,
+    "warehouse_code": "WH-005",
+    "address": "Direccion ficticia 104",
+    "telephone": "011-1000004",
+    "minimum_capacity": 140,
+    "minimum_temperature": 3.5
+  },
+  {
+    "id": 6,
+    "warehouse_code": "WH-006",
+    "address": "Direccion ficticia 105",
+    "telephone": "011-1000005",
+    "minimum_capacity": 150,
+    "minimum_temperature": 4.0
+  },
+  {
+    "id": 7,
+    "warehouse_code": "WH-007",
+    "address": "Direccion ficticia 106",
+    "telephone": "011-1000006",
+    "minimum_capacity": 160,
+    "minimum_temperature": 4.5
+  },
+  {
+    "id": 8,
+    "warehouse_code": "WH-008",
+    "address": "Direccion ficticia 107",
+    "telephone": "011-1000007",
+    "minimum_capacity": 170,
+    "minimum_temperature": 5.0
+  },
+  {
+    "id": 9,
+    "warehouse_code": "WH-009",
+    "address": "Direccion ficticia 108",
+    "telephone": "011-1000008",
+    "minimum_capacity": 180,
+    "minimum_temperature": 5.5
+  },
+  {
+    "id": 10,
+    "warehouse_code": "WH-010",
+    "address": "Direccion ficticia 109",
+    "telephone": "011-1000009",
+    "minimum_capacity": 190,
+    "minimum_temperature": 6.0
+  },
+  {
+    "id": 11,
+    "warehouse_code": "WH-011",
+    "address": "Direccion ficticia 110",
+    "telephone": "011-1000010",
+    "minimum_capacity": 200,
+    "minimum_temperature": 1.5
+  },
+  {
+    "id": 12,
+    "warehouse_code": "WH-012",
+    "address": "Direccion ficticia 111",
+    "telephone": "011-1000011",
+    "minimum_capacity": 210,
+    "minimum_temperature": 2.0
+  },
+  {
+    "id": 13,
+    "warehouse_code": "WH-013",
+    "address": "Direccion ficticia 112",
+    "telephone": "011-1000012",
+    "minimum_capacity": 220,
+    "minimum_temperature": 2.5
+  },
+  {
+    "id": 14,
+    "warehouse_code": "WH-014",
+    "address": "Direccion ficticia 113",
+    "telephone": "011-1000013",
+    "minimum_capacity": 230,
+    "minimum_temperature": 3.0
+  },
+  {
+    "id": 15,
+    "warehouse_code": "WH-015",
+    "address": "Direccion ficticia 114",
+    "telephone": "011-1000014",
+    "minimum_capacity": 240,
+    "minimum_temperature": 3.5
+  },
+  {
+    "id": 16,
+    "warehouse_code": "WH-016",
+    "address": "Direccion ficticia 115",
+    "telephone": "011-1000015",
+    "minimum_capacity": 250,
+    "minimum_temperature": 4.0
+  },
+  {
+    "id": 17,
+    "warehouse_code": "WH-017",
+    "address": "Direccion ficticia 116",
+    "telephone": "011-1000016",
+    "minimum_capacity": 260,
+    "minimum_temperature": 4.5
+  },
+  {
+    "id": 18,
+    "warehouse_code": "WH-018",
+    "address": "Direccion ficticia 117",
+    "telephone": "011-1000017",
+    "minimum_capacity": 270,
+    "minimum_temperature": 5.0
+  },
+  {
+    "id": 19,
+    "warehouse_code": "WH-019",
+    "address": "Direccion ficticia 118",
+    "telephone": "011-1000018",
+    "minimum_capacity": 280,
+    "minimum_temperature": 5.5
+  },
+  {
+    "id": 20,
+    "warehouse_code": "WH-020",
+    "address": "Direccion ficticia 119",
+    "telephone": "011-1000019",
+    "minimum_capacity": 290,
+    "minimum_temperature": 6.0
+  },
+  {
+    "id": 21,
+    "warehouse_code": "WH-021",
+    "address": "Direccion ficticia 120",
+    "telephone": "011-1000020",
+    "minimum_capacity": 300,
+    "minimum_temperature": 1.5
+  },
+  {
+    "id": 22,
+    "warehouse_code": "WH-022",
+    "address": "Direccion ficticia 121",
+    "telephone": "011-1000021",
+    "minimum_capacity": 310,
+    "minimum_temperature": 2.0
+  },
+  {
+    "id": 23,
+    "warehouse_code": "WH-023",
+    "address": "Direccion ficticia 122",
+    "telephone": "011-1000022",
+    "minimum_capacity": 320,
+    "minimum_temperature": 2.5
+  },
+  {
+    "id": 24,
+    "warehouse_code": "WH-024",
+    "address": "Direccion ficticia 123",
+    "telephone": "011-1000023",
+    "minimum_capacity": 330,
+    "minimum_temperature": 3.0
+  },
+  {
+    "id": 25,
+    "warehouse_code": "WH-025",
+    "address": "Direccion ficticia 124",
+    "telephone": "011-1000024",
+    "minimum_capacity": 340,
+    "minimum_temperature": 3.5
+  },
+  {
+    "id": 26,
+    "warehouse_code": "WH-026",
+    "address": "Direccion ficticia 125",
+    "telephone": "011-1000025",
+    "minimum_capacity": 350,
+    "minimum_temperature": 4.0
+  },
+  {
+    "id": 27,
+    "warehouse_code": "WH-027",
+    "address": "Direccion ficticia 126",
+    "telephone": "011-1000026",
+    "minimum_capacity": 360,
+    "minimum_temperature": 4.5
+  },
+  {
+    "id": 28,
+    "warehouse_code": "WH-028",
+    "address": "Direccion ficticia 127",
+    "telephone": "011-1000027",
+    "minimum_capacity": 370,
+    "minimum_temperature": 5.0
+  },
+  {
+    "id": 29,
+    "warehouse_code": "WH-029",
+    "address": "Direccion ficticia 128",
+    "telephone": "011-1000028",
+    "minimum_capacity": 380,
+    "minimum_temperature": 5.5
+  },
+  {
+    "id": 30,
+    "warehouse_code": "WH-030",
+    "address": "Direccion ficticia 129",
+    "telephone": "011-1000029",
+    "minimum_capacity": 390,
+    "minimum_temperature": 6.0
+  }
+]
