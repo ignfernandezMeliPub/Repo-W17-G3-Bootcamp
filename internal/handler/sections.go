@@ -45,7 +45,7 @@ func (c *SectionsController) GetSection(w http.ResponseWriter, r *http.Request) 
 }
 
 func (c *SectionsController) CreateSection(w http.ResponseWriter, r *http.Request) {
-	var section models.Section
+	var section models.SectionRequest
 	if err := request.JSON(r, &section); err != nil {
 		utils.ResponseHttpError(w, err)
 		return
@@ -66,7 +66,7 @@ func (c *SectionsController) UpdateSection(w http.ResponseWriter, r *http.Reques
 		utils.ResponseHttpError(w, err)
 		return
 	}
-	var section models.SectionPatch
+	var section models.SectionRequest
 	if err := request.JSON(r, &section); err != nil {
 		utils.ResponseHttpError(w, err)
 		return
