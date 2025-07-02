@@ -20,7 +20,7 @@ var ErrDecodeError = &DecodeError{}
 
 // Error @inheritdoc
 func (e *DecodeError) Error() string {
-	return fmt.Sprintf("field '%s' is expected to be of type '%s', but found '%s'", e.FieldName, e.ExpectedType, e.FoundType)
+	return fmt.Sprintf("Field {%s} is expected to be of type {%s}, but found {%s}", e.FieldName, e.ExpectedType, e.FoundType)
 }
 
 // Unwrap returns the underlying error for error unwrapping compatibility.
