@@ -135,7 +135,7 @@ func (a *ServerChi) Run() (err error) {
 
 	// Product - service
 	productTypeSv := service.NewProductTypeService(productTypeRp)
-	productSv := service.NewProductService(productRp, productTypeSv, nil) // agregar service seller
+	productSv := service.NewProductService(productRp, productTypeSv, &sellerService)
 
 	// Product - handler
 	productHd := handler.NewProductController(&productSv)
