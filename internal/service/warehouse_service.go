@@ -49,6 +49,7 @@ func (s *WarehouseDefault) UpdateWarehouse(id int, w models.Warehouse) (models.W
 	if w.Minimun_capacity < 0 {
 		return models.Warehouse{}, &custom_errors.InvalidArgValueErr{Argument: "minimun_capacity", Value: w.Minimun_capacity, ExtraInfo: "minimun_capacity cannot be less than zero"}
 	}
+	w.Id = id
 
 	return s.rp.UpdateWarehouse(id, w)
 }
