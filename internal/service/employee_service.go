@@ -2,23 +2,26 @@ package service
 
 import (
 	employee_repository "app/internal/repository/employee_repository"
+	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"errors"
 )
 
 type EmployeeServiceInterface interface {
 	GetEmployeesList() (employees []models.Employee, err error)
 	GetEmployeeById(id int) (employee models.Employee, err error)
-	CreateEmployee(attributes models.EmployeeRequestBody) (newEmployee models.Employee, err error)
-	UpdateEmployee(id int, attributes models.EmployeeRequestBody) (employee models.Employee, err error)
+	CreateEmployee(attributes models.EmployeePostRequestBody) (newEmployee models.Employee, err error)
+	UpdateEmployee(id int, attributes models.EmployeePatchRequestBody) (employee models.Employee, err error)
 	DeleteEmployee(id int) (err error)
 }
 
-func NewEmployeeService(repository employee_repository.EmployeeRepository) *EmployeeService {
-	return &EmployeeService{repository: repository}
+func NewEmployeeService(repository employee_repository.EmployeeRepository, svWahrehouse WarehouseDefault) *EmployeeService {
+	return &EmployeeService{repository: repository, svWahrehouse: svWahrehouse}
 }
 
 type EmployeeService struct {
-	repository employee_repository.EmployeeRepository
+	repository   employee_repository.EmployeeRepository
+	svWahrehouse WarehouseDefault
 }
 
 func (s *EmployeeService) GetEmployeesList() (employees []models.Employee, err error) {
@@ -36,7 +39,7 @@ func (s *EmployeeService) GetEmployeeById(id int) (employee models.Employee, err
 
 }
 
-func (s *EmployeeService) CreateEmployee(attributes models.EmployeeRequestBody) (newEmployee models.Employee, err error) {
+func (s *EmployeeService) CreateEmployee(attributes models.EmployeePostRequestBody) (newEmployee models.Employee, err error) {
 
 	err = s.repository.ValidateUniqueCardNumberID(*attributes.CardNumberId)
 
@@ -47,6 +50,25 @@ func (s *EmployeeService) CreateEmployee(attributes models.EmployeeRequestBody) 
 	}
 
 	// add validation wharehouse id
+
+	_, err = s.svWahrehouse.FindWarehouseById(*attributes.WarehouseId)
+
+	if err != nil {
+
+		if errors.As(err, &custom_errors.ErrNotFound) {
+
+			err = &custom_errors.InvalidArgValueErr{
+
+				Argument:  "warehouse_id",
+				Value:     *attributes.WarehouseId,
+				ExtraInfo: "The warehouse sent doesn't exist",
+			}
+
+		}
+
+		return
+
+	}
 
 	newAttributes := models.EmployeeAttributes{
 		CardNumberId: *attributes.CardNumberId,
@@ -59,7 +81,7 @@ func (s *EmployeeService) CreateEmployee(attributes models.EmployeeRequestBody) 
 
 }
 
-func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeeRequestBody) (updatedEmployee models.Employee, err error) {
+func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeePatchRequestBody) (updatedEmployee models.Employee, err error) {
 
 	employee, err := s.repository.GetEmployeeById(id)
 
@@ -82,6 +104,29 @@ func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeeReque
 	}
 
 	// add validation wharehouse id
+
+	if attributes.WarehouseId != nil {
+
+		_, err = s.svWahrehouse.FindWarehouseById(*attributes.WarehouseId)
+
+		if err != nil {
+
+			if errors.As(err, &custom_errors.ErrNotFound) {
+
+				err = &custom_errors.InvalidArgValueErr{
+
+					Argument:  "Warehouse",
+					Value:     attributes.WarehouseId,
+					ExtraInfo: "The harehouse sent doesn't exist",
+				}
+
+			}
+
+			return
+
+		}
+
+	}
 
 	employee.Patch(attributes)
 	updatedEmployee, err = s.repository.UpdateEmployee(employee)

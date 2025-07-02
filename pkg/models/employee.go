@@ -3,7 +3,7 @@ package models
 import "app/pkg/custom_errors"
 
 type EmployeeAttributes struct {
-	CardNumberId int    `json:"card_number_id"`
+	CardNumberId string `json:"card_number_id"`
 	FirstName    string `json:"first_name"`
 	LastName     string `json:"last_name"`
 	WarehouseId  int    `json:"warehouse_id"`
@@ -14,7 +14,7 @@ type Employee struct {
 	EmployeeAttributes
 }
 
-func (e *Employee) Patch(patch EmployeeRequestBody) {
+func (e *Employee) Patch(patch EmployeePatchRequestBody) {
 	if patch.CardNumberId != nil {
 		e.CardNumberId = *patch.CardNumberId
 	}
@@ -29,14 +29,29 @@ func (e *Employee) Patch(patch EmployeeRequestBody) {
 	}
 }
 
-type EmployeeRequestBody struct {
-	CardNumberId *int    `json:"card_number_id"`
+type EmployeePatchRequestBody struct {
+	CardNumberId *string `json:"card_number_id"`
 	FirstName    *string `json:"first_name"`
 	LastName     *string `json:"last_name"`
 	WarehouseId  *int    `json:"warehouse_id"`
 }
 
-func (c EmployeeRequestBody) VerifyMandatoryFieldsPresence() error {
+type EmployeePostRequestBody struct {
+	CardNumberId *string `json:"card_number_id"`
+	FirstName    *string `json:"first_name"`
+	LastName     *string `json:"last_name"`
+	WarehouseId  *int    `json:"warehouse_id"`
+}
+
+func (c EmployeePatchRequestBody) VerifyMandatoryFieldsPresence() error {
+	if c.CardNumberId == nil && c.FirstName == nil && c.LastName == nil && c.WarehouseId == nil {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "card_number_id or first_name or last_name or warehouse_id"}
+	}
+
+	return nil
+}
+
+func (c EmployeePostRequestBody) VerifyMandatoryFieldsPresence() error {
 	if c.CardNumberId == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "card_number_id"}
 	}

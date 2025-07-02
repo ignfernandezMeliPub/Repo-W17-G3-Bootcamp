@@ -125,13 +125,6 @@ func (a *ServerChi) Run() (err error) {
 		return
 	}
 
-	// Employee - repository
-	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
-	// Employee - service
-	svEmployee := service.NewEmployeeService(rpEmployee)
-	// Employee - handler
-	hdEmployee := handler.NewEmployeeController(svEmployee)
-
 	buyerRp := buyer_repository.NewBuyerMap(buyerDb)
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
@@ -165,7 +158,16 @@ func (a *ServerChi) Run() (err error) {
 	sectionsSv := service.NewSectionsService(sectionsRp, warehouseSv, productTypeSv)
 	sectionsHd := handler.NewSectionsController(sectionsSv)
 
+	//Employee - repository
+	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
+	//Employee - service
+	svEmployee := service.NewEmployeeService(rpEmployee, *warehouseSv)
+	//svEmployee := service.NewEmployeeService(rpEmployee, svWarehouse)
+	//Employee - handler
+	hdEmployee := handler.NewEmployeeController(svEmployee)
+
 	// - router
+
 	rt := chi.NewRouter()
 
 	// - middlewares
