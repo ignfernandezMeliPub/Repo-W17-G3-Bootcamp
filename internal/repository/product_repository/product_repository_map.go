@@ -26,7 +26,7 @@ func NewProductRepositoryMap(database map[int]models.Product) *ProductRepository
 
 }
 
-func (r *ProductRepositoryMap) FindAllProducts() ([]models.Product, error) { //cambia a array
+func (r *ProductRepositoryMap) FindAllProducts() ([]models.Product, error) {
 	products := make([]models.Product, 0)
 	for _, prod := range r.database {
 		products = append(products, prod)

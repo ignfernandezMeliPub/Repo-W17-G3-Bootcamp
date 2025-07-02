@@ -8,7 +8,6 @@ func NewEmployeeJSONFile(path string) *EmployeeJSONFile {
 	}
 }
 
-// VehicleJSONFile is a struct that implements the LoaderVehicle interface
 type EmployeeJSONFile struct {
 	// path is the path to the file that contains the vehicles in JSON format
 	path string

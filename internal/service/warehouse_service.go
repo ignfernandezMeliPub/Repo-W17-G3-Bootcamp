@@ -22,11 +22,9 @@ type WarehouseDefault struct {
 	rp warehouserepository.WarehouseRepository
 }
 
-// validar los datos negativos en el service
-// en el controller verificar los datos que me entran en input
 func (s *WarehouseDefault) CreateWarehouse(vh models.Warehouse) (models.Warehouse, error) {
-	if vh.Minimun_capacity < 0 {
-		return models.Warehouse{}, &custom_errors.InvalidArgValueErr{Argument: "minimun_capacity", Value: vh.Minimun_capacity, ExtraInfo: "minimun_capacity cannot be less than zero"}
+	if vh.MinimumCapacity < 0 {
+		return models.Warehouse{}, &custom_errors.InvalidArgValueErr{Argument: "minimun_capacity", Value: vh.MinimumCapacity, ExtraInfo: "minimun_capacity cannot be less than zero"}
 	}
 
 	return s.rp.CreateWarehouse(vh)
@@ -46,8 +44,8 @@ func (s *WarehouseDefault) UpdateWarehouse(id int, w models.Warehouse) (models.W
 		return models.Warehouse{}, &custom_errors.ResourceNotFoundError{}
 	}
 
-	if w.Minimun_capacity < 0 {
-		return models.Warehouse{}, &custom_errors.InvalidArgValueErr{Argument: "minimun_capacity", Value: w.Minimun_capacity, ExtraInfo: "minimun_capacity cannot be less than zero"}
+	if w.MinimumCapacity < 0 {
+		return models.Warehouse{}, &custom_errors.InvalidArgValueErr{Argument: "minimun_capacity", Value: w.MinimumCapacity, ExtraInfo: "minimun_capacity cannot be less than zero"}
 	}
 	w.Id = id
 

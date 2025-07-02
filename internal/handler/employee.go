@@ -18,7 +18,7 @@ func NewEmployeeController(svEmployee service.EmployeeServiceInterface) *Employe
 	return &EmployeesController{svEmployee: svEmployee}
 }
 
-func (c *EmployeesController) GetEmployeesList(w http.ResponseWriter, r *http.Request) {
+func (c *EmployeesController) GetEmployeesList(w http.ResponseWriter, _ *http.Request) {
 
 	res, err := c.svEmployee.GetEmployeesList()
 	if err != nil {
