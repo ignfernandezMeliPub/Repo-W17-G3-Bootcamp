@@ -5,16 +5,16 @@ import (
 )
 
 type Buyer struct {
-	Id             int    `json:"id"`
-	Card_number_id string `json:"card_number_id"`
-	First_name     string `json:"first_name"`
-	Last_name      string `json:"last_name"`
+	Id           int    `json:"id"`
+	CardNumberId string `json:"card_number_id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
 }
 
 type BuyerPatch struct {
-	Card_number_id *string `json:"card_number_id"`
-	First_name     *string `json:"first_name"`
-	Last_name      *string `json:"last_name"`
+	CardNumberId *string `json:"card_number_id"`
+	FirstName    *string `json:"first_name"`
+	LastName     *string `json:"last_name"`
 }
 
 func (b BuyerPatch) VerifyMandatoryFieldsPresence() error {
@@ -22,35 +22,35 @@ func (b BuyerPatch) VerifyMandatoryFieldsPresence() error {
 }
 
 func (b *Buyer) Patch(patch BuyerPatch) {
-	if patch.Card_number_id != nil {
-		b.Card_number_id = *patch.Card_number_id
+	if patch.CardNumberId != nil {
+		b.CardNumberId = *patch.CardNumberId
 	}
-	if patch.First_name != nil {
-		b.First_name = *patch.First_name
+	if patch.FirstName != nil {
+		b.FirstName = *patch.FirstName
 	}
-	if patch.Last_name != nil {
-		b.Last_name = *patch.Last_name
+	if patch.LastName != nil {
+		b.LastName = *patch.LastName
 	}
 	return
 }
 
 type BuyerCreateRequest struct {
-	Card_number_id *string `json:"card_number_id"`
-	First_name     *string `json:"first_name"`
-	Last_name      *string `json:"last_name"`
+	CardNumberId *string `json:"card_number_id"`
+	FirstName    *string `json:"first_name"`
+	LastName     *string `json:"last_name"`
 }
 
 func (b BuyerCreateRequest) VerifyMandatoryFieldsPresence() error {
-	if b.Card_number_id == nil {
-		return &custom_errors.MandatoryArgMissingErr{Argument: "Card_number_id"}
+	if b.CardNumberId == nil {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "card_number_id"}
 	}
 
-	if b.First_name == nil {
-		return &custom_errors.MandatoryArgMissingErr{Argument: "First_name"}
+	if b.FirstName == nil {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "first_name"}
 	}
 
-	if b.Last_name == nil {
-		return &custom_errors.MandatoryArgMissingErr{Argument: "Last_name"}
+	if b.LastName == nil {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "last_name"}
 	}
 
 	return nil
@@ -58,8 +58,8 @@ func (b BuyerCreateRequest) VerifyMandatoryFieldsPresence() error {
 
 func (b *BuyerCreateRequest) ToBuyer() Buyer {
 	return Buyer{
-		Card_number_id: *b.Card_number_id,
-		First_name:     *b.First_name,
-		Last_name:      *b.Last_name,
+		CardNumberId: *b.CardNumberId,
+		FirstName:    *b.FirstName,
+		LastName:     *b.LastName,
 	}
 }

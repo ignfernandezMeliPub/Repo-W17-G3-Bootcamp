@@ -42,14 +42,14 @@ func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err 
 		return
 	}
 
-	_, err = s.rp.FindBuyerByCardNumberID(_b.Card_number_id)
+	_, err = s.rp.FindBuyerByCardNumberID(_b.CardNumberId)
 
 	if err = utils.ExpectError(
 		err,
 		&custom_errors.ErrNotFound,
 		&custom_errors.UniqueAttributeViolationErr{
-			AttributeName: "Card_number_id",
-			Value:         _b.Card_number_id,
+			AttributeName: "card_number_id",
+			Value:         _b.CardNumberId,
 		}); err != nil {
 		return
 	}
@@ -72,9 +72,9 @@ func (s *BuyerServiceDefault) UpdateBuyerByID(id int, _b models.BuyerPatch) (b m
 		return
 	}
 
-	if _b.Card_number_id != nil {
+	if _b.CardNumberId != nil {
 
-		old_buyer, e := s.rp.FindBuyerByCardNumberID(*_b.Card_number_id)
+		old_buyer, e := s.rp.FindBuyerByCardNumberID(*_b.CardNumberId)
 		err = e
 
 		if err = utils.ExpectErrorOrNilCondition(
@@ -82,8 +82,8 @@ func (s *BuyerServiceDefault) UpdateBuyerByID(id int, _b models.BuyerPatch) (b m
 			old_buyer.Id != id,
 			&custom_errors.ErrNotFound,
 			&custom_errors.UniqueAttributeViolationErr{
-				AttributeName: "Card_number_id",
-				Value:         *_b.Card_number_id,
+				AttributeName: "card_number_id",
+				Value:         *_b.CardNumberId,
 			}); err != nil {
 			return
 		}
@@ -107,7 +107,7 @@ func (s *BuyerServiceDefault) DeleteBuyerByID(id int) (err error) {
 
 func validateBuyerAttributes(buyer models.Buyer) error {
 
-	if buyer.Card_number_id == "" {
+	if buyer.CardNumberId == "" {
 		return &custom_errors.InvalidArgValueErr{
 			Argument:  "card_number_id",
 			Value:     "",
@@ -115,7 +115,7 @@ func validateBuyerAttributes(buyer models.Buyer) error {
 		}
 	}
 
-	if buyer.First_name == "" {
+	if buyer.FirstName == "" {
 		return &custom_errors.InvalidArgValueErr{
 			Argument:  "first_name",
 			Value:     "",
@@ -123,7 +123,7 @@ func validateBuyerAttributes(buyer models.Buyer) error {
 		}
 	}
 
-	if buyer.Last_name == "" {
+	if buyer.LastName == "" {
 		return &custom_errors.InvalidArgValueErr{
 			Argument:  "last_name",
 			Value:     "",

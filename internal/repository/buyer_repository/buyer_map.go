@@ -52,10 +52,10 @@ func (r *BuyerRepositoryMap) FindBuyerByID(id int) (b models.Buyer, err error) {
 
 	return
 }
-func (r *BuyerRepositoryMap) FindBuyerByCardNumberID(card_number_id string) (b models.Buyer, err error) {
+func (r *BuyerRepositoryMap) FindBuyerByCardNumberID(cardNumberId string) (b models.Buyer, err error) {
 
 	for _, value := range r.db {
-		if value.Card_number_id == card_number_id {
+		if value.CardNumberId == cardNumberId {
 			b = value
 			return
 		}

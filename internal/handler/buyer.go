@@ -34,8 +34,7 @@ func (h *BuyerDefault) GetAllBuyers() http.HandlerFunc {
 		data := b
 
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -60,8 +59,7 @@ func (h *BuyerDefault) GetBuyerByID() http.HandlerFunc {
 
 		data := b
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -69,9 +67,9 @@ func (h *BuyerDefault) GetBuyerByID() http.HandlerFunc {
 func (h *BuyerDefault) CreateBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
-		var _buyer_request models.BuyerCreateRequest
+		var _buyerRequest models.BuyerCreateRequest
 
-		buyer_request, err := utils.InstantiateVarFromBody(&r.Body, _buyer_request)
+		buyerRequest, err := utils.InstantiateVarFromBody(&r.Body, _buyerRequest)
 
 		if err != nil {
 			utils.ResponseHttpError(w, err)
@@ -80,7 +78,7 @@ func (h *BuyerDefault) CreateBuyer() http.HandlerFunc {
 
 		// process
 
-		_b := buyer_request.ToBuyer()
+		_b := buyerRequest.ToBuyer()
 
 		b, err := h.sv.CreateBuyer(_b)
 		if err != nil {
@@ -91,8 +89,7 @@ func (h *BuyerDefault) CreateBuyer() http.HandlerFunc {
 		// response
 		data := b
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -107,9 +104,9 @@ func (h *BuyerDefault) PatchBuyer() http.HandlerFunc {
 			return
 		}
 
-		var _buyer_patch models.BuyerPatch
+		var _buyerPatch models.BuyerPatch
 
-		buyer_patch, err := utils.InstantiateVarFromBody(&r.Body, _buyer_patch)
+		buyerPatch, err := utils.InstantiateVarFromBody(&r.Body, _buyerPatch)
 
 		if err != nil {
 			utils.ResponseHttpError(w, err)
@@ -117,7 +114,7 @@ func (h *BuyerDefault) PatchBuyer() http.HandlerFunc {
 		}
 
 		// process
-		b, err := h.sv.UpdateBuyerByID(id, buyer_patch)
+		b, err := h.sv.UpdateBuyerByID(id, buyerPatch)
 		if err != nil {
 			utils.ResponseHttpError(w, err)
 			return
@@ -126,8 +123,7 @@ func (h *BuyerDefault) PatchBuyer() http.HandlerFunc {
 		// response
 		data := b
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -152,8 +148,7 @@ func (h *BuyerDefault) DeleteBuyer() http.HandlerFunc {
 		// response
 
 		response.JSON(w, http.StatusNoContent, map[string]any{
-			"message": "success",
-			"data":    nil,
+			"data": nil,
 		})
 	}
 }

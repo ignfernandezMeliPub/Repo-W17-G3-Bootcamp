@@ -18,7 +18,7 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 	case errors.As(err, &custom_errors.ErrNotFound):
 		status = http.StatusNotFound
 		message = "Not found"
-	case errors.As(err, &custom_errors.ErrInvalidArgs) || errors.As(err, &custom_errors.ErrDecodeError) || errors.As(err, &custom_errors.ErrMandatoryArgMissing):
+	case errors.As(err, &custom_errors.ErrInvalidArgs) || errors.As(err, &custom_errors.ErrDecodeError) || errors.As(err, &custom_errors.ErrMandatoryArgMissing) || errors.As(err, &custom_errors.UrlParamDecodeErrorI):
 		status = http.StatusBadRequest
 		message = "Bad request"
 	case errors.As(err, &custom_errors.ErrConflictError) || errors.As(err, &custom_errors.ErrUniqueAttributeViolationError):
