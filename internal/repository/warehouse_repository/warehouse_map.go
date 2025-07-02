@@ -1,4 +1,4 @@
-package warehouserepository
+package warehouse_repository
 
 import (
 	"app/pkg/custom_errors"

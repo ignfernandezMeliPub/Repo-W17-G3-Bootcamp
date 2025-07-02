@@ -4,12 +4,12 @@ import (
 	"app/internal/handler"
 	"app/internal/loader"
 	"app/internal/repository/buyer_repository"
-	employee_repository "app/internal/repository/employee_repository"
+	"app/internal/repository/employee_repository"
 	"app/internal/repository/product_repository"
 	"app/internal/repository/product_type_repository"
 	"app/internal/repository/sections_repository"
 	"app/internal/repository/seller_repository"
-	warehouse_repository "app/internal/repository/warehouse_repository"
+	"app/internal/repository/warehouse_repository"
 	"app/internal/service"
 	"app/pkg/models"
 	"net/http"
@@ -21,9 +21,9 @@ import (
 // ConfigServerChi is a struct that represents the configuration for ServerChi
 type ConfigServerChi struct {
 	// ServerAddress is the address where the server will be listening
+	ServerAddress        string
 	ProductTypesFilePath string
 	ProductsFilePath     string
-	ServerAddress        string
 	EmployeesFilePath    string
 	BuyerLoaderFilePath  string
 	WarehouseFilePath    string
@@ -33,9 +33,8 @@ type ConfigServerChi struct {
 // NewServerChi is a function that returns a new instance of ServerChi
 func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 	// default values
-	defaultConfig := &ConfigServerChi{
-		ServerAddress: ":8080",
-	}
+	defaultConfig := &ConfigServerChi{ServerAddress: ":8080"}
+
 	if cfg != nil {
 		if cfg.ServerAddress != "" {
 			defaultConfig.ServerAddress = cfg.ServerAddress
@@ -158,16 +157,14 @@ func (a *ServerChi) Run() (err error) {
 	sectionsSv := service.NewSectionsService(sectionsRp, warehouseSv, productTypeSv)
 	sectionsHd := handler.NewSectionsController(sectionsSv)
 
-	//Employee - repository
+	// Employee - repository
 	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
-	//Employee - service
+	// Employee - service
 	svEmployee := service.NewEmployeeService(rpEmployee, *warehouseSv)
-	//svEmployee := service.NewEmployeeService(rpEmployee, svWarehouse)
-	//Employee - handler
+	// Employee - handler
 	hdEmployee := handler.NewEmployeeController(svEmployee)
 
 	// - router
-
 	rt := chi.NewRouter()
 
 	// - middlewares
@@ -176,7 +173,7 @@ func (a *ServerChi) Run() (err error) {
 
 	// - endpoints
 	rt.Route("/api/v1", func(rt chi.Router) {
-		// 1
+		// 1. Sellers
 		rt.Route("/sellers", func(rt chi.Router) {
 			rt.Get("/", sellerHandler.GetAll)
 			rt.Get("/{id}", sellerHandler.GetById)
@@ -184,7 +181,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Patch("/", sellerHandler.Patch)
 			rt.Delete("/{id}", sellerHandler.Delete)
 		})
-		// 2
+		// 2. Warehouses
 		rt.Route("/warehouses", func(rt chi.Router) {
 			rt.Get("/", warehouseHd.FindWarehouse())
 			rt.Get("/{id}", warehouseHd.FindWarehouseById())
@@ -193,7 +190,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Delete("/{id}", warehouseHd.DeleteWarehouse())
 
 		})
-		// 3
+		// 3. Sections
 		rt.Route("/sections", func(rt chi.Router) {
 			rt.Get("/", sectionsHd.GetSections)
 			rt.Get("/{id}", sectionsHd.GetSection)
@@ -201,7 +198,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Patch("/{id}", sectionsHd.UpdateSection)
 			rt.Delete("/{id}", sectionsHd.DeleteSection)
 		})
-		// 4
+		// 4. Products
 		rt.Route("/products", func(rt chi.Router) {
 			rt.Get("/", productHd.GetAllProducts())
 			rt.Get("/{id}", productHd.GetProductById())
@@ -209,7 +206,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Patch("/{id}", productHd.UpdateProduct())
 			rt.Delete("/{id}", productHd.DeleteProduct())
 		})
-		// 5
+		// 5. Employees
 		rt.Route("/employees", func(rt chi.Router) {
 			rt.Get("/", hdEmployee.GetEmployeesList)
 			rt.Get("/{id}", hdEmployee.GetEmployeeById)
@@ -217,7 +214,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Patch("/{id}", hdEmployee.UpdateEmployee)
 			rt.Delete("/{id}", hdEmployee.DeleteEmployee)
 		})
-		// 6
+		// 6. Buyers
 		rt.Route("/buyers", func(rt chi.Router) {
 			rt.Get("/", buyerHd.GetAllBuyers())
 			rt.Get("/{id}", buyerHd.GetBuyerByID())
