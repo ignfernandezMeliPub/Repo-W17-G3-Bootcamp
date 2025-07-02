@@ -2,7 +2,9 @@ package service
 
 import (
 	employee_repository "app/internal/repository/employee_repository"
+	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"errors"
 )
 
 type EmployeeServiceInterface interface {
@@ -53,6 +55,17 @@ func (s *EmployeeService) CreateEmployee(attributes models.EmployeeRequestBody) 
 
 	if err != nil {
 
+		if errors.As(err, &custom_errors.ErrNotFound) {
+
+			err = &custom_errors.InvalidArgValueErr{
+
+				Argument:  "warehouse_id",
+				Value:     *attributes.WarehouseId,
+				ExtraInfo: "The warehouse sent doesn't exist",
+			}
+
+		}
+
 		return
 
 	}
@@ -97,6 +110,17 @@ func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeeReque
 		_, err = s.svWahrehouse.FindWarehouseById(*attributes.WarehouseId)
 
 		if err != nil {
+
+			if errors.As(err, &custom_errors.ErrNotFound) {
+
+				err = &custom_errors.InvalidArgValueErr{
+
+					Argument:  "Warehouse",
+					Value:     attributes.WarehouseId,
+					ExtraInfo: "The harehouse sent doesn't exist",
+				}
+
+			}
 
 			return
 

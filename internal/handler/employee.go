@@ -109,7 +109,7 @@ func (c *EmployeesController) UpdateEmployee(w http.ResponseWriter, r *http.Requ
 	// Some of the fields sent have the wrong type
 	if err := json.NewDecoder(r.Body).Decode(&newEmployeeAttributes); err != nil {
 
-		utils.ResponseHttpError(w, idError)
+		utils.ResponseHttpError(w, err)
 		return
 
 	}
@@ -145,7 +145,7 @@ func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Requ
 
 	if err != nil {
 
-		utils.ResponseHttpError(w, idError)
+		utils.ResponseHttpError(w, err)
 		return
 
 	}
