@@ -6,5 +6,5 @@ var ErrInvalidBodyError = &InvalidBodyError{}
 
 // Error @inheritdoc
 func (e *InvalidBodyError) Error() string {
-	return "Invalid body"
+	return "Invalid body format."
 }

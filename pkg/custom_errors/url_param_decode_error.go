@@ -14,5 +14,5 @@ var UrlParamDecodeErrorI = &UrlParamDecodeError{}
 
 // Error @inheritdoc
 func (e *UrlParamDecodeError) Error() string {
-	return fmt.Sprintf("field '%s' failed to be decoded. Please verify format.", e.UrlParam)
+	return fmt.Sprintf("Failed to decode url param {%s}. Please verify format.", e.UrlParam)
 }
