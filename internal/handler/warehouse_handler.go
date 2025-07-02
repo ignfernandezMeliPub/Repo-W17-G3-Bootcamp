@@ -86,7 +86,7 @@ func (h *WarehouseDefault) UpdateWarehouse() http.HandlerFunc {
 
 		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, nil)
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
@@ -113,7 +113,7 @@ func (h *WarehouseDefault) DeleteWarehouse() http.HandlerFunc {
 
 		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, nil)
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
