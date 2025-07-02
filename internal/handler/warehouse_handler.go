@@ -39,7 +39,7 @@ func (h *WarehouseDefault) FindWarehouseById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, nil)
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
