@@ -5,6 +5,7 @@ import (
 	"app/internal/loader"
 	"app/internal/repository/buyer_repository"
 	employee_repository "app/internal/repository/employee_repository"
+	"app/internal/repository/product_type_repository"
 	"app/internal/repository/sections_repository"
 	warehouse_repository "app/internal/repository/warehouse_repository"
 	"app/internal/service"
@@ -107,6 +108,10 @@ func (a *ServerChi) Run() (err error) {
 	warehouse_sv := service.NewWarehouseDefault(warehouse_rp)
 	warehouse_hd := handler.NewWarehouseDefault(warehouse_sv)
 
+	//products
+	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(map[int]models.ProductType{1: {Id: 1, Name: "ProductType1", Description: "Default"}})
+	product_type_sv := service.NewProductTypeService(product_type_rp)
+
 	//sections
 	sections_rp := sections_repository.NewSectionsRepositoryMap()
 	sections_db, err := loader.LoadDataFromFile[models.Section](a.sectionsFilePath)
@@ -117,7 +122,7 @@ func (a *ServerChi) Run() (err error) {
 	if err != nil {
 		return err
 	}
-	sections_sv := service.NewSectionsService(sections_rp, warehouse_sv)
+	sections_sv := service.NewSectionsService(sections_rp, warehouse_sv, product_type_sv)
 	sections_hd := handler.NewSectionsController(sections_sv)
 
 	rt := chi.NewRouter()

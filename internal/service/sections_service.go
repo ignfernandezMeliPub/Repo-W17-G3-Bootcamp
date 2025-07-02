@@ -14,12 +14,13 @@ type SectionsService interface {
 }
 
 type SectionsServiceImpl struct {
-	rp           sections_repository.SectionsRepository
-	sv_warehouse IWarehouseService
+	rp              sections_repository.SectionsRepository
+	sv_warehouse    IWarehouseService
+	sv_product_type ProductTypeServices
 }
 
-func NewSectionsService(rp sections_repository.SectionsRepository, wh IWarehouseService) *SectionsServiceImpl {
-	return &SectionsServiceImpl{rp: rp, sv_warehouse: wh}
+func NewSectionsService(rp sections_repository.SectionsRepository, wh IWarehouseService, pt ProductTypeServices) *SectionsServiceImpl {
+	return &SectionsServiceImpl{rp: rp, sv_warehouse: wh, sv_product_type: pt}
 }
 
 func (s *SectionsServiceImpl) GetSections() ([]models.Section, error) {
@@ -33,6 +34,10 @@ func (s *SectionsServiceImpl) GetSectionByID(id int) (models.Section, error) {
 func (s *SectionsServiceImpl) CreateSection(section models.Section) (models.Section, error) {
 	//Falta validacion de los FR hacia ProductType
 	_, err := s.sv_warehouse.FindWarehouseById(section.WarehouseId)
+	if err != nil {
+		return models.Section{}, err
+	}
+	_, err = s.sv_product_type.GetProductTypeById(section.ProductTypeId)
 	if err != nil {
 		return models.Section{}, err
 	}
@@ -69,8 +74,11 @@ func (s *SectionsServiceImpl) UpdateSection(id int, section models.SectionPatch)
 		}
 		oldSec.WarehouseId = *section.WarehouseId
 	}
-	//Falta validar que el productType exista.
 	if section.ProductTypeId != nil {
+		_, err = s.sv_product_type.GetProductTypeById(*section.ProductTypeId)
+		if err != nil {
+			return models.Section{}, err
+		}
 		oldSec.ProductTypeId = *section.ProductTypeId
 	}
 
