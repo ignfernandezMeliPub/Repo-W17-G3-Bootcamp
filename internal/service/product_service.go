@@ -4,7 +4,6 @@ import (
 	"app/internal/repository/product_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"fmt"
 )
 
 type ProductServiceI interface {
@@ -45,7 +44,7 @@ func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Pr
 	}
 	//validar que el producto con productCode no exista
 	if !p.isValidateProductCode(*product.ProductCode) {
-		return models.Product{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "product_code", Value: *product.ProductCode}
+		return models.Product{}, &custom_errors.ResourceConflictError{Argument: "product_code", Value: *product.ProductCode, ExtraInfo: "Product code already exists"}
 	}
 	//validar que el seller exista
 	if !p.isValidSeller(product.SellerId) {
@@ -76,7 +75,6 @@ func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Pr
 }
 
 func (p *ProductService) UpdateProduct(updateProduct models.ProductPatchRequest) (models.Product, error) {
-	//validar datos de negocio
 	product, err := p.ProductRepo.FindProductById(updateProduct.Id)
 
 	if err != nil {
@@ -94,48 +92,48 @@ func (p *ProductService) UpdateProduct(updateProduct models.ProductPatchRequest)
 func (p *ProductService) patchProduct(product models.Product, updateProduct models.ProductPatchRequest) (models.Product, error) {
 	if updateProduct.ProductCode != nil {
 		if *updateProduct.ProductCode == "" {
-			return models.Product{}, fmt.Errorf("invalid product code #%s", *updateProduct.ProductCode)
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "product_code", Value: *updateProduct.ProductCode, ExtraInfo: "Product code cannot be empty"}
 		}
 
 		if product.ProductCode != *updateProduct.ProductCode && !p.isValidateProductCode(*updateProduct.ProductCode) {
-			return models.Product{}, fmt.Errorf("product code #%s already exists", *updateProduct.ProductCode)
+			return models.Product{}, &custom_errors.ResourceConflictError{Argument: "product_code", Value: *updateProduct.ProductCode, ExtraInfo: "Product code already exists"}
 		}
 		product.ProductCode = *updateProduct.ProductCode
 	}
 
 	if updateProduct.Description != nil {
 		if *updateProduct.Description == "" {
-			return models.Product{}, fmt.Errorf("invalid description code #%s", *updateProduct.Description)
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "description", Value: *updateProduct.Description, ExtraInfo: "Description cannot be empty"}
 		}
 		product.Description = *updateProduct.Description
 	}
 	if updateProduct.Width != nil {
 		if *updateProduct.Width <= 0.0 {
-			return models.Product{}, fmt.Errorf("invalid width code #%.2f", *updateProduct.Width)
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "width", Value: *updateProduct.Width, ExtraInfo: "Width must be greater than 0"}
 		}
 		product.Width = *updateProduct.Width
 	}
 	if updateProduct.Height != nil {
 		if *updateProduct.Height <= 0.0 {
-			return models.Product{}, fmt.Errorf("invalid height code #%.2f", *updateProduct.Height)
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "height", Value: *updateProduct.Height, ExtraInfo: "Height must be greater than 0"}
 		}
 		product.Height = *updateProduct.Height
 	}
 	if updateProduct.Length != nil {
 		if *updateProduct.Length <= 0.0 {
-			return models.Product{}, fmt.Errorf("invalid lenght code #%.2f", *updateProduct.Length)
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "length", Value: *updateProduct.Length, ExtraInfo: "Length must be greater than 0"}
 		}
 		product.Length = *updateProduct.Length
 	}
 	if updateProduct.NetWeight != nil {
 		if *updateProduct.NetWeight <= 0.0 {
-			return models.Product{}, fmt.Errorf("invalid net_weight code #%.2f", *updateProduct.NetWeight)
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "net_weight", Value: *updateProduct.NetWeight, ExtraInfo: "Net weight must be greater than 0"}
 		}
 		product.NetWeight = *updateProduct.NetWeight
 	}
 	if updateProduct.ExpirationRate != nil {
 		if *updateProduct.ExpirationRate <= 0 {
-			return models.Product{}, fmt.Errorf("invalid expiration_rate code #%d", *updateProduct.ExpirationRate)
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "expiration_rate", Value: *updateProduct.ExpirationRate, ExtraInfo: "Expiration rate must be greater than 0"}
 		}
 		product.ExpirationRate = *updateProduct.ExpirationRate
 	}
@@ -144,20 +142,19 @@ func (p *ProductService) patchProduct(product models.Product, updateProduct mode
 	}
 	if updateProduct.FreezingRate != nil {
 		if *updateProduct.FreezingRate <= 0 {
-			return models.Product{}, fmt.Errorf("invalid freezing_rate code #%d", *updateProduct.FreezingRate)
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "freezing_rate", Value: *updateProduct.FreezingRate, ExtraInfo: "Freezing rate must be greater than 0"}
 		}
 		product.FreezingRate = *updateProduct.FreezingRate
 	}
 	if updateProduct.ProductTypeId != nil {
 		if !p.isValidateProductType(*updateProduct.ProductTypeId) {
-			return models.Product{}, fmt.Errorf("product type with id %d not exist", *updateProduct.ProductTypeId)
+			return models.Product{}, &custom_errors.ResourceNotFoundError{}
 		}
 		product.ProductTypeId = *updateProduct.ProductTypeId
 	}
 	if updateProduct.SellerId != nil {
-		//aca se valida si el seller existe
 		if !p.isValidSeller(*updateProduct.SellerId) {
-			return models.Product{}, fmt.Errorf("seller with id %d not exist", *updateProduct.SellerId)
+			return models.Product{}, &custom_errors.ResourceNotFoundError{}
 		}
 		product.SellerId = *updateProduct.SellerId
 	}

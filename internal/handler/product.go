@@ -3,14 +3,11 @@ package handler
 import (
 	"app/internal/handler/utils"
 	"app/internal/service"
-	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/bootcamp-go/web/response"
-	"github.com/go-chi/chi/v5"
 )
 
 type ProductController struct {
@@ -28,22 +25,17 @@ func (h *ProductController) GetAllProducts() http.HandlerFunc {
 			utils.ResponseHttpError(w, err)
 			return
 		}
-
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    products,
+			"data": products,
 		})
 	}
 }
 
 func (h *ProductController) GetProductById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, map[string]any{
-				"message": "Invalid ID format",
-				"error":   err.Error(),
-			})
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
@@ -54,8 +46,7 @@ func (h *ProductController) GetProductById() http.HandlerFunc {
 		}
 
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    product,
+			"data": product,
 		})
 	}
 }
@@ -63,9 +54,8 @@ func (h *ProductController) GetProductById() http.HandlerFunc {
 func (h *ProductController) CreateProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var productRequest models.ProductRequest
-		var err error
 
-		productRequest, err = utils.InstantiateVarFromBody(&r.Body, productRequest)
+		productRequest, err := utils.InstantiateVarFromBody(&r.Body, productRequest)
 		if err != nil {
 			utils.ResponseHttpError(w, err)
 			return
@@ -73,46 +63,28 @@ func (h *ProductController) CreateProduct() http.HandlerFunc {
 
 		product, err := h.sv.CreateProduct(productRequest)
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, map[string]any{
-				"message": "Error creating product",
-				"error":   err.Error(),
-			})
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "Product created successfully",
-			"data":    product,
+			"data": product,
 		})
 	}
 }
 
 func (h *ProductController) UpdateProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, map[string]any{
-				"message": "Invalid ID format",
-				"error":   err.Error(),
-			})
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
 		var productPatchRequest models.ProductPatchRequest
 		productPatchRequest, err = utils.InstantiateVarFromBody(&r.Body, productPatchRequest)
 		if err != nil {
-			status := http.StatusBadRequest
-			message := "invalid request body"
-
-			var decodeErr *custom_errors.DecodeError
-			if errors.As(err, &decodeErr) {
-				message = "invalid field type in request body"
-			}
-
-			response.JSON(w, status, map[string]any{
-				"message": message,
-				"error":   err.Error(),
-			})
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
@@ -120,42 +92,30 @@ func (h *ProductController) UpdateProduct() http.HandlerFunc {
 
 		product, err := h.sv.UpdateProduct(productPatchRequest)
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, map[string]any{
-				"message": "Error updating product",
-				"error":   err.Error(),
-			})
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "Product updated successfully",
-			"data":    product,
+			"data": product,
 		})
 	}
 }
 
 func (h *ProductController) DeleteProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, map[string]any{
-				"message": "Invalid ID format",
-				"error":   err.Error(),
-			})
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
 		err = h.sv.DeleteProduct(id)
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, map[string]any{
-				"message": "Error deleting product",
-				"error":   err.Error(),
-			})
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
-		response.JSON(w, http.StatusNoContent, map[string]any{
-			"message": "Product deleted successfully",
-		})
+		response.JSON(w, http.StatusNoContent, map[string]any{})
 	}
 }
