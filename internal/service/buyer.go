@@ -11,7 +11,7 @@ import (
 type BuyerService interface {
 	FindAllBuyers() (b []models.Buyer, err error)
 	FindBuyerByID(id int) (b models.Buyer, err error)
-	FindBuyerByCardNumberID(card_number_id string) (b models.Buyer, err error)
+	FindBuyerByCardNumberID(cardNumberId string) (b models.Buyer, err error)
 	CreateBuyer(_b models.Buyer) (b models.Buyer, err error)
 	UpdateBuyerByID(id int, _b models.BuyerPatch) (b models.Buyer, err error)
 	DeleteBuyerByID(id int) (err error)
@@ -33,8 +33,8 @@ func (s *BuyerServiceDefault) FindBuyerByID(id int) (b models.Buyer, err error) 
 	b, err = s.rp.FindBuyerByID(id)
 	return
 }
-func (s *BuyerServiceDefault) FindBuyerByCardNumberID(card_number_id string) (b models.Buyer, err error) {
-	b, err = s.rp.FindBuyerByCardNumberID(card_number_id)
+func (s *BuyerServiceDefault) FindBuyerByCardNumberID(cardNumberId string) (b models.Buyer, err error) {
+	b, err = s.rp.FindBuyerByCardNumberID(cardNumberId)
 	return
 }
 func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err error) {
