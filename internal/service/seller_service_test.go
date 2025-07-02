@@ -30,33 +30,21 @@ func getSellerServiceImpl() SellerServiceImpl {
 // TestCreateSeller_Success verifies that creating a new seller succeeds.
 func TestCreateSeller_Success(t *testing.T) {
 	service := getSellerServiceImpl()
-	seller, err := service.Create(11, 2001, "NewCo", "Nueva 123", "5555-6666")
+	seller, err := service.Create(2001, "NewCo", "Nueva 123", "5555-6666")
 
 	require.NoError(t, err)
-	assert.Equal(t, 11, seller.Id)
 	assert.Equal(t, 2001, seller.CompanyId)
 	assert.Equal(t, "NewCo", seller.CompanyName)
 
-	got, err := service.GetById(11)
+	got, err := service.GetById(seller.Id)
 	require.NoError(t, err)
 	assert.Equal(t, "NewCo", got.CompanyName)
-}
-
-// TestCreateSeller_DuplicateId verifies that creating a seller with a duplicate ID fails.
-func TestCreateSeller_DuplicateId(t *testing.T) {
-	service := getSellerServiceImpl()
-	_, err := service.Create(1, 9999, "Otra", "Dir", "555")
-
-	var unique *custom_errors.UniqueAttributeViolationErr
-	require.ErrorAs(t, err, &unique)
-
-	assert.Equal(t, "id", unique.AttributeName)
 }
 
 // TestCreateSeller_DuplicateCompanyId verifies that creating a seller with a duplicate CompanyID fails.
 func TestCreateSeller_DuplicateCompanyId(t *testing.T) {
 	service := getSellerServiceImpl()
-	_, err := service.Create(99, 1001, "Otra", "Dir", "555")
+	_, err := service.Create(1001, "Otra", "Dir", "555")
 
 	var unique *custom_errors.UniqueAttributeViolationErr
 	require.ErrorAs(t, err, &unique)
@@ -127,6 +115,6 @@ func TestPatch_NotFound(t *testing.T) {
 	cn := "Other"
 	_, err := service.Patch(9999, nil, &cn, nil, nil)
 
-	var notfound *custom_errors.ResourceNotFoundError
-	require.ErrorAs(t, err, &notfound)
+	var notFound *custom_errors.ResourceNotFoundError
+	require.ErrorAs(t, err, &notFound)
 }
