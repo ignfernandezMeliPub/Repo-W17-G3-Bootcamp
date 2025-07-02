@@ -33,10 +33,29 @@ func (s *SectionsServiceImpl) GetSectionByID(id int) (models.Section, error) {
 }
 
 func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (models.Section, error) {
-	if section.SectionNumber == nil || section.ProductTypeId == nil || section.WarehouseId == nil ||
-		section.MaximumCapacity == nil || section.MinimumCapacity == nil || section.MinimumTemperature == nil ||
-		section.CurrentCapacity == nil || section.CurrentTemperature == nil {
-		return models.Section{}, &custom_errors.MandatoryArgMissingErr{}
+	if section.SectionNumber == nil {
+		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "section_number"}
+	}
+	if section.ProductTypeId == nil {
+		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "current_temperature"}
+	}
+	if section.WarehouseId == nil {
+		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "minimum_temperature"}
+	}
+	if section.MaximumCapacity == nil {
+		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "current_capacity"}
+	}
+	if section.MinimumCapacity == nil {
+		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "minimum_capacity"}
+	}
+	if section.MinimumTemperature == nil {
+		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "maximum_capacity"}
+	}
+	if section.CurrentCapacity == nil {
+		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "warehouse_id"}
+	}
+	if section.CurrentTemperature == nil {
+		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "product_type_id"}
 	}
 	newSection := models.Section{
 		SectionNumber:      *section.SectionNumber,
@@ -54,11 +73,11 @@ func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (mode
 	}
 	_, err = s.sv_warehouse.FindWarehouseById(newSection.WarehouseId)
 	if err != nil {
-		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: newSection.WarehouseId}
+		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: newSection.WarehouseId, ExtraInfo: "warehouse not found"}
 	}
 	_, err = s.sv_product_type.GetProductTypeById(newSection.ProductTypeId)
 	if err != nil {
-		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: newSection.ProductTypeId}
+		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: newSection.ProductTypeId, ExtraInfo: "product type not found"}
 	}
 	return s.rp.CreateSection(newSection)
 }
@@ -96,14 +115,14 @@ func (s *SectionsServiceImpl) UpdateSection(id int, section models.SectionReques
 	if section.WarehouseId != nil {
 		_, err = s.sv_warehouse.FindWarehouseById(*section.WarehouseId)
 		if err != nil {
-			return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: *section.WarehouseId}
+			return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: *section.WarehouseId, ExtraInfo: "warehouse not found"}
 		}
 		oldSec.WarehouseId = *section.WarehouseId
 	}
 	if section.ProductTypeId != nil {
 		_, err = s.sv_product_type.GetProductTypeById(*section.ProductTypeId)
 		if err != nil {
-			return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: *section.ProductTypeId}
+			return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: *section.ProductTypeId, ExtraInfo: "product type not found"}
 		}
 		oldSec.ProductTypeId = *section.ProductTypeId
 	}
