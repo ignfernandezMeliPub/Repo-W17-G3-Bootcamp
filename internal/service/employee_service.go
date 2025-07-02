@@ -10,8 +10,8 @@ import (
 type EmployeeServiceInterface interface {
 	GetEmployeesList() (employees []models.Employee, err error)
 	GetEmployeeById(id int) (employee models.Employee, err error)
-	CreateEmployee(attributes models.EmployeeRequestBody) (newEmployee models.Employee, err error)
-	UpdateEmployee(id int, attributes models.EmployeeRequestBody) (employee models.Employee, err error)
+	CreateEmployee(attributes models.EmployeePostRequestBody) (newEmployee models.Employee, err error)
+	UpdateEmployee(id int, attributes models.EmployeePatchRequestBody) (employee models.Employee, err error)
 	DeleteEmployee(id int) (err error)
 }
 
@@ -39,7 +39,7 @@ func (s *EmployeeService) GetEmployeeById(id int) (employee models.Employee, err
 
 }
 
-func (s *EmployeeService) CreateEmployee(attributes models.EmployeeRequestBody) (newEmployee models.Employee, err error) {
+func (s *EmployeeService) CreateEmployee(attributes models.EmployeePostRequestBody) (newEmployee models.Employee, err error) {
 
 	err = s.repository.ValidateUniqueCardNumberID(*attributes.CardNumberId)
 
@@ -81,7 +81,7 @@ func (s *EmployeeService) CreateEmployee(attributes models.EmployeeRequestBody) 
 
 }
 
-func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeeRequestBody) (updatedEmployee models.Employee, err error) {
+func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeePatchRequestBody) (updatedEmployee models.Employee, err error) {
 
 	employee, err := s.repository.GetEmployeeById(id)
 

@@ -4,7 +4,6 @@ import (
 	"app/internal/handler/utils"
 	"app/internal/service"
 	"app/pkg/models"
-	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -23,7 +22,7 @@ func (c *EmployeesController) GetEmployeesList(w http.ResponseWriter, r *http.Re
 
 	res, err := c.svEmployee.GetEmployeesList()
 	if err != nil {
-		response.Error(w, http.StatusNotFound, err.Error())
+		utils.ResponseHttpError(w, err)
 		return
 	}
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
@@ -60,21 +59,13 @@ func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Req
 
 func (c *EmployeesController) SaveEmployee(w http.ResponseWriter, r *http.Request) {
 
-	var newEmployeeAttributes models.EmployeeRequestBody
+	var newEmployeeAttributes models.EmployeePostRequestBody
 
 	newEmployeeAttributes, err := utils.InstantiateVarFromBody(&r.Body, newEmployeeAttributes)
 
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
-	}
-
-	// A field is missing
-	if validationError := newEmployeeAttributes.VerifyMandatoryFieldsPresence(); validationError != nil {
-
-		utils.ResponseHttpError(w, validationError)
-		return
-
 	}
 
 	employee, err := c.svEmployee.CreateEmployee(newEmployeeAttributes)
@@ -94,20 +85,20 @@ func (c *EmployeesController) SaveEmployee(w http.ResponseWriter, r *http.Reques
 
 func (c *EmployeesController) UpdateEmployee(w http.ResponseWriter, r *http.Request) {
 
-	var newEmployeeAttributes models.EmployeeRequestBody
+	var newEmployeeAttributes models.EmployeePatchRequestBody
 
 	id, idError := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
 	// id format invalid
 	if idError != nil {
-
 		utils.ResponseHttpError(w, idError)
 		return
-
 	}
 
+	newEmployeeAttributes, err := utils.InstantiateVarFromBody(&r.Body, newEmployeeAttributes)
+
 	// Some of the fields sent have the wrong type
-	if err := json.NewDecoder(r.Body).Decode(&newEmployeeAttributes); err != nil {
+	if err != nil {
 
 		utils.ResponseHttpError(w, err)
 		return
