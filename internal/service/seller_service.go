@@ -7,7 +7,7 @@ import (
 )
 
 type SellerService interface {
-	Create(id int, companyId int, companyName string, address string, telephone string) (models.Seller, error)
+	Create(companyId int, companyName string, address string, telephone string) (models.Seller, error)
 	GetById(id int) (models.Seller, error)
 	GetAll() ([]models.Seller, error)
 	Delete(id int) error
@@ -23,24 +23,16 @@ func NewSellerService(repository seller_repository.SellerRepository) SellerServi
 }
 
 // Create Creates a new seller
-func (s *SellerServiceImpl) Create(id int, companyId int, companyName string, address string, telephone string) (models.Seller, error) {
-	isUsed, err := s.repository.IdIsUsed(id)
+func (s *SellerServiceImpl) Create(companyId int, companyName string, address string, telephone string) (models.Seller, error) {
+	isUsed, err := s.repository.CompanyIdIsUsed(companyId)
 	if err != nil {
 		return models.Seller{}, err
 	}
 	if isUsed {
-		return models.Seller{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "id", Value: id}
+		return models.Seller{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "companyId", Value: companyId}
 	}
 
-	isUsed, err = s.repository.CompanyIdIsUsed(companyId)
-	if err != nil {
-		return models.Seller{}, err
-	}
-	if isUsed {
-		return models.Seller{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "companyId", Value: id}
-	}
-
-	seller := models.Seller{Id: id, CompanyId: companyId, CompanyName: companyName, Address: address, Telephone: telephone}
+	seller := models.Seller{Id: -1, CompanyId: companyId, CompanyName: companyName, Address: address, Telephone: telephone}
 	return s.repository.Save(seller)
 }
 

@@ -9,5 +9,5 @@ type MandatoryArgMissingErr struct {
 var ErrMandatoryArgMissing = &MandatoryArgMissingErr{}
 
 func (e *MandatoryArgMissingErr) Error() string {
-	return fmt.Sprintf("Argument {%v} is mandatory", e.Argument)
+	return fmt.Sprintf("Argument/s {%v} is/are mandatory", e.Argument)
 }
