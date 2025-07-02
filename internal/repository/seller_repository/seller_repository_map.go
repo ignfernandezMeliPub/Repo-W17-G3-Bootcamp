@@ -3,6 +3,7 @@ package seller_repository
 import (
 	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"math/rand"
 	"sync"
 )
 
@@ -24,6 +25,16 @@ func (r *SellerRepositoryMap) Save(seller models.Seller) (models.Seller, error) 
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
+	var newId int
+	for {
+		newId = rand.Intn(999999) + 1 // ID entre 1 y 999999
+		_, ok := r.database[newId]
+		if !ok {
+			break
+		}
+	}
+
+	seller.Id = newId
 	r.database[seller.Id] = seller
 	return seller, nil
 }
@@ -38,16 +49,6 @@ func (r *SellerRepositoryMap) GetById(id int) (models.Seller, error) {
 		return models.Seller{}, &custom_errors.ResourceNotFoundError{}
 	}
 	return seller, nil
-}
-
-// IdExists checks if a seller with the given ID exists in the repository.
-// Returns true if it exists, otherwise false. Error is always nil
-func (r *SellerRepositoryMap) IdIsUsed(id int) (bool, error) {
-	r.lock.RLock()
-	defer r.lock.RUnlock()
-
-	_, ok := r.database[id]
-	return ok, nil
 }
 
 // CompanyIdIsUsed checks if any seller in the repository is using the specified company ID.
