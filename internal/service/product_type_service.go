@@ -14,8 +14,8 @@ type ProductTypeServiceImpl struct {
 	ProductTypeRepository product_type_repository.ProductTypeRepository
 }
 
-func NewProductTypeService(rp product_type_repository.ProductTypeRepository) ProductTypeServiceImpl {
-	return ProductTypeServiceImpl{ProductTypeRepository: rp}
+func NewProductTypeService(rp product_type_repository.ProductTypeRepository) *ProductTypeServiceImpl {
+	return &ProductTypeServiceImpl{ProductTypeRepository: rp}
 }
 
 func (s *ProductTypeServiceImpl) GetProductTypeById(id int) (models.ProductType, error) {

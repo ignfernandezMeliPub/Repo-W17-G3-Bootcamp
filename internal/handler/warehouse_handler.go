@@ -7,6 +7,7 @@ import (
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,7 +24,7 @@ type WarehouseDefault struct {
 
 func (h *WarehouseDefault) FindWarehouse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		fmt.Printf("entre")
 		var data []models.Warehouse
 		data, err := h.sv.FindWarehouse()
 
