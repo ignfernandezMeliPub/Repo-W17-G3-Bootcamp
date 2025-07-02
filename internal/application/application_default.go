@@ -161,11 +161,11 @@ func (a *ServerChi) Run() (err error) {
 	//Employee - repository
 	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
 	//Employee - service
-	svEmployee := service.NewEmployeeService(rpEmployee, *warehouse_sv)
+	svEmployee := service.NewEmployeeService(rpEmployee, *warehouseSv)
 	//svEmployee := service.NewEmployeeService(rpEmployee, svWarehouse)
 	//Employee - handler
 	hdEmployee := handler.NewEmployeeController(svEmployee)
-  
+
 	// - router
 
 	rt := chi.NewRouter()
