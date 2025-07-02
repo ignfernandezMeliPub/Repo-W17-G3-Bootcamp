@@ -99,24 +99,28 @@ func (a *ServerChi) Run() (err error) {
 	sellerService := service.NewSellerService(&sellerRepo)
 	sellerHandler := handler.NewSellerHandler(&sellerService)
 
-	buyer_ld := loader.NewBuyerLoaderJSONFile(a.buyerLoaderFilePath)
-	buyer_db, err := buyer_ld.Load()
+	buyerLd := loader.NewBuyerLoaderJSONFile(a.buyerLoaderFilePath)
+	buyerDb, err := buyerLd.Load()
 	if err != nil {
 		return
 	}
 
 	// load products_type
-	product_ld := loader.NewProductLoaderJSONFile(a.productsFilePath)
-	product_db, err := product_ld.Load()
+	productLd := loader.NewProductLoaderJSONFile(a.productsFilePath)
+	productDb, err := productLd.Load()
 	if err != nil {
 		return
 	}
 
-	product_type_ld := loader.NewProductTypeLoaderJSONFile(a.productTypeFilePath)
-	product_type_db, err := product_type_ld.Load()
+	productTypeLd := loader.NewProductTypeLoaderJSONFile(a.productTypeFilePath)
+	productTypeDb, err := productTypeLd.Load()
 
-	warehouse_lb := loader.NewWarehouseJSONFile(a.warehouseFilePath)
-	warehouse_db, err := warehouse_lb.Load()
+	if err != nil {
+		return
+	}
+
+	warehouseLb := loader.NewWarehouseJSONFile(a.warehouseFilePath)
+	warehouseDb, err := warehouseLb.Load()
 	if err != nil {
 		return
 	}
@@ -128,38 +132,38 @@ func (a *ServerChi) Run() (err error) {
 	// Employee - handler
 	hdEmployee := handler.NewEmployeeController(svEmployee)
 
-	buyer_rp := buyer_repository.NewBuyerMap(buyer_db)
-	buyer_sv := service.NewBuyerDefault(buyer_rp)
-	buyer_hd := handler.NewBuyerDefault(buyer_sv)
+	buyerRp := buyer_repository.NewBuyerMap(buyerDb)
+	buyerSv := service.NewBuyerDefault(buyerRp)
+	buyerHd := handler.NewBuyerDefault(buyerSv)
 
 	// Product - repository
-	product_rp := product_repository.NewProductRepositoryMap(product_db)
-	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(product_type_db)
+	productRp := product_repository.NewProductRepositoryMap(productDb)
+	productTypeRp := product_type_repository.NewProductTypeRepositoryMap(productTypeDb)
 
 	// Product - service
-	product_type_sv := service.NewProductTypeService(product_type_rp)
-	product_sv := service.NewProductService(product_rp, product_type_sv, nil) // agregar service seller
+	productTypeSv := service.NewProductTypeService(productTypeRp)
+	productSv := service.NewProductService(productRp, productTypeSv, nil) // agregar service seller
 
 	// Product - handler
-	product_hd := handler.NewProductController(&product_sv)
+	productHd := handler.NewProductController(&productSv)
 
 	// warehouse
-	warehouse_rp := warehouse_repository.NewWarehouseMap(warehouse_db)
-	warehouse_sv := service.NewWarehouseDefault(warehouse_rp)
-	warehouse_hd := handler.NewWarehouseDefault(warehouse_sv)
+	warehouseRp := warehouse_repository.NewWarehouseMap(warehouseDb)
+	warehouseSv := service.NewWarehouseDefault(warehouseRp)
+	warehouseHd := handler.NewWarehouseDefault(warehouseSv)
 
 	// sections
-	sections_rp := sections_repository.NewSectionsRepositoryMap()
-	sections_db, err := loader.LoadDataFromFile[models.Section](a.sectionsFilePath)
+	sectionsRp := sections_repository.NewSectionsRepositoryMap()
+	sectionsDb, err := loader.LoadDataFromFile[models.Section](a.sectionsFilePath)
 	if err != nil {
 		return err
 	}
-	err = sections_rp.PoblateSectionsRepo(sections_db)
+	err = sectionsRp.PoblateSectionsRepo(sectionsDb)
 	if err != nil {
 		return err
 	}
-	sections_sv := service.NewSectionsService(sections_rp, warehouse_sv, product_type_sv)
-	sections_hd := handler.NewSectionsController(sections_sv)
+	sectionsSv := service.NewSectionsService(sectionsRp, warehouseSv, productTypeSv)
+	sectionsHd := handler.NewSectionsController(sectionsSv)
 
 	// - router
 	rt := chi.NewRouter()
@@ -180,28 +184,28 @@ func (a *ServerChi) Run() (err error) {
 		})
 		// 2
 		rt.Route("/warehouses", func(rt chi.Router) {
-			rt.Get("/", warehouse_hd.FindWarehouse())
-			rt.Get("/{id}", warehouse_hd.FindWarehouseById())
-			rt.Post("/", warehouse_hd.CreateWarehouse())
-			rt.Patch("/{id}", warehouse_hd.UpdateWarehouse())
-			rt.Delete("/{id}", warehouse_hd.DeleteWarehouse())
+			rt.Get("/", warehouseHd.FindWarehouse())
+			rt.Get("/{id}", warehouseHd.FindWarehouseById())
+			rt.Post("/", warehouseHd.CreateWarehouse())
+			rt.Patch("/{id}", warehouseHd.UpdateWarehouse())
+			rt.Delete("/{id}", warehouseHd.DeleteWarehouse())
 
 		})
 		// 3
 		rt.Route("/sections", func(rt chi.Router) {
-			rt.Get("/", sections_hd.GetSections)
-			rt.Get("/{id}", sections_hd.GetSection)
-			rt.Post("/", sections_hd.CreateSection)
-			rt.Patch("/{id}", sections_hd.UpdateSection)
-			rt.Delete("/{id}", sections_hd.DeleteSection)
+			rt.Get("/", sectionsHd.GetSections)
+			rt.Get("/{id}", sectionsHd.GetSection)
+			rt.Post("/", sectionsHd.CreateSection)
+			rt.Patch("/{id}", sectionsHd.UpdateSection)
+			rt.Delete("/{id}", sectionsHd.DeleteSection)
 		})
 		// 4
 		rt.Route("/products", func(rt chi.Router) {
-			rt.Get("/", product_hd.GetAllProducts())
-			rt.Get("/{id}", product_hd.GetProductById())
-			rt.Post("/", product_hd.CreateProduct())
-			rt.Patch("/{id}", product_hd.UpdateProduct())
-			rt.Delete("/{id}", product_hd.DeleteProduct())
+			rt.Get("/", productHd.GetAllProducts())
+			rt.Get("/{id}", productHd.GetProductById())
+			rt.Post("/", productHd.CreateProduct())
+			rt.Patch("/{id}", productHd.UpdateProduct())
+			rt.Delete("/{id}", productHd.DeleteProduct())
 		})
 		// 5
 		rt.Route("/employees", func(rt chi.Router) {
@@ -213,11 +217,11 @@ func (a *ServerChi) Run() (err error) {
 		})
 		// 6
 		rt.Route("/buyers", func(rt chi.Router) {
-			rt.Get("/", buyer_hd.GetAllBuyers())
-			rt.Get("/{id}", buyer_hd.GetBuyerByID())
-			rt.Post("/", buyer_hd.CreateBuyer())
-			rt.Patch("/{id}", buyer_hd.PatchBuyer())
-			rt.Delete("/{id}", buyer_hd.DeleteBuyer())
+			rt.Get("/", buyerHd.GetAllBuyers())
+			rt.Get("/{id}", buyerHd.GetBuyerByID())
+			rt.Post("/", buyerHd.CreateBuyer())
+			rt.Patch("/{id}", buyerHd.PatchBuyer())
+			rt.Delete("/{id}", buyerHd.DeleteBuyer())
 		})
 	})
 
