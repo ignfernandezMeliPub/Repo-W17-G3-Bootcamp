@@ -98,8 +98,8 @@ func (h *ProductController) UpdateProduct() http.HandlerFunc {
 			return
 		}
 
-		var productRequest models.ProductRequest
-		productRequest, err = utils.InstantiateVarFromBody(&r.Body, productRequest)
+		var productPatchRequest models.ProductPatchRequest
+		productPatchRequest, err = utils.InstantiateVarFromBody(&r.Body, productPatchRequest)
 		if err != nil {
 			status := http.StatusBadRequest
 			message := "invalid request body"
@@ -116,9 +116,9 @@ func (h *ProductController) UpdateProduct() http.HandlerFunc {
 			return
 		}
 
-		productRequest.Id = id
+		productPatchRequest.Id = id
 
-		product, err := h.sv.UpdateProduct(productRequest)
+		product, err := h.sv.UpdateProduct(productPatchRequest)
 		if err != nil {
 			response.JSON(w, http.StatusInternalServerError, map[string]any{
 				"message": "Error updating product",

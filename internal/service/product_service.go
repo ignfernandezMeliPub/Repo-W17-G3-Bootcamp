@@ -11,7 +11,7 @@ type ProductServiceI interface {
 	GetAllProducts() ([]models.Product, error)
 	GetProductById(int) (models.Product, error)
 	CreateProduct(models.ProductRequest) (models.Product, error)
-	UpdateProduct(models.ProductRequest) (models.Product, error)
+	UpdateProduct(models.ProductPatchRequest) (models.Product, error)
 	DeleteProduct(int) error
 }
 
@@ -75,7 +75,7 @@ func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Pr
 
 }
 
-func (p *ProductService) UpdateProduct(updateProduct models.ProductRequest) (models.Product, error) {
+func (p *ProductService) UpdateProduct(updateProduct models.ProductPatchRequest) (models.Product, error) {
 	//validar datos de negocio
 	product, err := p.ProductRepo.FindProductById(updateProduct.Id)
 
@@ -91,13 +91,13 @@ func (p *ProductService) UpdateProduct(updateProduct models.ProductRequest) (mod
 	return p.ProductRepo.UpdateProduct(updatedProduct)
 }
 
-func (p *ProductService) patchProduct(product models.Product, updateProduct models.ProductRequest) (models.Product, error) {
+func (p *ProductService) patchProduct(product models.Product, updateProduct models.ProductPatchRequest) (models.Product, error) {
 	if updateProduct.ProductCode != nil {
 		if *updateProduct.ProductCode == "" {
 			return models.Product{}, fmt.Errorf("invalid product code #%s", *updateProduct.ProductCode)
 		}
 
-		if !p.isValidateProductCode(*updateProduct.ProductCode) {
+		if product.ProductCode != *updateProduct.ProductCode && !p.isValidateProductCode(*updateProduct.ProductCode) {
 			return models.Product{}, fmt.Errorf("product code #%s already exists", *updateProduct.ProductCode)
 		}
 		product.ProductCode = *updateProduct.ProductCode
@@ -154,9 +154,12 @@ func (p *ProductService) patchProduct(product models.Product, updateProduct mode
 		}
 		product.ProductTypeId = *updateProduct.ProductTypeId
 	}
-	if updateProduct.SellerId != 0 {
+	if updateProduct.SellerId != nil {
 		//aca se valida si el seller existe
-		product.SellerId = updateProduct.SellerId
+		if !p.isValidSeller(*updateProduct.SellerId) {
+			return models.Product{}, fmt.Errorf("seller with id %d not exist", *updateProduct.SellerId)
+		}
+		product.SellerId = *updateProduct.SellerId
 	}
 
 	return product, nil
