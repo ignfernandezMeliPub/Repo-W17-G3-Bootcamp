@@ -29,3 +29,8 @@ func (r *ProductTypeRepositoryMap) FindProductTypeById(id int) (models.ProductTy
 	return productType, nil
 
 }
+
+func (r *ProductTypeRepositoryMap) IsValidProductType(id int) bool {
+	_, found := r.database[id]
+	return found
+}

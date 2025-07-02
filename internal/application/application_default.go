@@ -5,6 +5,7 @@ import (
 	"app/internal/loader"
 	"app/internal/repository/buyer_repository"
 	employee_repository "app/internal/repository/employee_repository"
+	"app/internal/repository/product_repository"
 	"app/internal/repository/product_type_repository"
 	"app/internal/repository/sections_repository"
 	warehouse_repository "app/internal/repository/warehouse_repository"
@@ -19,11 +20,13 @@ import (
 // ConfigServerChi is a struct that represents the configuration for ServerChi
 type ConfigServerChi struct {
 	// ServerAddress is the address where the server will be listening
-	ServerAddress       string
-	EmployeesFilePath   string
-	BuyerLoaderFilePath string
-	WarehouseFilePath   string
-	SectionsFilePath    string
+	ProductTypesFilePath string
+	ProductsFilePath     string
+	ServerAddress        string
+	EmployeesFilePath    string
+	BuyerLoaderFilePath  string
+	WarehouseFilePath    string
+	SectionsFilePath     string
 }
 
 // NewServerChi is a function that returns a new instance of ServerChi
@@ -45,6 +48,12 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		if cfg.WarehouseFilePath != "" {
 			defaultConfig.WarehouseFilePath = cfg.WarehouseFilePath
 		}
+		if cfg.ProductTypesFilePath != "" {
+			defaultConfig.ProductTypesFilePath = cfg.ProductTypesFilePath
+		}
+		if cfg.ProductsFilePath != "" {
+			defaultConfig.ProductsFilePath = cfg.ProductsFilePath
+		}
 		if cfg.SectionsFilePath != "" {
 			defaultConfig.SectionsFilePath = cfg.SectionsFilePath
 		}
@@ -55,6 +64,8 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		employeesFilePath:   defaultConfig.EmployeesFilePath,
 		buyerLoaderFilePath: defaultConfig.BuyerLoaderFilePath,
 		warehouseFilePath:   defaultConfig.WarehouseFilePath,
+		productTypeFilePath: defaultConfig.ProductTypesFilePath,
+		productsFilePath:    defaultConfig.ProductsFilePath,
 		sectionsFilePath:    defaultConfig.SectionsFilePath,
 	}
 }
@@ -66,6 +77,8 @@ type ServerChi struct {
 	employeesFilePath   string
 	buyerLoaderFilePath string
 	warehouseFilePath   string
+	productTypeFilePath string
+	productsFilePath    string
 	sectionsFilePath    string
 }
 
@@ -86,6 +99,16 @@ func (a *ServerChi) Run() (err error) {
 		return
 	}
 
+	//load products_type
+	product_ld := loader.NewProductLoaderJSONFile(a.productsFilePath)
+	product_db, err := product_ld.Load()
+	if err != nil {
+		return
+	}
+
+	product_type_ld := loader.NewProductTypeLoaderJSONFile(a.productTypeFilePath)
+	product_type_db, err := product_type_ld.Load()
+
 	warehouse_lb := loader.NewWarehouseJSONFile(a.warehouseFilePath)
 	warehouse_db, err := warehouse_lb.Load()
 	if err != nil {
@@ -103,14 +126,21 @@ func (a *ServerChi) Run() (err error) {
 	buyer_sv := service.NewBuyerDefault(buyer_rp)
 	buyer_hd := handler.NewBuyerDefault(buyer_sv)
 
+	// Product - repository
+	product_rp := product_repository.NewProductRepositoryMap(product_db)
+	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(product_type_db)
+
+	// Product - service
+	product_type_sv := service.NewProductTypeService(product_type_rp)
+	product_sv := service.NewProductService(product_rp, product_type_sv, nil) //agregar service seller
+
+	// Product - handler
+	product_hd := handler.NewProductController(&product_sv)
+
 	//warehouse
 	warehouse_rp := warehouse_repository.NewWarehouseMap(warehouse_db)
 	warehouse_sv := service.NewWarehouseDefault(warehouse_rp)
 	warehouse_hd := handler.NewWarehouseDefault(warehouse_sv)
-
-	//products
-	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(map[int]models.ProductType{1: {Id: 1, Name: "ProductType1", Description: "Default"}})
-	product_type_sv := service.NewProductTypeService(product_type_rp)
 
 	//sections
 	sections_rp := sections_repository.NewSectionsRepositoryMap()
@@ -156,7 +186,11 @@ func (a *ServerChi) Run() (err error) {
 		})
 		//4
 		rt.Route("/products", func(rt chi.Router) {
-			rt.Get("/EXAMPLE", nil)
+			rt.Get("/", product_hd.GetAllProducts())
+			rt.Get("/{id}", product_hd.GetProductById())
+			rt.Post("/", product_hd.CreateProduct())
+			rt.Patch("/{id}", product_hd.UpdateProduct())
+			rt.Delete("/{id}", product_hd.DeleteProduct())
 		})
 		//5
 		rt.Route("/employees", func(rt chi.Router) {
