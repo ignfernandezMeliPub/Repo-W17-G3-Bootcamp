@@ -57,7 +57,7 @@ func InstantiateVarFromBody[T BodyInstantiableStruct](body *io.ReadCloser, varia
 			}
 		}
 
-		return variable, err
+		return variable, &custom_errors.InvalidBodyError{}
 	}
 
 	return variable, variable.VerifyMandatoryFieldsPresence()
