@@ -18,6 +18,9 @@ type BuyerPatch struct {
 }
 
 func (b BuyerPatch) VerifyMandatoryFieldsPresence() error {
+	if b.CardNumberId == nil && b.FirstName == nil && b.LastName == nil {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "card_number_id or first_name or last_name"}
+	}
 	return nil
 }
 

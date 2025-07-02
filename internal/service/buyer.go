@@ -5,6 +5,7 @@ import (
 	"app/internal/service/utils"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"strings"
 )
 
 type BuyerService interface {
@@ -107,7 +108,7 @@ func (s *BuyerServiceDefault) DeleteBuyerByID(id int) (err error) {
 
 func validateBuyerAttributes(buyer models.Buyer) error {
 
-	if buyer.CardNumberId == "" {
+	if strings.TrimSpace(buyer.CardNumberId) == "" {
 		return &custom_errors.InvalidArgValueErr{
 			Argument:  "card_number_id",
 			Value:     "",
@@ -115,7 +116,7 @@ func validateBuyerAttributes(buyer models.Buyer) error {
 		}
 	}
 
-	if buyer.FirstName == "" {
+	if strings.TrimSpace(buyer.FirstName) == "" {
 		return &custom_errors.InvalidArgValueErr{
 			Argument:  "first_name",
 			Value:     "",
@@ -123,7 +124,7 @@ func validateBuyerAttributes(buyer models.Buyer) error {
 		}
 	}
 
-	if buyer.LastName == "" {
+	if strings.TrimSpace(buyer.LastName) == "" {
 		return &custom_errors.InvalidArgValueErr{
 			Argument:  "last_name",
 			Value:     "",
