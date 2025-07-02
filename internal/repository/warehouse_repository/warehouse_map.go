@@ -1,4 +1,4 @@
-package warehouserepository
+package warehouse_repository
 
 import (
 	"app/pkg/custom_errors"
@@ -27,11 +27,7 @@ func (r *WarehouseRepositoryMap) CreateWarehouse(wh models.Warehouse) (models.Wa
 			newId = id + 1
 		}
 		if strings.EqualFold(w.Warehouse_code, wh.Warehouse_code) {
-			return models.Warehouse{}, &custom_errors.ResourceConflictError{
-				Value:     w.Warehouse_code,
-				Argument:  "warehouse_code",
-				ExtraInfo: "warehouse_code must be unique",
-			}
+			return models.Warehouse{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "warehouse_code", Value: w.Warehouse_code}
 		}
 	}
 	wh.Id = newId
@@ -64,10 +60,7 @@ func (r *WarehouseRepositoryMap) FindWarehouseById(id int) (models.Warehouse, er
 
 func (r *WarehouseRepositoryMap) UpdateWarehouse(id int, w models.Warehouse) (models.Warehouse, error) {
 	if r.FindWarehouseByCode(w.Warehouse_code) {
-		return models.Warehouse{}, &custom_errors.ResourceConflictError{
-			Value:     w.Warehouse_code,
-			Argument:  "warehouse_code",
-			ExtraInfo: "warehouse_code must be unique"}
+		return models.Warehouse{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "warehouse_code", Value: w.Warehouse_code}
 	}
 
 	r.db[id] = w

@@ -59,7 +59,7 @@ func (b BuyerCreateRequest) VerifyMandatoryFieldsPresence() error {
 	return nil
 }
 
-func (b *BuyerCreateRequest) ToBuyer() Buyer {
+func (b BuyerCreateRequest) ToBuyer() Buyer {
 	return Buyer{
 		CardNumberId: *b.CardNumberId,
 		FirstName:    *b.FirstName,

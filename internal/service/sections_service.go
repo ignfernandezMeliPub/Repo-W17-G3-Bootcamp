@@ -145,7 +145,7 @@ func (s *SectionsServiceImpl) ValidateSection(id int, sectionNumber string) erro
 	}
 	for _, section := range sections {
 		if section.SectionNumber == sectionNumber && id != section.ID {
-			return &custom_errors.ResourceConflictError{Argument: "section_number", Value: sectionNumber}
+			return &custom_errors.UniqueAttributeViolationErr{AttributeName: "section_number", Value: sectionNumber}
 		}
 	}
 	return nil
