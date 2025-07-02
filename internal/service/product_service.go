@@ -4,6 +4,7 @@ import (
 	"app/internal/repository/product_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"fmt"
 )
 
 type ProductServiceI interface {
@@ -40,7 +41,7 @@ func (p *ProductService) DeleteProduct(id int) error {
 func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Product, error) {
 	//validar que productType exista
 	if !p.isValidateProductType(*product.ProductTypeId) {
-		return models.Product{}, &custom_errors.ResourceNotFoundError{}
+		return models.Product{}, &custom_errors.ResourceConflictError{Argument: "product_type_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Product Type ID"}
 	}
 	//validar que el producto con productCode no exista
 	if !p.isValidateProductCode(*product.ProductCode) {
@@ -48,7 +49,7 @@ func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Pr
 	}
 	//validar que el seller exista
 	if !p.isValidSeller(product.SellerId) {
-		return models.Product{}, &custom_errors.ResourceNotFoundError{}
+		return models.Product{}, &custom_errors.ResourceConflictError{Argument: "seller_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Seller ID"}
 	}
 
 	// Validaciones de valores positivos y mayores a 0
@@ -168,13 +169,13 @@ func (p *ProductService) patchProduct(product models.Product, updateProduct mode
 	}
 	if updateProduct.ProductTypeId != nil {
 		if !p.isValidateProductType(*updateProduct.ProductTypeId) {
-			return models.Product{}, &custom_errors.ResourceNotFoundError{}
+			return models.Product{}, &custom_errors.ResourceConflictError{Argument: "product_type_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Product Type ID"}
 		}
 		product.ProductTypeId = *updateProduct.ProductTypeId
 	}
 	if updateProduct.SellerId != nil {
 		if !p.isValidSeller(*updateProduct.SellerId) {
-			return models.Product{}, &custom_errors.ResourceNotFoundError{}
+			return models.Product{}, &custom_errors.ResourceConflictError{Argument: "seller_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Seller ID"}
 		}
 		product.SellerId = *updateProduct.SellerId
 	}
