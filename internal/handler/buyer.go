@@ -26,18 +26,15 @@ func (h *BuyerDefault) GetAllBuyers() http.HandlerFunc {
 		// process
 		b, err := h.sv.FindAllBuyers()
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, nil)
+			utils.ResponseHttpError(w, err)
 			return
 		}
 
 		// response
-		data := make(map[int]models.Buyer)
-		for _, buyer := range b {
-			data[buyer.Id] = buyer
-		}
+		data := b
+
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -48,22 +45,21 @@ func (h *BuyerDefault) GetBuyerByID() http.HandlerFunc {
 		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, nil)
+			utils.ResponseHttpError(w, err)
 			return
 		}
 		// process
 
 		b, err := h.sv.FindBuyerByID(id)
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, nil)
+			utils.ResponseHttpError(w, err)
 			return
 		}
 		// response
 
 		data := b
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -71,29 +67,88 @@ func (h *BuyerDefault) GetBuyerByID() http.HandlerFunc {
 func (h *BuyerDefault) CreateBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
+		var _buyerRequest models.BuyerCreateRequest
+
+		buyerRequest, err := utils.InstantiateVarFromBody(&r.Body, _buyerRequest)
+
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 
 		// process
 
+		_b := buyerRequest.ToBuyer()
+
+		b, err := h.sv.CreateBuyer(_b)
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+
 		// response
+		data := b
+		response.JSON(w, http.StatusCreated, map[string]any{
+			"data": data,
+		})
 	}
 }
 
 func (h *BuyerDefault) PatchBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
+		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
+
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+
+		var _buyerPatch models.BuyerPatch
+
+		buyerPatch, err := utils.InstantiateVarFromBody(&r.Body, _buyerPatch)
+
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 
 		// process
+		b, err := h.sv.UpdateBuyerByID(id, buyerPatch)
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 
 		// response
+		data := b
+		response.JSON(w, http.StatusCreated, map[string]any{
+			"data": data,
+		})
 	}
 }
 
 func (h *BuyerDefault) DeleteBuyer() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
+		id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 		// process
 
+		err = h.sv.DeleteBuyerByID(id)
+
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
 		// response
+
+		response.JSON(w, http.StatusNoContent, map[string]any{
+			"data": nil,
+		})
 	}
 }

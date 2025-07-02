@@ -35,7 +35,7 @@ func (r *BuyerRepositoryMap) FindAllBuyers() (b []models.Buyer, err error) {
 	}
 
 	if len(b) == 0 {
-		err = &custom_errors.ResourceNotFoundError{}
+		err = custom_errors.ErrNotFound
 		return
 	}
 
@@ -46,22 +46,22 @@ func (r *BuyerRepositoryMap) FindBuyerByID(id int) (b models.Buyer, err error) {
 	b, ok := r.db[id]
 
 	if !ok {
-		err = &custom_errors.ResourceNotFoundError{}
+		err = custom_errors.ErrNotFound
 		return
 	}
 
 	return
 }
-func (r *BuyerRepositoryMap) FindBuyerByCardNumberID(card_number_id int) (b models.Buyer, err error) {
+func (r *BuyerRepositoryMap) FindBuyerByCardNumberID(cardNumberId string) (b models.Buyer, err error) {
 
 	for _, value := range r.db {
-		if b.Card_number_id == card_number_id {
+		if value.CardNumberId == cardNumberId {
 			b = value
 			return
 		}
 	}
 
-	err = &custom_errors.ResourceNotFoundError{}
+	err = custom_errors.ErrNotFound
 	return
 }
 func (r *BuyerRepositoryMap) CreateBuyer(_b models.Buyer) (b models.Buyer, err error) {
