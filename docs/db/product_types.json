@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "name": "Frescos",
+        "description": "Productos que deben conservarse frescos y consumir en poco tiempo."
+    },
+    {
+        "id": 2,
+        "name": "Congelados",
+        "description": "Productos que deben almacenarse a temperaturas bajo cero."
+    },
+    {
+        "id": 3,
+        "name": "Secos",
+        "description": "Productos que no requieren refrigeración y tienen una larga vida útil."
+    }
+]

@@ -5,7 +5,7 @@ import "app/pkg/models"
 type BuyerRepository interface {
 	FindAllBuyers() (b []models.Buyer, err error)
 	FindBuyerByID(id int) (b models.Buyer, err error)
-	FindBuyerByCardNumberID(card_number_id int) (b models.Buyer, err error)
+	FindBuyerByCardNumberID(cardNumber_id string) (b models.Buyer, err error)
 	CreateBuyer(_b models.Buyer) (b models.Buyer, err error)
 	UpdateBuyer(_b models.Buyer) (b models.Buyer, err error)
 	DeleteBuyerByID(id int) (e error)

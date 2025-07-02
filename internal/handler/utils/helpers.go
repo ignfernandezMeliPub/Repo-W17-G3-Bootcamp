@@ -18,7 +18,13 @@ import (
 //	id, err := GetURLParamAs[int](r, "userId", strconv.Atoi)
 func GetURLParamAs[T any](request *http.Request, urlParamKey string, parser func(string) (T, error)) (T, error) {
 	valueStr := chi.URLParam(request, urlParamKey)
-	return parser(valueStr)
+
+	result, err := parser(valueStr)
+	if err != nil {
+		return result, &custom_errors.UrlParamDecodeError{UrlParam: urlParamKey, BaseErr: err}
+	}
+
+	return result, nil
 }
 
 // BodyInstantiableStruct should be implemented by any struct type intended to be
@@ -51,7 +57,7 @@ func InstantiateVarFromBody[T BodyInstantiableStruct](body *io.ReadCloser, varia
 			}
 		}
 
-		return variable, err
+		return variable, &custom_errors.InvalidBodyError{}
 	}
 
 	return variable, variable.VerifyMandatoryFieldsPresence()

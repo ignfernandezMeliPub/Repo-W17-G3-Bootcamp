@@ -9,13 +9,13 @@ type ProductTypeRepositoryMap struct {
 	database map[int]models.ProductType
 }
 
-func NewProductTypeRepositoryMap(database map[int]models.ProductType) ProductTypeRepositoryMap {
+func NewProductTypeRepositoryMap(database map[int]models.ProductType) *ProductTypeRepositoryMap {
 
 	if database == nil {
 		database = map[int]models.ProductType{}
 	}
 
-	return ProductTypeRepositoryMap{database: database}
+	return &ProductTypeRepositoryMap{database: database}
 
 }
 
@@ -28,4 +28,9 @@ func (r *ProductTypeRepositoryMap) FindProductTypeById(id int) (models.ProductTy
 	}
 	return productType, nil
 
+}
+
+func (r *ProductTypeRepositoryMap) IsValidProductType(id int) bool {
+	_, found := r.database[id]
+	return found
 }

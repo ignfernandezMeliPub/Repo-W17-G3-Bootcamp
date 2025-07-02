@@ -18,12 +18,15 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 	case errors.As(err, &custom_errors.ErrNotFound):
 		status = http.StatusNotFound
 		message = "Not found"
-	case errors.As(err, &custom_errors.ErrInvalidArgs) || errors.As(err, &custom_errors.ErrDecodeError) || errors.As(err, &custom_errors.ErrMandatoryArgMissing):
+	case errors.As(err, &custom_errors.ErrInvalidBodyError) || errors.As(err, &custom_errors.ErrDecodeError) || errors.As(err, &custom_errors.UrlParamDecodeErrorI):
 		status = http.StatusBadRequest
 		message = "Bad request"
 	case errors.As(err, &custom_errors.ErrConflictError) || errors.As(err, &custom_errors.ErrUniqueAttributeViolationError):
 		status = http.StatusConflict
 		message = "Conflict"
+	case errors.As(err, &custom_errors.ErrInvalidArgs) || errors.As(err, &custom_errors.ErrMandatoryArgMissing):
+		status = http.StatusUnprocessableEntity
+		message = "Unprocessable Entity"
 	default:
 		status = http.StatusInternalServerError
 		message = "Internal server error"
