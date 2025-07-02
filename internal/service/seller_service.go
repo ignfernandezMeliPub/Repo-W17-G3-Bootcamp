@@ -53,13 +53,16 @@ func (s *SellerServiceImpl) Patch(id int, companyId *int, companyName *string, a
 		return models.Seller{}, err
 	}
 
-	if companyId != nil {
+	if companyId != nil && *companyId != coincidence.CompanyId {
+		println(coincidence.CompanyId)
+		println(*companyId)
+		println(coincidence.CompanyId == *companyId)
 		isUsed, err := s.repository.CompanyIdIsUsed(*companyId)
 		if err != nil {
 			return models.Seller{}, err
 		}
 		if isUsed {
-			return models.Seller{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "companyId", Value: id}
+			return models.Seller{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "companyId", Value: *companyId}
 		}
 
 		coincidence.CompanyId = *companyId
