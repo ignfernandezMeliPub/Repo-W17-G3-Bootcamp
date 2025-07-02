@@ -12,7 +12,7 @@ type Section struct {
 	ProductTypeId      int     `json:"product_type_id"`
 }
 
-type SectionPatch struct {
+type SectionRequest struct {
 	SectionNumber      *string  `json:"section_number,omitempty"`
 	CurrentTemperature *float32 `json:"current_temperature,omitempty"`
 	MinimumTemperature *float32 `json:"minimum_temperature,omitempty"`

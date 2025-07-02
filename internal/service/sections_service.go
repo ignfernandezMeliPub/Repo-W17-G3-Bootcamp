@@ -4,14 +4,13 @@ import (
 	"app/internal/repository/sections_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"strconv"
 )
 
 type SectionsService interface {
 	GetSections() ([]models.Section, error)
 	GetSectionByID(id int) (models.Section, error)
-	CreateSection(section models.Section) (models.Section, error)
-	UpdateSection(id int, section models.SectionPatch) (models.Section, error)
+	CreateSection(section models.SectionRequest) (models.Section, error)
+	UpdateSection(id int, section models.SectionRequest) (models.Section, error)
 	DeleteSection(id int) error
 }
 
@@ -33,29 +32,38 @@ func (s *SectionsServiceImpl) GetSectionByID(id int) (models.Section, error) {
 	return s.rp.GetSectionById(id)
 }
 
-func (s *SectionsServiceImpl) CreateSection(section models.Section) (models.Section, error) {
-	if section.ID != 0 {
-		_, err := s.rp.GetSectionById(section.ID)
-		if err == nil {
-			return models.Section{}, &custom_errors.ResourceConflictError{Argument: "id", Value: strconv.Itoa(section.ID)}
-		}
+func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (models.Section, error) {
+	if section.SectionNumber == nil || section.ProductTypeId == nil || section.WarehouseId == nil ||
+		section.MaximumCapacity == nil || section.MinimumCapacity == nil || section.MinimumTemperature == nil ||
+		section.CurrentCapacity == nil || section.CurrentTemperature == nil {
+		return models.Section{}, &custom_errors.MandatoryArgMissingErr{}
 	}
-	err := s.ValidateSection(section.ID, section.SectionNumber)
+	newSection := models.Section{
+		SectionNumber:      *section.SectionNumber,
+		CurrentTemperature: *section.CurrentTemperature,
+		MinimumTemperature: *section.MinimumTemperature,
+		CurrentCapacity:    *section.CurrentCapacity,
+		MinimumCapacity:    *section.MinimumCapacity,
+		MaximumCapacity:    *section.MaximumCapacity,
+		WarehouseId:        *section.WarehouseId,
+		ProductTypeId:      *section.ProductTypeId,
+	}
+	err := s.ValidateSection(newSection.ID, newSection.SectionNumber)
 	if err != nil {
 		return models.Section{}, err
 	}
-	_, err = s.sv_warehouse.FindWarehouseById(section.WarehouseId)
+	_, err = s.sv_warehouse.FindWarehouseById(newSection.WarehouseId)
 	if err != nil {
-		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: section.WarehouseId}
+		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: newSection.WarehouseId}
 	}
-	_, err = s.sv_product_type.GetProductTypeById(section.ProductTypeId)
+	_, err = s.sv_product_type.GetProductTypeById(newSection.ProductTypeId)
 	if err != nil {
-		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: section.ProductTypeId}
+		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: newSection.ProductTypeId}
 	}
-	return s.rp.CreateSection(section)
+	return s.rp.CreateSection(newSection)
 }
 
-func (s *SectionsServiceImpl) UpdateSection(id int, section models.SectionPatch) (models.Section, error) {
+func (s *SectionsServiceImpl) UpdateSection(id int, section models.SectionRequest) (models.Section, error) {
 	oldSec, err := s.rp.GetSectionById(id)
 	if err != nil {
 		return models.Section{}, err
