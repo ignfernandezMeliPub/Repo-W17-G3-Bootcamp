@@ -39,6 +39,7 @@ func (p *ProductService) DeleteProduct(id int) error {
 
 func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Product, error) {
 	//validar que productType exista
+
 	if !p.isValidateProductType(*product.ProductTypeId) {
 		return models.Product{}, &custom_errors.ResourceNotFoundError{}
 	}
@@ -160,8 +161,7 @@ func (p *ProductService) patchProduct(product models.Product, updateProduct mode
 }
 
 func (p *ProductService) isValidateProductType(id int) bool {
-	_, err := p.ProductTypeService.GetProductTypeById(id)
-	return err == nil
+	return p.ProductTypeService.IsValidProductType(id)
 }
 
 func (p *ProductService) isValidateProductCode(code string) bool {

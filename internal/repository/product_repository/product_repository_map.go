@@ -10,7 +10,7 @@ type ProductRepositoryMap struct {
 	seed     int
 }
 
-func NewProductTypeRepositoryMap(database map[int]models.Product) *ProductRepositoryMap {
+func NewProductRepositoryMap(database map[int]models.Product) *ProductRepositoryMap {
 
 	if database == nil {
 		database = map[int]models.Product{}

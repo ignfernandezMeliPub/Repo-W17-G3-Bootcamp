@@ -97,7 +97,7 @@ func (a *ServerChi) Run() (err error) {
 		return
 	}
 
-	product_type_ld := loader.NewProductTypeLoaderJSONFile(a.productsFilePath)
+	product_type_ld := loader.NewProductTypeLoaderJSONFile(a.productTypeFilePath)
 	product_type_db, err := product_type_ld.Load()
 	if err != nil {
 		return
@@ -115,7 +115,7 @@ func (a *ServerChi) Run() (err error) {
 	buyer_hd := handler.NewBuyerDefault(buyer_sv)
 
 	// Product - repository
-	product_rp := product_repository.NewProductTypeRepositoryMap(product_db)                //aca deberiamos agregar el archivo de productos
+	product_rp := product_repository.NewProductRepositoryMap(product_db)                    //aca deberiamos agregar el archivo de productos
 	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(product_type_db) //aca deberiamos agregar el archivo de tipos de productos
 
 	// Product - service
