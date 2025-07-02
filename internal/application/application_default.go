@@ -115,12 +115,12 @@ func (a *ServerChi) Run() (err error) {
 	buyer_hd := handler.NewBuyerDefault(buyer_sv)
 
 	// Product - repository
-	product_rp := product_repository.NewProductRepositoryMap(product_db)                    //aca deberiamos agregar el archivo de productos
-	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(product_type_db) //aca deberiamos agregar el archivo de tipos de productos
+	product_rp := product_repository.NewProductRepositoryMap(product_db)
+	product_type_rp := product_type_repository.NewProductTypeRepositoryMap(product_type_db)
 
 	// Product - service
 	product_type_sv := service.NewProductTypeService(&product_type_rp)
-	product_sv := service.NewProductService(product_rp, &product_type_sv)
+	product_sv := service.NewProductService(product_rp, &product_type_sv, nil) //agregar service seller
 
 	// Product - handler
 	product_hd := handler.NewProductController(&product_sv)

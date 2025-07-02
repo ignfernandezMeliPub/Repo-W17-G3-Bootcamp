@@ -18,10 +18,11 @@ type ProductServiceI interface {
 type ProductService struct {
 	ProductRepo        product_repository.ProductRepository
 	ProductTypeService ProductTypeServices
+	SellerServices     SellerService
 }
 
-func NewProductService(prodRepository product_repository.ProductRepository, typeServices ProductTypeServices) ProductService {
-	return ProductService{ProductRepo: prodRepository, ProductTypeService: typeServices}
+func NewProductService(prodRepository product_repository.ProductRepository, typeService ProductTypeServices, sellService SellerService) ProductService {
+	return ProductService{ProductRepo: prodRepository, ProductTypeService: typeService, SellerServices: sellService}
 }
 
 func (p *ProductService) GetAllProducts() ([]models.Product, error) {
@@ -39,7 +40,6 @@ func (p *ProductService) DeleteProduct(id int) error {
 
 func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Product, error) {
 	//validar que productType exista
-
 	if !p.isValidateProductType(*product.ProductTypeId) {
 		return models.Product{}, &custom_errors.ResourceNotFoundError{}
 	}
@@ -47,7 +47,10 @@ func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Pr
 	if !p.isValidateProductCode(*product.ProductCode) {
 		return models.Product{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "product_code", Value: *product.ProductCode}
 	}
-	//validar que el seller exista (NECESITO LO DE GUIDO)
+	//validar que el seller exista
+	if !p.isValidSeller(product.SellerId) {
+		return models.Product{}, &custom_errors.ResourceNotFoundError{}
+	}
 
 	newProduct := models.Product{
 		ProductCode:                    *product.ProductCode,
@@ -168,4 +171,13 @@ func (p *ProductService) isValidateProductCode(code string) bool {
 	_, err := p.ProductRepo.FindProductByCode(code)
 
 	return err != nil
+}
+
+func (p *ProductService) isValidSeller(id int) bool {
+	if id == 0 {
+		return true
+	}
+	_, err := p.SellerServices.GetById(id)
+
+	return err == nil
 }
