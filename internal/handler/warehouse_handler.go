@@ -1,7 +1,6 @@
 package handler
 
 import (
-	//"app/internal/handler/custom_errors"
 	"app/internal/handler/utils"
 	"app/internal/service"
 	"app/pkg/models"
@@ -58,7 +57,7 @@ func (h *WarehouseDefault) FindWarehouseById() http.HandlerFunc {
 
 func (h *WarehouseDefault) CreateWarehouse() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		//request
+		// request
 		var wh models.Warehouse
 		wh, err := utils.InstantiateVarFromBody(&r.Body, wh)
 		if err != nil {
@@ -66,14 +65,14 @@ func (h *WarehouseDefault) CreateWarehouse() http.HandlerFunc {
 			return
 		}
 
-		//process
+		// process
 		data, err := h.sv.CreateWarehouse(wh)
 		if err != nil {
 			utils.ResponseHttpError(w, err)
 			return
 		}
 
-		//response
+		// response
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"data": data,
 		})

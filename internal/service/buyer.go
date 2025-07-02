@@ -47,7 +47,7 @@ func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err 
 
 	if err = utils.ExpectError(
 		err,
-		&custom_errors.ErrNotFound,
+		custom_errors.ErrNotFound,
 		&custom_errors.UniqueAttributeViolationErr{
 			AttributeName: "card_number_id",
 			Value:         _b.CardNumberId,
@@ -75,13 +75,13 @@ func (s *BuyerServiceDefault) UpdateBuyerByID(id int, _b models.BuyerPatch) (b m
 
 	if _b.CardNumberId != nil {
 
-		old_buyer, e := s.rp.FindBuyerByCardNumberID(*_b.CardNumberId)
+		oldBuyer, e := s.rp.FindBuyerByCardNumberID(*_b.CardNumberId)
 		err = e
 
 		if err = utils.ExpectErrorOrNilCondition(
 			err,
-			old_buyer.Id != id,
-			&custom_errors.ErrNotFound,
+			oldBuyer.Id != id,
+			custom_errors.ErrNotFound,
 			&custom_errors.UniqueAttributeViolationErr{
 				AttributeName: "card_number_id",
 				Value:         *_b.CardNumberId,

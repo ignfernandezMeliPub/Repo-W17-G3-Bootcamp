@@ -26,8 +26,8 @@ func (r *WarehouseRepositoryMap) CreateWarehouse(wh models.Warehouse) (models.Wa
 		if id >= newId {
 			newId = id + 1
 		}
-		if strings.EqualFold(w.Warehouse_code, wh.Warehouse_code) {
-			return models.Warehouse{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "warehouse_code", Value: w.Warehouse_code}
+		if strings.EqualFold(w.WarehouseCode, wh.WarehouseCode) {
+			return models.Warehouse{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "warehouse_code", Value: w.WarehouseCode}
 		}
 	}
 	wh.Id = newId
@@ -59,8 +59,8 @@ func (r *WarehouseRepositoryMap) FindWarehouseById(id int) (models.Warehouse, er
 }
 
 func (r *WarehouseRepositoryMap) UpdateWarehouse(id int, w models.Warehouse) (models.Warehouse, error) {
-	if r.FindWarehouseByCode(w.Warehouse_code) {
-		return models.Warehouse{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "warehouse_code", Value: w.Warehouse_code}
+	if r.FindWarehouseByCode(w.WarehouseCode) {
+		return models.Warehouse{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "warehouse_code", Value: w.WarehouseCode}
 	}
 
 	r.db[id] = w
@@ -75,7 +75,7 @@ func (r *WarehouseRepositoryMap) DeleteWarehouse(id int) error {
 func (r *WarehouseRepositoryMap) FindWarehouseByCode(code string) bool {
 
 	for _, w := range r.db {
-		if strings.EqualFold(w.Warehouse_code, code) {
+		if strings.EqualFold(w.WarehouseCode, code) {
 			return true
 		}
 	}

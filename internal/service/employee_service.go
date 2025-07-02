@@ -1,7 +1,7 @@
 package service
 
 import (
-	employee_repository "app/internal/repository/employee_repository"
+	"app/internal/repository/employee_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"errors"
@@ -145,8 +145,7 @@ func (s *EmployeeService) DeleteEmployee(id int) (err error) {
 
 	}
 
-	s.repository.DeleteEmployee(id)
+	err = s.repository.DeleteEmployee(id)
 
 	return
-
 }

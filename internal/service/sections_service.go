@@ -15,13 +15,13 @@ type SectionsService interface {
 }
 
 type SectionsServiceImpl struct {
-	rp              sections_repository.SectionsRepository
-	sv_warehouse    IWarehouseService
-	sv_product_type ProductTypeServices
+	rp            sections_repository.SectionsRepository
+	svWarehouse   IWarehouseService
+	svProductType ProductTypeServices
 }
 
 func NewSectionsService(rp sections_repository.SectionsRepository, wh IWarehouseService, pt ProductTypeServices) *SectionsServiceImpl {
-	return &SectionsServiceImpl{rp: rp, sv_warehouse: wh, sv_product_type: pt}
+	return &SectionsServiceImpl{rp: rp, svWarehouse: wh, svProductType: pt}
 }
 
 func (s *SectionsServiceImpl) GetSections() ([]models.Section, error) {
@@ -71,11 +71,11 @@ func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (mode
 	if err != nil {
 		return models.Section{}, err
 	}
-	_, err = s.sv_warehouse.FindWarehouseById(newSection.WarehouseId)
+	_, err = s.svWarehouse.FindWarehouseById(newSection.WarehouseId)
 	if err != nil {
 		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: newSection.WarehouseId, ExtraInfo: "warehouse not found"}
 	}
-	_, err = s.sv_product_type.GetProductTypeById(newSection.ProductTypeId)
+	_, err = s.svProductType.GetProductTypeById(newSection.ProductTypeId)
 	if err != nil {
 		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: newSection.ProductTypeId, ExtraInfo: "product type not found"}
 	}
@@ -113,14 +113,14 @@ func (s *SectionsServiceImpl) UpdateSection(id int, section models.SectionReques
 		oldSec.MaximumCapacity = *section.MaximumCapacity
 	}
 	if section.WarehouseId != nil {
-		_, err = s.sv_warehouse.FindWarehouseById(*section.WarehouseId)
+		_, err = s.svWarehouse.FindWarehouseById(*section.WarehouseId)
 		if err != nil {
 			return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: *section.WarehouseId, ExtraInfo: "warehouse not found"}
 		}
 		oldSec.WarehouseId = *section.WarehouseId
 	}
 	if section.ProductTypeId != nil {
-		_, err = s.sv_product_type.GetProductTypeById(*section.ProductTypeId)
+		_, err = s.svProductType.GetProductTypeById(*section.ProductTypeId)
 		if err != nil {
 			return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: *section.ProductTypeId, ExtraInfo: "product type not found"}
 		}

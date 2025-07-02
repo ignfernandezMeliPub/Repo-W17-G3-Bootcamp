@@ -18,7 +18,7 @@ func NewSectionsController(sv service.SectionsService) *SectionsController {
 	return &SectionsController{sv: sv}
 }
 
-func (c *SectionsController) GetSections(w http.ResponseWriter, r *http.Request) {
+func (c *SectionsController) GetSections(w http.ResponseWriter, _ *http.Request) {
 	res, err := c.sv.GetSections()
 	if err != nil {
 		utils.ResponseHttpError(w, err)
