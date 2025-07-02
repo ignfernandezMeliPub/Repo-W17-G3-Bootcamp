@@ -29,7 +29,7 @@ func (h *SellerHandler) GetAll(w http.ResponseWriter, _ *http.Request) {
 func (h *SellerHandler) GetById(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
-		utils.ResponseHttpError(w, err) // TODO Manejar este error
+		utils.ResponseHttpError(w, err)
 		return
 	}
 
@@ -85,7 +85,7 @@ func (h *SellerHandler) Patch(w http.ResponseWriter, r *http.Request) {
 func (h *SellerHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
-		utils.ResponseHttpError(w, err) // TODO Manejar este error
+		utils.ResponseHttpError(w, err)
 		return
 	}
 
