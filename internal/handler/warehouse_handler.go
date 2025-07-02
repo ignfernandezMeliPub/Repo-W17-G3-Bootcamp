@@ -30,8 +30,7 @@ func (h *WarehouseDefault) FindWarehouse() http.HandlerFunc {
 		}
 
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -51,8 +50,7 @@ func (h *WarehouseDefault) FindWarehouseById() http.HandlerFunc {
 		}
 
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 
 	}
@@ -77,8 +75,7 @@ func (h *WarehouseDefault) CreateWarehouse() http.HandlerFunc {
 
 		//response
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "warehouse created successfully",
-			"data":    data,
+			"data": data,
 		})
 
 	}
@@ -106,8 +103,7 @@ func (h *WarehouseDefault) UpdateWarehouse() http.HandlerFunc {
 			return
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "warehouse updated successfully",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -126,8 +122,6 @@ func (h *WarehouseDefault) DeleteWarehouse() http.HandlerFunc {
 			utils.ResponseHttpError(w, err)
 			return
 		}
-		response.JSON(w, http.StatusNoContent, map[string]any{
-			"message": "warehouse delete successfully",
-		})
+		response.JSON(w, http.StatusNoContent, map[string]any{})
 	}
 }

@@ -41,11 +41,10 @@ func (r *WarehouseRepositoryMap) CreateWarehouse(wh models.Warehouse) (models.Wa
 
 func (r *WarehouseRepositoryMap) FindWarehouse() ([]models.Warehouse, error) {
 
-	w := make([]models.Warehouse, len(r.db))
-
-	if len(w) == 0 {
+	if len(r.db) == 0 {
 		return nil, &custom_errors.ResourceNotFoundError{}
 	}
+	w := make([]models.Warehouse, len(r.db))
 	i := 0
 	for _, value := range r.db {
 		w[i] = value
