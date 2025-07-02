@@ -14,6 +14,10 @@ type SellerHandler struct {
 	service service.SellerService
 }
 
+func NewSellerHandler(service service.SellerService) SellerHandler {
+	return SellerHandler{service: service}
+}
+
 func (h *SellerHandler) GetAll(w http.ResponseWriter, _ *http.Request) {
 	all, err := h.service.GetAll()
 	if err != nil {

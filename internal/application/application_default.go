@@ -8,6 +8,7 @@ import (
 	"app/internal/repository/product_repository"
 	"app/internal/repository/product_type_repository"
 	"app/internal/repository/sections_repository"
+	"app/internal/repository/seller_repository"
 	warehouse_repository "app/internal/repository/warehouse_repository"
 	"app/internal/service"
 	"app/pkg/models"
@@ -93,13 +94,18 @@ func (a *ServerChi) Run() (err error) {
 		return
 	}
 
+	// Seller
+	sellerRepo := seller_repository.NewSellerRepositoryMap(make(map[int]models.Seller))
+	sellerService := service.NewSellerService(&sellerRepo)
+	sellerHandler := handler.NewSellerHandler(&sellerService)
+
 	buyer_ld := loader.NewBuyerLoaderJSONFile(a.buyerLoaderFilePath)
 	buyer_db, err := buyer_ld.Load()
 	if err != nil {
 		return
 	}
 
-	//load products_type
+	// load products_type
 	product_ld := loader.NewProductLoaderJSONFile(a.productsFilePath)
 	product_db, err := product_ld.Load()
 	if err != nil {
@@ -115,11 +121,11 @@ func (a *ServerChi) Run() (err error) {
 		return
 	}
 
-	//Employee - repository
+	// Employee - repository
 	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
-	//Employee - service
+	// Employee - service
 	svEmployee := service.NewEmployeeService(rpEmployee)
-	//Employee - handler
+	// Employee - handler
 	hdEmployee := handler.NewEmployeeController(svEmployee)
 
 	buyer_rp := buyer_repository.NewBuyerMap(buyer_db)
@@ -132,17 +138,17 @@ func (a *ServerChi) Run() (err error) {
 
 	// Product - service
 	product_type_sv := service.NewProductTypeService(product_type_rp)
-	product_sv := service.NewProductService(product_rp, product_type_sv, nil) //agregar service seller
+	product_sv := service.NewProductService(product_rp, product_type_sv, nil) // agregar service seller
 
 	// Product - handler
 	product_hd := handler.NewProductController(&product_sv)
 
-	//warehouse
+	// warehouse
 	warehouse_rp := warehouse_repository.NewWarehouseMap(warehouse_db)
 	warehouse_sv := service.NewWarehouseDefault(warehouse_rp)
 	warehouse_hd := handler.NewWarehouseDefault(warehouse_sv)
 
-	//sections
+	// sections
 	sections_rp := sections_repository.NewSectionsRepositoryMap()
 	sections_db, err := loader.LoadDataFromFile[models.Section](a.sectionsFilePath)
 	if err != nil {
@@ -155,19 +161,24 @@ func (a *ServerChi) Run() (err error) {
 	sections_sv := service.NewSectionsService(sections_rp, warehouse_sv, product_type_sv)
 	sections_hd := handler.NewSectionsController(sections_sv)
 
+	// - router
 	rt := chi.NewRouter()
+
 	// - middlewares
 	rt.Use(middleware.Logger)
 	rt.Use(middleware.Recoverer)
 
 	// - endpoints
 	rt.Route("/api/v1", func(rt chi.Router) {
-
-		//1
+		// 1
 		rt.Route("/sellers", func(rt chi.Router) {
-			rt.Get("/EXAMPLE", nil)
+			rt.Get("/", sellerHandler.GetAll)
+			rt.Get("/{id}", sellerHandler.GetById)
+			rt.Post("/", sellerHandler.Create)
+			rt.Patch("/", sellerHandler.Patch)
+			rt.Delete("/{id}", sellerHandler.Delete)
 		})
-		//2
+		// 2
 		rt.Route("/warehouses", func(rt chi.Router) {
 			rt.Get("/", warehouse_hd.FindWarehouse())
 			rt.Get("/{id}", warehouse_hd.FindWarehouseById())
@@ -176,7 +187,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Delete("/{id}", warehouse_hd.DeleteWarehouse())
 
 		})
-		//3
+		// 3
 		rt.Route("/sections", func(rt chi.Router) {
 			rt.Get("/", sections_hd.GetSections)
 			rt.Get("/{id}", sections_hd.GetSection)
@@ -184,7 +195,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Patch("/{id}", sections_hd.UpdateSection)
 			rt.Delete("/{id}", sections_hd.DeleteSection)
 		})
-		//4
+		// 4
 		rt.Route("/products", func(rt chi.Router) {
 			rt.Get("/", product_hd.GetAllProducts())
 			rt.Get("/{id}", product_hd.GetProductById())
@@ -192,7 +203,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Patch("/{id}", product_hd.UpdateProduct())
 			rt.Delete("/{id}", product_hd.DeleteProduct())
 		})
-		//5
+		// 5
 		rt.Route("/employees", func(rt chi.Router) {
 			rt.Get("/", hdEmployee.GetEmployeesList)
 			rt.Get("/{id}", hdEmployee.GetEmployeeById)
@@ -200,7 +211,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Patch("/{id}", hdEmployee.UpdateEmployee)
 			rt.Delete("/{id}", hdEmployee.DeleteEmployee)
 		})
-		//6
+		// 6
 		rt.Route("/buyers", func(rt chi.Router) {
 			rt.Get("/", buyer_hd.GetAllBuyers())
 			rt.Get("/{id}", buyer_hd.GetBuyerByID())
@@ -209,6 +220,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Delete("/{id}", buyer_hd.DeleteBuyer())
 		})
 	})
+
 	// run server
 	err = http.ListenAndServe(a.serverAddress, rt)
 	return
