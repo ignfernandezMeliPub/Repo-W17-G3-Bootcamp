@@ -38,6 +38,10 @@ func (s *BuyerServiceDefault) FindBuyerByCardNumberID(card_number_id string) (b 
 }
 func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err error) {
 
+	if err = validateBuyerAttributes(_b); err != nil {
+		return
+	}
+
 	_, err = s.rp.FindBuyerByCardNumberID(_b.Card_number_id)
 
 	if err = utils.ExpectError(
@@ -53,11 +57,18 @@ func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err 
 	b, err = s.rp.CreateBuyer(_b)
 	return
 }
+
 func (s *BuyerServiceDefault) UpdateBuyerByID(id int, _b models.BuyerPatch) (b models.Buyer, err error) {
 
 	buyer, err := s.rp.FindBuyerByID(id)
 
 	if err != nil {
+		return
+	}
+
+	buyer.Patch(_b)
+
+	if err = validateBuyerAttributes(buyer); err != nil {
 		return
 	}
 
@@ -78,7 +89,6 @@ func (s *BuyerServiceDefault) UpdateBuyerByID(id int, _b models.BuyerPatch) (b m
 		}
 	}
 
-	buyer.Patch(_b)
 	b, err = s.rp.UpdateBuyer(buyer)
 	return
 }
@@ -93,4 +103,32 @@ func (s *BuyerServiceDefault) DeleteBuyerByID(id int) (err error) {
 
 	err = s.rp.DeleteBuyerByID(id)
 	return
+}
+
+func validateBuyerAttributes(buyer models.Buyer) error {
+
+	if buyer.Card_number_id == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "card_number_id",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
+	}
+
+	if buyer.First_name == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "first_name",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
+	}
+
+	if buyer.Last_name == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "last_name",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
+	}
+	return nil
 }
