@@ -1,0 +1,37 @@
+### Variables
+@baseUrl = http://localhost:8080/api/v1
+@sellerId = 56302
+
+### 1. Create Seller
+POST {{baseUrl}}/sellers
+Content-Type: application/json
+
+{
+  "cid": 12345,
+  "company_name": "Tech Solutions Inc",
+  "address": "123 Main Street, New York, NY 10001",
+  "telephone": "+1-555-123-4567"
+}
+
+### 2. Get All Sellers
+GET {{baseUrl}}/sellers
+Content-Type: application/json
+
+### 3. Get Seller by ID
+GET {{baseUrl}}/sellers/{{sellerId}}
+Content-Type: application/json
+
+### 4. Patch Seller
+PATCH {{baseUrl}}/sellers
+Content-Type: application/json
+
+{
+  "id": {{sellerId}},
+  "cid": 54321,
+  "company_name": "Updated Tech Solutions Inc",
+  "address": "456 Updated Street, Los Angeles, CA 90001",
+  "telephone": "+1-555-987-6543"
+}
+
+### 16. Delete Seller
+DELETE {{baseUrl}}/sellers/{{sellerId}}
