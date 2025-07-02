@@ -27,7 +27,11 @@ func (r *WarehouseRepositoryMap) CreateWarehouse(wh models.Warehouse) (models.Wa
 			newId = id + 1
 		}
 		if strings.EqualFold(w.Warehouse_code, wh.Warehouse_code) {
-			return models.Warehouse{}, &custom_errors.ResourceConflictError{}
+			return models.Warehouse{}, &custom_errors.ResourceConflictError{
+				Value:     w.Warehouse_code,
+				Argument:  "warehouse_code",
+				ExtraInfo: "warehouse_code must be unique",
+			}
 		}
 	}
 	wh.Id = newId
@@ -37,11 +41,10 @@ func (r *WarehouseRepositoryMap) CreateWarehouse(wh models.Warehouse) (models.Wa
 
 func (r *WarehouseRepositoryMap) FindWarehouse() ([]models.Warehouse, error) {
 
-	w := make([]models.Warehouse, len(r.db))
-
-	if len(w) == 0 {
+	if len(r.db) == 0 {
 		return nil, &custom_errors.ResourceNotFoundError{}
 	}
+	w := make([]models.Warehouse, len(r.db))
 	i := 0
 	for _, value := range r.db {
 		w[i] = value
@@ -60,6 +63,13 @@ func (r *WarehouseRepositoryMap) FindWarehouseById(id int) (models.Warehouse, er
 }
 
 func (r *WarehouseRepositoryMap) UpdateWarehouse(id int, w models.Warehouse) (models.Warehouse, error) {
+	if r.FindWarehouseByCode(w.Warehouse_code) {
+		return models.Warehouse{}, &custom_errors.ResourceConflictError{
+			Value:     w.Warehouse_code,
+			Argument:  "warehouse_code",
+			ExtraInfo: "warehouse_code must be unique"}
+	}
+
 	r.db[id] = w
 	return w, nil
 }
@@ -67,4 +77,14 @@ func (r *WarehouseRepositoryMap) UpdateWarehouse(id int, w models.Warehouse) (mo
 func (r *WarehouseRepositoryMap) DeleteWarehouse(id int) error {
 	delete(r.db, id)
 	return nil
+}
+
+func (r *WarehouseRepositoryMap) FindWarehouseByCode(code string) bool {
+
+	for _, w := range r.db {
+		if strings.EqualFold(w.Warehouse_code, code) {
+			return true
+		}
+	}
+	return false
 }
