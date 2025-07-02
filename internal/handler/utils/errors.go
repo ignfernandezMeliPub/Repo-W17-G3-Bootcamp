@@ -12,7 +12,7 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 	var status int
 	var message string
 
-	error_msg := err.Error()
+	errorMsg := err.Error()
 
 	switch {
 	case errors.As(err, &custom_errors.ErrNotFound):
@@ -21,7 +21,7 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 	case errors.As(err, &custom_errors.ErrInvalidBodyError) || errors.As(err, &custom_errors.ErrDecodeError) || errors.As(err, &custom_errors.UrlParamDecodeErrorI):
 		status = http.StatusBadRequest
 		message = "Bad request"
-	case errors.As(err, &custom_errors.ErrConflictError) || errors.As(err, &custom_errors.ErrUniqueAttributeViolationError):
+	case errors.As(err, &custom_errors.ErrUniqueAttributeViolationError):
 		status = http.StatusConflict
 		message = "Conflict"
 	case errors.As(err, &custom_errors.ErrInvalidArgs) || errors.As(err, &custom_errors.ErrMandatoryArgMissing):
@@ -30,11 +30,11 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 	default:
 		status = http.StatusInternalServerError
 		message = "Internal server error"
-		error_msg = "Internal server error" // Don't expose unhandled error
+		errorMsg = "Internal server error"
 	}
 
 	response.JSON(w, status, map[string]any{
 		"message": message,
-		"error":   error_msg,
+		"error":   errorMsg,
 	})
 }
