@@ -51,6 +51,26 @@ func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Pr
 		return models.Product{}, &custom_errors.ResourceNotFoundError{}
 	}
 
+	// Validaciones de valores positivos y mayores a 0
+	if *product.Width <= 0.0 {
+		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "width", Value: *product.Width, ExtraInfo: "Width must be greater than 0"}
+	}
+	if *product.Height <= 0.0 {
+		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "height", Value: *product.Height, ExtraInfo: "Height must be greater than 0"}
+	}
+	if *product.Length <= 0.0 {
+		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "length", Value: *product.Length, ExtraInfo: "Length must be greater than 0"}
+	}
+	if *product.NetWeight <= 0.0 {
+		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "net_weight", Value: *product.NetWeight, ExtraInfo: "Net weight must be greater than 0"}
+	}
+	if *product.ExpirationRate <= 0 {
+		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "expiration_rate", Value: *product.ExpirationRate, ExtraInfo: "Expiration rate must be greater than 0"}
+	}
+	if *product.FreezingRate <= 0 {
+		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "freezing_rate", Value: *product.FreezingRate, ExtraInfo: "Freezing rate must be greater than 0"}
+	}
+
 	newProduct := models.Product{
 		ProductCode:                    *product.ProductCode,
 		Description:                    *product.Description,
