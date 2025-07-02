@@ -31,10 +31,8 @@ func (h *BuyerDefault) GetAllBuyers() http.HandlerFunc {
 		}
 
 		// response
-		data := make(map[int]models.Buyer)
-		for _, buyer := range b {
-			data[buyer.Id] = buyer
-		}
+		data := b
+
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
 			"data":    data,
