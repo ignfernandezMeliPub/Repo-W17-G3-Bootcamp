@@ -95,5 +95,6 @@ func (r *SellerRepositoryMap) Delete(id int) error {
 
 // Update Updates the Seller and returns it
 func (r *SellerRepositoryMap) Update(seller models.Seller) (models.Seller, error) {
-	return r.Save(seller)
+	r.database[seller.Id] = seller
+	return seller, nil
 }
