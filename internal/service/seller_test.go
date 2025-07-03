@@ -4,9 +4,10 @@ import (
 	"app/internal/repository/seller_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func getSellerServiceImpl() SellerServiceImpl {
@@ -30,13 +31,13 @@ func getSellerServiceImpl() SellerServiceImpl {
 // TestCreateSeller_Success verifies that creating a new seller succeeds.
 func TestCreateSeller_Success(t *testing.T) {
 	service := getSellerServiceImpl()
-	seller, err := service.Create(2001, "NewCo", "Nueva 123", "5555-6666")
+	seller, err := service.CreateSeller(2001, "NewCo", "Nueva 123", "5555-6666")
 
 	require.NoError(t, err)
 	assert.Equal(t, 2001, seller.CompanyId)
 	assert.Equal(t, "NewCo", seller.CompanyName)
 
-	got, err := service.GetById(seller.Id)
+	got, err := service.GetSellerById(seller.Id)
 	require.NoError(t, err)
 	assert.Equal(t, "NewCo", got.CompanyName)
 }
@@ -44,17 +45,17 @@ func TestCreateSeller_Success(t *testing.T) {
 // TestCreateSeller_DuplicateCompanyId verifies that creating a seller with a duplicate CompanyID fails.
 func TestCreateSeller_DuplicateCompanyId(t *testing.T) {
 	service := getSellerServiceImpl()
-	_, err := service.Create(1001, "Otra", "Dir", "555")
+	_, err := service.CreateSeller(1001, "Otra", "Dir", "555")
 
 	var unique *custom_errors.UniqueAttributeViolationErr
 	require.ErrorAs(t, err, &unique)
 	assert.Equal(t, "companyId", unique.AttributeName)
 }
 
-// TestGetById_NotFound verifies that GetById returns an error when the seller does not exist.
+// TestGetById_NotFound verifies that GetSellerById returns an error when the seller does not exist.
 func TestGetById_NotFound(t *testing.T) {
 	service := getSellerServiceImpl()
-	_, err := service.GetById(123456)
+	_, err := service.GetSellerById(123456)
 
 	require.Error(t, err)
 
@@ -62,10 +63,10 @@ func TestGetById_NotFound(t *testing.T) {
 	assert.ErrorAs(t, err, &notFoundErrorPoint)
 }
 
-// TestGetAll verifies that GetAll returns all stored sellers.
+// TestGetAll verifies that GetAllSellers returns all stored sellers.
 func TestGetAll(t *testing.T) {
 	service := getSellerServiceImpl()
-	all, err := service.GetAll()
+	all, err := service.GetAllSellers()
 
 	require.NoError(t, err)
 	assert.Len(t, all, 10)
@@ -74,46 +75,46 @@ func TestGetAll(t *testing.T) {
 // TestDeleteSeller verifies that deleting a seller works, and that deleting a non-existent seller returns an error.
 func TestDeleteSeller(t *testing.T) {
 	service := getSellerServiceImpl()
-	err := service.Delete(2)
+	err := service.DeleteSellerById(2)
 
 	require.NoError(t, err)
 
-	err = service.Delete(2)
+	err = service.DeleteSellerById(2)
 	var notFound *custom_errors.ResourceNotFoundError
 	require.ErrorAs(t, err, &notFound)
 }
 
-// TestPatch_Success verifies that Patch correctly updates the fields of an existing seller.
-func TestPatch_Success(t *testing.T) {
+// TestUpdate_Success verifies that UpdateSeller correctly updates the fields of an existing seller.
+func TestUpdate_Success(t *testing.T) {
 	service := getSellerServiceImpl()
 
 	tel := "111-8888"
 	name := "Soylent Inc."
-	s, err := service.Patch(3, nil, &name, nil, &tel)
+	s, err := service.UpdateSellerById(3, nil, &name, nil, &tel)
 
 	require.NoError(t, err)
 	assert.Equal(t, "111-8888", s.Telephone)
 	assert.Equal(t, "Soylent Inc.", s.CompanyName)
 }
 
-// TestPatch_DuplicateCompanyId verifies that Patch fails if the new CompanyID already exists, and that no changes are applied.
-func TestPatch_DuplicateCompanyId(t *testing.T) {
+// TestUpdate_DuplicateCompanyId verifies that UpdateSeller fails if the new CompanyID already exists, and that no changes are applied.
+func TestUpdate_DuplicateCompanyId(t *testing.T) {
 	service := getSellerServiceImpl()
 
 	id := 1001
-	_, err := service.Patch(4, &id, nil, nil, nil)
+	_, err := service.UpdateSellerById(4, &id, nil, nil, nil)
 
 	var unique *custom_errors.UniqueAttributeViolationErr
 	require.ErrorAs(t, err, &unique)
 	assert.Equal(t, "companyId", unique.AttributeName)
 }
 
-// TestPatch_NotFound verifies that Patch returns an error when attempting to update a non-existent seller.
-func TestPatch_NotFound(t *testing.T) {
+// TestUpdate_NotFound verifies that UpdateSeller returns an error when attempting to update a non-existent seller.
+func TestUpdate_NotFound(t *testing.T) {
 	service := getSellerServiceImpl()
 
 	cn := "Other"
-	_, err := service.Patch(9999, nil, &cn, nil, nil)
+	_, err := service.UpdateSellerById(9999, nil, &cn, nil, nil)
 
 	var notFound *custom_errors.ResourceNotFoundError
 	require.ErrorAs(t, err, &notFound)

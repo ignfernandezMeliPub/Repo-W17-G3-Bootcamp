@@ -28,7 +28,7 @@ func (s *SectionsRepositoryImpl) PoblateSectionsRepo(sec []models.Section) error
 	return nil
 }
 
-func (s *SectionsRepositoryImpl) GetSections() ([]models.Section, error) {
+func (s *SectionsRepositoryImpl) GetAllSections() ([]models.Section, error) {
 	if len(s.sections) == 0 {
 		return []models.Section{}, &custom_errors.ResourceNotFoundError{}
 	}
@@ -57,7 +57,7 @@ func (s *SectionsRepositoryImpl) CreateSection(section models.Section) (models.S
 	return section, nil
 }
 
-func (s *SectionsRepositoryImpl) UpdateSection(section models.Section) (models.Section, error) {
+func (s *SectionsRepositoryImpl) UpdateSectionById(section models.Section) (models.Section, error) {
 	s.sections[section.ID] = section
 	return section, nil
 }

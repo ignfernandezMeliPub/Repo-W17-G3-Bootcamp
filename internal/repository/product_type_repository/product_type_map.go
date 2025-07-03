@@ -19,7 +19,7 @@ func NewProductTypeRepositoryMap(database map[int]models.ProductType) *ProductTy
 
 }
 
-func (r *ProductTypeRepositoryMap) FindProductTypeById(id int) (models.ProductType, error) {
+func (r *ProductTypeRepositoryMap) GetProductTypeById(id int) (models.ProductType, error) {
 
 	productType, found := r.database[id]
 

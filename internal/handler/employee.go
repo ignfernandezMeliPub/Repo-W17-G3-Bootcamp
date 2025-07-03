@@ -18,9 +18,9 @@ func NewEmployeeController(svEmployee service.EmployeeServiceInterface) *Employe
 	return &EmployeesController{svEmployee: svEmployee}
 }
 
-func (c *EmployeesController) GetEmployeesList(w http.ResponseWriter, _ *http.Request) {
+func (c *EmployeesController) GetAllEmployees(w http.ResponseWriter, _ *http.Request) {
 
-	res, err := c.svEmployee.GetEmployeesList()
+	res, err := c.svEmployee.GetAllEmployees()
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
@@ -57,7 +57,7 @@ func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Req
 
 }
 
-func (c *EmployeesController) SaveEmployee(w http.ResponseWriter, r *http.Request) {
+func (c *EmployeesController) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 
 	var newEmployeeAttributes models.EmployeePostRequestBody
 
@@ -83,7 +83,7 @@ func (c *EmployeesController) SaveEmployee(w http.ResponseWriter, r *http.Reques
 
 }
 
-func (c *EmployeesController) UpdateEmployee(w http.ResponseWriter, r *http.Request) {
+func (c *EmployeesController) PatchEmployee(w http.ResponseWriter, r *http.Request) {
 
 	var newEmployeeAttributes models.EmployeePatchRequestBody
 
@@ -105,7 +105,7 @@ func (c *EmployeesController) UpdateEmployee(w http.ResponseWriter, r *http.Requ
 
 	}
 
-	employee, err := c.svEmployee.UpdateEmployee(id, newEmployeeAttributes)
+	employee, err := c.svEmployee.UpdateEmployeeById(id, newEmployeeAttributes)
 
 	if err != nil {
 

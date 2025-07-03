@@ -7,11 +7,11 @@ import (
 )
 
 type SectionsService interface {
-	GetSections() ([]models.Section, error)
-	GetSectionByID(id int) (models.Section, error)
+	GetAllSections() ([]models.Section, error)
+	GetSectionById(id int) (models.Section, error)
 	CreateSection(section models.SectionRequest) (models.Section, error)
-	UpdateSection(id int, section models.SectionRequest) (models.Section, error)
-	DeleteSection(id int) error
+	UpdateSectionById(id int, section models.SectionRequest) (models.Section, error)
+	DeleteSectionById(id int) error
 }
 
 type SectionsServiceImpl struct {
@@ -24,11 +24,11 @@ func NewSectionsService(rp sections_repository.SectionsRepository, wh IWarehouse
 	return &SectionsServiceImpl{rp: rp, svWarehouse: wh, svProductType: pt}
 }
 
-func (s *SectionsServiceImpl) GetSections() ([]models.Section, error) {
-	return s.rp.GetSections()
+func (s *SectionsServiceImpl) GetAllSections() ([]models.Section, error) {
+	return s.rp.GetAllSections()
 }
 
-func (s *SectionsServiceImpl) GetSectionByID(id int) (models.Section, error) {
+func (s *SectionsServiceImpl) GetSectionById(id int) (models.Section, error) {
 	return s.rp.GetSectionById(id)
 }
 
@@ -71,7 +71,7 @@ func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (mode
 	if err != nil {
 		return models.Section{}, err
 	}
-	_, err = s.svWarehouse.FindWarehouseById(newSection.WarehouseId)
+	_, err = s.svWarehouse.GetWarehouseById(newSection.WarehouseId)
 	if err != nil {
 		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: newSection.WarehouseId, ExtraInfo: "warehouse not found"}
 	}
@@ -82,7 +82,7 @@ func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (mode
 	return s.rp.CreateSection(newSection)
 }
 
-func (s *SectionsServiceImpl) UpdateSection(id int, section models.SectionRequest) (models.Section, error) {
+func (s *SectionsServiceImpl) UpdateSectionById(id int, section models.SectionRequest) (models.Section, error) {
 	oldSec, err := s.rp.GetSectionById(id)
 	if err != nil {
 		return models.Section{}, err
@@ -113,7 +113,7 @@ func (s *SectionsServiceImpl) UpdateSection(id int, section models.SectionReques
 		oldSec.MaximumCapacity = *section.MaximumCapacity
 	}
 	if section.WarehouseId != nil {
-		_, err = s.svWarehouse.FindWarehouseById(*section.WarehouseId)
+		_, err = s.svWarehouse.GetWarehouseById(*section.WarehouseId)
 		if err != nil {
 			return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: *section.WarehouseId, ExtraInfo: "warehouse not found"}
 		}
@@ -127,10 +127,10 @@ func (s *SectionsServiceImpl) UpdateSection(id int, section models.SectionReques
 		oldSec.ProductTypeId = *section.ProductTypeId
 	}
 
-	return s.rp.UpdateSection(oldSec)
+	return s.rp.UpdateSectionById(oldSec)
 }
 
-func (s *SectionsServiceImpl) DeleteSection(id int) error {
+func (s *SectionsServiceImpl) DeleteSectionById(id int) error {
 	_, err := s.rp.GetSectionById(id)
 	if err != nil {
 		return err
@@ -139,7 +139,7 @@ func (s *SectionsServiceImpl) DeleteSection(id int) error {
 }
 
 func (s *SectionsServiceImpl) ValidateSection(id int, sectionNumber string) error {
-	sections, err := s.rp.GetSections()
+	sections, err := s.rp.GetAllSections()
 	if err != nil {
 		return err
 	}

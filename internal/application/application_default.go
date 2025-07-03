@@ -175,52 +175,52 @@ func (a *ServerChi) Run() (err error) {
 	rt.Route("/api/v1", func(rt chi.Router) {
 		// 1. Sellers
 		rt.Route("/sellers", func(rt chi.Router) {
-			rt.Get("/", sellerHandler.GetAll)
-			rt.Get("/{id}", sellerHandler.GetById)
-			rt.Post("/", sellerHandler.Create)
-			rt.Patch("/", sellerHandler.Patch)
-			rt.Delete("/{id}", sellerHandler.Delete)
+			rt.Get("/", sellerHandler.GetAllSellers)
+			rt.Get("/{id}", sellerHandler.GetSellerById)
+			rt.Post("/", sellerHandler.CreateSeller)
+			rt.Patch("/{id}", sellerHandler.PatchSeller)
+			rt.Delete("/{id}", sellerHandler.DeleteSeller)
 		})
 		// 2. Warehouses
 		rt.Route("/warehouses", func(rt chi.Router) {
-			rt.Get("/", warehouseHd.FindWarehouse())
-			rt.Get("/{id}", warehouseHd.FindWarehouseById())
-			rt.Post("/", warehouseHd.CreateWarehouse())
-			rt.Patch("/{id}", warehouseHd.UpdateWarehouse())
-			rt.Delete("/{id}", warehouseHd.DeleteWarehouse())
+			rt.Get("/", warehouseHd.GetWarehouse)
+			rt.Get("/{id}", warehouseHd.GetWarehouseById)
+			rt.Post("/", warehouseHd.CreateWarehouse)
+			rt.Patch("/{id}", warehouseHd.PatchWarehouse)
+			rt.Delete("/{id}", warehouseHd.DeleteWarehouse)
 
 		})
 		// 3. Sections
 		rt.Route("/sections", func(rt chi.Router) {
 			rt.Get("/", sectionsHd.GetSections)
-			rt.Get("/{id}", sectionsHd.GetSection)
+			rt.Get("/{id}", sectionsHd.GetSectionById)
 			rt.Post("/", sectionsHd.CreateSection)
-			rt.Patch("/{id}", sectionsHd.UpdateSection)
+			rt.Patch("/{id}", sectionsHd.PatchSection)
 			rt.Delete("/{id}", sectionsHd.DeleteSection)
 		})
 		// 4. Products
 		rt.Route("/products", func(rt chi.Router) {
-			rt.Get("/", productHd.GetAllProducts())
-			rt.Get("/{id}", productHd.GetProductById())
-			rt.Post("/", productHd.CreateProduct())
-			rt.Patch("/{id}", productHd.UpdateProduct())
-			rt.Delete("/{id}", productHd.DeleteProduct())
+			rt.Get("/", productHd.GetAllProducts)
+			rt.Get("/{id}", productHd.GetProductById)
+			rt.Post("/", productHd.CreateProduct)
+			rt.Patch("/{id}", productHd.PatchProduct)
+			rt.Delete("/{id}", productHd.DeleteProduct)
 		})
 		// 5. Employees
 		rt.Route("/employees", func(rt chi.Router) {
-			rt.Get("/", hdEmployee.GetEmployeesList)
+			rt.Get("/", hdEmployee.GetAllEmployees)
 			rt.Get("/{id}", hdEmployee.GetEmployeeById)
-			rt.Post("/", hdEmployee.SaveEmployee)
-			rt.Patch("/{id}", hdEmployee.UpdateEmployee)
+			rt.Post("/", hdEmployee.CreateEmployee)
+			rt.Patch("/{id}", hdEmployee.PatchEmployee)
 			rt.Delete("/{id}", hdEmployee.DeleteEmployee)
 		})
 		// 6. Buyers
 		rt.Route("/buyers", func(rt chi.Router) {
-			rt.Get("/", buyerHd.GetAllBuyers())
-			rt.Get("/{id}", buyerHd.GetBuyerByID())
-			rt.Post("/", buyerHd.CreateBuyer())
-			rt.Patch("/{id}", buyerHd.PatchBuyer())
-			rt.Delete("/{id}", buyerHd.DeleteBuyer())
+			rt.Get("/", buyerHd.GetAllBuyers)
+			rt.Get("/{id}", buyerHd.GetBuyerById)
+			rt.Post("/", buyerHd.CreateBuyer)
+			rt.Patch("/{id}", buyerHd.PatchBuyer)
+			rt.Delete("/{id}", buyerHd.DeleteBuyer)
 		})
 	})
 

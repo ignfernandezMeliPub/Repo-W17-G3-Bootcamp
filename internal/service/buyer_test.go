@@ -27,19 +27,19 @@ func getBuyerService() BuyerService {
 	return NewBuyerDefault(repo)
 }
 
-func TestFindAllBuyers(t *testing.T) {
+func TestGetAllBuyers(t *testing.T) {
 	s := getBuyerService()
 
-	b, err := s.FindAllBuyers()
+	b, err := s.GetAllBuyers()
 
 	require.NoError(t, err)
 	assert.Equal(t, 10, len(b))
 }
-func TestFindBuyerByID(t *testing.T) {
+func TestGetBuyerByID(t *testing.T) {
 	s := getBuyerService()
 
 	t.Run("Success", func(t *testing.T) {
-		b, err := s.FindBuyerByID(1)
+		b, err := s.GetBuyerById(1)
 		assert.NoError(t, err)
 		assert.Equal(t, "Juan", b.FirstName)
 		assert.Equal(t, "Pérez", b.LastName)
@@ -47,17 +47,17 @@ func TestFindBuyerByID(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		_, err := s.FindBuyerByID(999)
+		_, err := s.GetBuyerById(999)
 		assert.Error(t, err)
 		assert.ErrorAs(t, err, &custom_errors.ErrNotFound)
 	})
 }
 
-func TestFindBuyerByCardNumberID(t *testing.T) {
+func TestGetBuyerByCardNumberID(t *testing.T) {
 	s := getBuyerService()
 
 	t.Run("Success", func(t *testing.T) {
-		b, err := s.FindBuyerByCardNumberID("1002")
+		b, err := s.GetBuyerByCardNumberId("1002")
 		assert.NoError(t, err)
 		assert.Equal(t, "Ana", b.FirstName)
 		assert.Equal(t, "García", b.LastName)
@@ -65,7 +65,7 @@ func TestFindBuyerByCardNumberID(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		_, err := s.FindBuyerByCardNumberID("")
+		_, err := s.GetBuyerByCardNumberId("")
 		assert.Error(t, err)
 		assert.ErrorAs(t, err, &custom_errors.ErrNotFound)
 	})
@@ -114,7 +114,7 @@ func TestUpdateBuyerByID(t *testing.T) {
 
 		_b := models.BuyerPatch{CardNumberId: &CardNumberId, FirstName: &FirstName, LastName: &LastName}
 
-		b, err := s.UpdateBuyerByID(id, _b)
+		b, err := s.UpdateBuyerById(id, _b)
 		assert.NoError(t, err)
 		assert.Equal(t, *_b.FirstName, b.FirstName)
 		assert.Equal(t, *_b.LastName, b.LastName)
@@ -127,11 +127,11 @@ func TestUpdateBuyerByID(t *testing.T) {
 
 		LastName := "Re updated last name"
 
-		buyer_pre_update, _ := s.FindBuyerByID(id)
+		buyer_pre_update, _ := s.GetBuyerById(id)
 
 		_b := models.BuyerPatch{LastName: &LastName}
 
-		b, err := s.UpdateBuyerByID(id, _b)
+		b, err := s.UpdateBuyerById(id, _b)
 		assert.NoError(t, err)
 		assert.Equal(t, buyer_pre_update.FirstName, b.FirstName)
 		assert.Equal(t, LastName, b.LastName)
@@ -145,7 +145,7 @@ func TestUpdateBuyerByID(t *testing.T) {
 
 		_b := models.BuyerPatch{CardNumberId: &CardNumberID}
 
-		b, err := s.UpdateBuyerByID(id, _b)
+		b, err := s.UpdateBuyerById(id, _b)
 		assert.NoError(t, err)
 		assert.Equal(t, CardNumberID, b.CardNumberId)
 	})
@@ -156,7 +156,7 @@ func TestUpdateBuyerByID(t *testing.T) {
 
 		_b := models.BuyerPatch{CardNumberId: &CardNumberID}
 
-		_, err := s.UpdateBuyerByID(id, _b)
+		_, err := s.UpdateBuyerById(id, _b)
 		assert.Error(t, err)
 		assert.ErrorAs(t, err, &custom_errors.ErrUniqueAttributeViolationError)
 	})
@@ -166,7 +166,7 @@ func TestUpdateBuyerByID(t *testing.T) {
 		CardNumberId := ""
 		_b := models.BuyerPatch{CardNumberId: &CardNumberId}
 
-		_, err := s.UpdateBuyerByID(id, _b)
+		_, err := s.UpdateBuyerById(id, _b)
 		assert.Error(t, err)
 		assert.ErrorAs(t, err, &custom_errors.ErrInvalidArgs)
 	})
@@ -178,14 +178,14 @@ func TestDeleteBuyerByID(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		id := 1
 
-		err := s.DeleteBuyerByID(id)
+		err := s.DeleteBuyerById(id)
 		assert.NoError(t, err)
 	})
 
 	t.Run("Not found", func(t *testing.T) {
 		id := 1
 
-		err := s.DeleteBuyerByID(id)
+		err := s.DeleteBuyerById(id)
 		assert.Error(t, err)
 		assert.ErrorAs(t, err, &custom_errors.ErrNotFound)
 	})

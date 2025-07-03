@@ -26,7 +26,7 @@ func NewProductRepositoryMap(database map[int]models.Product) *ProductRepository
 
 }
 
-func (r *ProductRepositoryMap) FindAllProducts() ([]models.Product, error) {
+func (r *ProductRepositoryMap) GetAllProducts() ([]models.Product, error) {
 	products := make([]models.Product, 0)
 	for _, prod := range r.database {
 		products = append(products, prod)
@@ -34,7 +34,7 @@ func (r *ProductRepositoryMap) FindAllProducts() ([]models.Product, error) {
 	return products, nil
 }
 
-func (r *ProductRepositoryMap) FindProductById(id int) (models.Product, error) {
+func (r *ProductRepositoryMap) GetProductById(id int) (models.Product, error) {
 	product, found := r.database[id]
 	if !found {
 		return models.Product{}, &custom_errors.ResourceNotFoundError{}
@@ -42,7 +42,7 @@ func (r *ProductRepositoryMap) FindProductById(id int) (models.Product, error) {
 	return product, nil
 }
 
-func (r *ProductRepositoryMap) DeleteProduct(id int) error {
+func (r *ProductRepositoryMap) DeleteProductById(id int) error {
 	_, found := r.database[id]
 	if !found {
 		return &custom_errors.ResourceNotFoundError{}
@@ -51,14 +51,14 @@ func (r *ProductRepositoryMap) DeleteProduct(id int) error {
 	return nil
 }
 
-func (r *ProductRepositoryMap) SaveProduct(p models.Product) (models.Product, error) {
+func (r *ProductRepositoryMap) CreateProduct(p models.Product) (models.Product, error) {
 	p.ID = r.seed
 	r.database[p.ID] = p
 	r.seed++
 	return p, nil
 }
 
-func (r *ProductRepositoryMap) FindProductByCode(code string) (models.Product, error) {
+func (r *ProductRepositoryMap) GetProductByCode(code string) (models.Product, error) {
 	for _, product := range r.database {
 		if product.ProductCode == code {
 			return product, nil
@@ -67,7 +67,7 @@ func (r *ProductRepositoryMap) FindProductByCode(code string) (models.Product, e
 	return models.Product{}, &custom_errors.ResourceNotFoundError{}
 }
 
-func (r *ProductRepositoryMap) UpdateProduct(p models.Product) (models.Product, error) {
+func (r *ProductRepositoryMap) UpdateProductById(p models.Product) (models.Product, error) {
 	r.database[p.ID] = p
 	return p, nil
 }

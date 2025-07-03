@@ -19,7 +19,7 @@ type EmployeeMap struct {
 	lastId int
 }
 
-func (m *EmployeeMap) GetEmployeesList() (employees []models.Employee, err error) {
+func (m *EmployeeMap) GetAllEmployees() (employees []models.Employee, err error) {
 
 	employees = make([]models.Employee, len(m.db))
 
@@ -68,7 +68,7 @@ func (m *EmployeeMap) ValidateUniqueCardNumberID(cardNumber string) (err error) 
 
 }
 
-func (m *EmployeeMap) SaveEmployee(attributes models.EmployeeAttributes) (newEmployee models.Employee, err error) {
+func (m *EmployeeMap) CreateEmployee(attributes models.EmployeeAttributes) (newEmployee models.Employee, err error) {
 
 	m.lastId = m.lastId + 1
 	newEmployee = models.Employee{Id: m.lastId,
@@ -86,7 +86,7 @@ func (m *EmployeeMap) SaveEmployee(attributes models.EmployeeAttributes) (newEmp
 
 }
 
-func (m *EmployeeMap) UpdateEmployee(employee models.Employee) (updatedEmployee models.Employee, err error) {
+func (m *EmployeeMap) UpdateEmployeeById(employee models.Employee) (updatedEmployee models.Employee, err error) {
 
 	updatedEmployee = employee
 	m.db[employee.Id] = updatedEmployee

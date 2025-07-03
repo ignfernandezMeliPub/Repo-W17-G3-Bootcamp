@@ -25,7 +25,7 @@ func NewBuyerMap(db map[int]models.Buyer) *BuyerRepositoryMap {
 	return &BuyerRepositoryMap{db: defaultDb, seed: maxID + 1}
 }
 
-func (r *BuyerRepositoryMap) FindAllBuyers() (b []models.Buyer, err error) {
+func (r *BuyerRepositoryMap) GetAllBuyers() (b []models.Buyer, err error) {
 	b = make([]models.Buyer, len(r.db))
 
 	i := 0
@@ -42,7 +42,7 @@ func (r *BuyerRepositoryMap) FindAllBuyers() (b []models.Buyer, err error) {
 	return
 }
 
-func (r *BuyerRepositoryMap) FindBuyerByID(id int) (b models.Buyer, err error) {
+func (r *BuyerRepositoryMap) GetBuyerById(id int) (b models.Buyer, err error) {
 	b, ok := r.db[id]
 
 	if !ok {
@@ -52,7 +52,7 @@ func (r *BuyerRepositoryMap) FindBuyerByID(id int) (b models.Buyer, err error) {
 
 	return
 }
-func (r *BuyerRepositoryMap) FindBuyerByCardNumberID(cardNumberId string) (b models.Buyer, err error) {
+func (r *BuyerRepositoryMap) GetBuyerByCardNumberId(cardNumberId string) (b models.Buyer, err error) {
 
 	for _, value := range r.db {
 		if value.CardNumberId == cardNumberId {
@@ -81,7 +81,7 @@ func (r *BuyerRepositoryMap) UpdateBuyer(_b models.Buyer) (b models.Buyer, err e
 	return
 }
 
-func (r *BuyerRepositoryMap) DeleteBuyerByID(id int) (err error) {
+func (r *BuyerRepositoryMap) DeleteBuyerById(id int) (err error) {
 	delete(r.db, id)
 	return
 }

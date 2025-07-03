@@ -4,10 +4,11 @@ import (
 	"app/internal/handler/utils"
 	"app/internal/service"
 	"app/pkg/models"
-	"github.com/bootcamp-go/web/request"
-	"github.com/bootcamp-go/web/response"
 	"net/http"
 	"strconv"
+
+	"github.com/bootcamp-go/web/request"
+	"github.com/bootcamp-go/web/response"
 )
 
 type SectionsController struct {
@@ -19,7 +20,7 @@ func NewSectionsController(sv service.SectionsService) *SectionsController {
 }
 
 func (c *SectionsController) GetSections(w http.ResponseWriter, _ *http.Request) {
-	res, err := c.sv.GetSections()
+	res, err := c.sv.GetAllSections()
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
@@ -28,13 +29,13 @@ func (c *SectionsController) GetSections(w http.ResponseWriter, _ *http.Request)
 	return
 }
 
-func (c *SectionsController) GetSection(w http.ResponseWriter, r *http.Request) {
+func (c *SectionsController) GetSectionById(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
-	sec, err := c.sv.GetSectionByID(id)
+	sec, err := c.sv.GetSectionById(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
@@ -60,7 +61,7 @@ func (c *SectionsController) CreateSection(w http.ResponseWriter, r *http.Reques
 
 }
 
-func (c *SectionsController) UpdateSection(w http.ResponseWriter, r *http.Request) {
+func (c *SectionsController) PatchSection(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
@@ -71,7 +72,7 @@ func (c *SectionsController) UpdateSection(w http.ResponseWriter, r *http.Reques
 		utils.ResponseHttpError(w, err)
 		return
 	}
-	res, err := c.sv.UpdateSection(id, section)
+	res, err := c.sv.UpdateSectionById(id, section)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
@@ -87,7 +88,7 @@ func (c *SectionsController) DeleteSection(w http.ResponseWriter, r *http.Reques
 		utils.ResponseHttpError(w, err)
 		return
 	}
-	err = c.sv.DeleteSection(id)
+	err = c.sv.DeleteSectionById(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return

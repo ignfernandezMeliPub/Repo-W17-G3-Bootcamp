@@ -8,10 +8,10 @@ import (
 )
 
 type EmployeeServiceInterface interface {
-	GetEmployeesList() (employees []models.Employee, err error)
+	GetAllEmployees() (employees []models.Employee, err error)
 	GetEmployeeById(id int) (employee models.Employee, err error)
 	CreateEmployee(attributes models.EmployeePostRequestBody) (newEmployee models.Employee, err error)
-	UpdateEmployee(id int, attributes models.EmployeePatchRequestBody) (employee models.Employee, err error)
+	UpdateEmployeeById(id int, attributes models.EmployeePatchRequestBody) (employee models.Employee, err error)
 	DeleteEmployee(id int) (err error)
 }
 
@@ -24,9 +24,9 @@ type EmployeeService struct {
 	svWahrehouse WarehouseDefault
 }
 
-func (s *EmployeeService) GetEmployeesList() (employees []models.Employee, err error) {
+func (s *EmployeeService) GetAllEmployees() (employees []models.Employee, err error) {
 
-	employees, err = s.repository.GetEmployeesList()
+	employees, err = s.repository.GetAllEmployees()
 
 	return
 
@@ -51,7 +51,7 @@ func (s *EmployeeService) CreateEmployee(attributes models.EmployeePostRequestBo
 
 	// add validation wharehouse id
 
-	_, err = s.svWahrehouse.FindWarehouseById(*attributes.WarehouseId)
+	_, err = s.svWahrehouse.GetWarehouseById(*attributes.WarehouseId)
 
 	if err != nil {
 
@@ -76,12 +76,12 @@ func (s *EmployeeService) CreateEmployee(attributes models.EmployeePostRequestBo
 		LastName:     *attributes.LastName,
 		WarehouseId:  *attributes.WarehouseId}
 
-	newEmployee, err = s.repository.SaveEmployee(newAttributes)
+	newEmployee, err = s.repository.CreateEmployee(newAttributes)
 	return
 
 }
 
-func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeePatchRequestBody) (updatedEmployee models.Employee, err error) {
+func (s *EmployeeService) UpdateEmployeeById(id int, attributes models.EmployeePatchRequestBody) (updatedEmployee models.Employee, err error) {
 
 	employee, err := s.repository.GetEmployeeById(id)
 
@@ -107,7 +107,7 @@ func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeePatch
 
 	if attributes.WarehouseId != nil {
 
-		_, err = s.svWahrehouse.FindWarehouseById(*attributes.WarehouseId)
+		_, err = s.svWahrehouse.GetWarehouseById(*attributes.WarehouseId)
 
 		if err != nil {
 
@@ -129,7 +129,7 @@ func (s *EmployeeService) UpdateEmployee(id int, attributes models.EmployeePatch
 	}
 
 	employee.Patch(attributes)
-	updatedEmployee, err = s.repository.UpdateEmployee(employee)
+	updatedEmployee, err = s.repository.UpdateEmployeeById(employee)
 
 	return
 

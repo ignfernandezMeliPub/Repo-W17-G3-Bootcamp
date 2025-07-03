@@ -9,12 +9,12 @@ import (
 )
 
 type BuyerService interface {
-	FindAllBuyers() (b []models.Buyer, err error)
-	FindBuyerByID(id int) (b models.Buyer, err error)
-	FindBuyerByCardNumberID(cardNumberId string) (b models.Buyer, err error)
+	GetAllBuyers() (b []models.Buyer, err error)
+	GetBuyerById(id int) (b models.Buyer, err error)
+	GetBuyerByCardNumberId(cardNumberId string) (b models.Buyer, err error)
 	CreateBuyer(_b models.Buyer) (b models.Buyer, err error)
-	UpdateBuyerByID(id int, _b models.BuyerPatch) (b models.Buyer, err error)
-	DeleteBuyerByID(id int) (err error)
+	UpdateBuyerById(id int, _b models.BuyerPatch) (b models.Buyer, err error)
+	DeleteBuyerById(id int) (err error)
 }
 
 type BuyerServiceDefault struct {
@@ -25,16 +25,16 @@ func NewBuyerDefault(rp buyer_repository.BuyerRepository) *BuyerServiceDefault {
 	return &BuyerServiceDefault{rp: rp}
 }
 
-func (s *BuyerServiceDefault) FindAllBuyers() (b []models.Buyer, err error) {
-	b, err = s.rp.FindAllBuyers()
+func (s *BuyerServiceDefault) GetAllBuyers() (b []models.Buyer, err error) {
+	b, err = s.rp.GetAllBuyers()
 	return
 }
-func (s *BuyerServiceDefault) FindBuyerByID(id int) (b models.Buyer, err error) {
-	b, err = s.rp.FindBuyerByID(id)
+func (s *BuyerServiceDefault) GetBuyerById(id int) (b models.Buyer, err error) {
+	b, err = s.rp.GetBuyerById(id)
 	return
 }
-func (s *BuyerServiceDefault) FindBuyerByCardNumberID(cardNumberId string) (b models.Buyer, err error) {
-	b, err = s.rp.FindBuyerByCardNumberID(cardNumberId)
+func (s *BuyerServiceDefault) GetBuyerByCardNumberId(cardNumberId string) (b models.Buyer, err error) {
+	b, err = s.rp.GetBuyerByCardNumberId(cardNumberId)
 	return
 }
 func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err error) {
@@ -43,7 +43,7 @@ func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err 
 		return
 	}
 
-	_, err = s.rp.FindBuyerByCardNumberID(_b.CardNumberId)
+	_, err = s.rp.GetBuyerByCardNumberId(_b.CardNumberId)
 
 	if err = utils.ExpectError(
 		err,
@@ -59,9 +59,9 @@ func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err 
 	return
 }
 
-func (s *BuyerServiceDefault) UpdateBuyerByID(id int, _b models.BuyerPatch) (b models.Buyer, err error) {
+func (s *BuyerServiceDefault) UpdateBuyerById(id int, _b models.BuyerPatch) (b models.Buyer, err error) {
 
-	buyer, err := s.rp.FindBuyerByID(id)
+	buyer, err := s.rp.GetBuyerById(id)
 
 	if err != nil {
 		return
@@ -75,7 +75,7 @@ func (s *BuyerServiceDefault) UpdateBuyerByID(id int, _b models.BuyerPatch) (b m
 
 	if _b.CardNumberId != nil {
 
-		oldBuyer, e := s.rp.FindBuyerByCardNumberID(*_b.CardNumberId)
+		oldBuyer, e := s.rp.GetBuyerByCardNumberId(*_b.CardNumberId)
 		err = e
 
 		if err = utils.ExpectErrorOrNilCondition(
@@ -94,15 +94,15 @@ func (s *BuyerServiceDefault) UpdateBuyerByID(id int, _b models.BuyerPatch) (b m
 	return
 }
 
-func (s *BuyerServiceDefault) DeleteBuyerByID(id int) (err error) {
+func (s *BuyerServiceDefault) DeleteBuyerById(id int) (err error) {
 
-	_, err = s.rp.FindBuyerByID(id)
+	_, err = s.rp.GetBuyerById(id)
 
 	if err != nil {
 		return
 	}
 
-	err = s.rp.DeleteBuyerByID(id)
+	err = s.rp.DeleteBuyerById(id)
 	return
 }
 
