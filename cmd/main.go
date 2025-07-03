@@ -6,10 +6,8 @@ import (
 )
 
 func main() {
-	// env
-	// ...
+	// - env
 
-	// app
 	// - config
 	cfg := &application.ConfigServerChi{
 		ServerAddress:        ":8080",
@@ -20,7 +18,10 @@ func main() {
 		ProductsFilePath:     "docs/db/products.json",
 		SectionsFilePath:     "docs/db/sections.json",
 	}
+
+	// - app
 	app := application.NewServerChi(cfg)
+
 	// - run
 	if err := app.Run(); err != nil {
 		fmt.Println(err)

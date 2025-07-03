@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:8080/api/v1
-@sellerId = 211796
+@sellerId = 808460
 
 ### 1. Create Seller
 POST {{baseUrl}}/sellers
@@ -22,11 +22,10 @@ GET {{baseUrl}}/sellers/{{sellerId}}
 Content-Type: application/json
 
 ### 4. Patch Seller
-PATCH {{baseUrl}}/sellers
+PATCH {{baseUrl}}/sellers/{{sellerId}}
 Content-Type: application/json
 
 {
-  "id": {{sellerId}},
   "cid": 54321,
   "company_name": "Updated Tech Solutions Inc",
   "address": "456 Updated Street, Los Angeles, CA 90001",
