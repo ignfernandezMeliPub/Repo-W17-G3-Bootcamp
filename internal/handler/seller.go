@@ -69,14 +69,20 @@ func (h *SellerHandler) CreateSeller(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *SellerHandler) PatchSeller(w http.ResponseWriter, r *http.Request) {
-	var patchSellerDto dto.PatchSellerDto
-	patchSellerDto, err := utils.InstantiateVarFromBody(&r.Body, patchSellerDto)
+	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	seller, err := h.service.UpdateSellerById(*patchSellerDto.Id, patchSellerDto.CompanyId, patchSellerDto.CompanyName, patchSellerDto.Address, patchSellerDto.Telephone)
+	var patchSellerDto dto.PatchSellerDto
+	patchSellerDto, err = utils.InstantiateVarFromBody(&r.Body, patchSellerDto)
+	if err != nil {
+		utils.ResponseHttpError(w, err)
+		return
+	}
+
+	seller, err := h.service.UpdateSellerById(id, patchSellerDto.CompanyId, patchSellerDto.CompanyName, patchSellerDto.Address, patchSellerDto.Telephone)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return

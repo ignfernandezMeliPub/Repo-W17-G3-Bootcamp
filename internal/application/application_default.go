@@ -178,7 +178,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/", sellerHandler.GetAllSellers)
 			rt.Get("/{id}", sellerHandler.GetSellerById)
 			rt.Post("/", sellerHandler.CreateSeller)
-			rt.Patch("/", sellerHandler.PatchSeller)
+			rt.Patch("/{id}", sellerHandler.PatchSeller)
 			rt.Delete("/{id}", sellerHandler.DeleteSeller)
 		})
 		// 2. Warehouses
