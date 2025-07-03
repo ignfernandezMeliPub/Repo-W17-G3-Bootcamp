@@ -7,10 +7,10 @@ import (
 )
 
 type IWarehouseService interface {
+	GetAllWarehouses() ([]models.Warehouse, error)
+	GetWarehouseById(id int) (models.Warehouse, error)
 	CreateWarehouse(vh models.Warehouse) (models.Warehouse, error)
-	FindWarehouse() ([]models.Warehouse, error)
-	FindWarehouseById(id int) (models.Warehouse, error)
-	UpdateWarehouse(id int, w models.Warehouse) (models.Warehouse, error)
+	UpdateWarehouseById(id int, w models.Warehouse) (models.Warehouse, error)
 	DeleteWarehouse(id int) error
 }
 
@@ -29,17 +29,17 @@ func (s *WarehouseDefault) CreateWarehouse(vh models.Warehouse) (models.Warehous
 
 	return s.rp.CreateWarehouse(vh)
 }
+func (s *WarehouseDefault) GetAllWarehouses() ([]models.Warehouse, error) {
+	return s.rp.GetAllWarehouses()
 
-func (s *WarehouseDefault) FindWarehouse() ([]models.Warehouse, error) {
-	return s.rp.FindWarehouse()
 }
 
-func (s *WarehouseDefault) FindWarehouseById(id int) (models.Warehouse, error) {
-	return s.rp.FindWarehouseById(id)
+func (s *WarehouseDefault) GetWarehouseById(id int) (models.Warehouse, error) {
+	return s.rp.GetWarehouseById(id)
 }
 
-func (s *WarehouseDefault) UpdateWarehouse(id int, w models.Warehouse) (models.Warehouse, error) {
-	_, err := s.rp.FindWarehouseById(id)
+func (s *WarehouseDefault) UpdateWarehouseById(id int, w models.Warehouse) (models.Warehouse, error) {
+	_, err := s.rp.GetWarehouseById(id)
 	if err != nil {
 		return models.Warehouse{}, &custom_errors.ResourceNotFoundError{}
 	}
@@ -49,13 +49,13 @@ func (s *WarehouseDefault) UpdateWarehouse(id int, w models.Warehouse) (models.W
 	}
 	w.Id = id
 
-	return s.rp.UpdateWarehouse(id, w)
+	return s.rp.UpdateWarehouseById(id, w)
 }
 
 func (s *WarehouseDefault) DeleteWarehouse(id int) error {
-	_, err := s.rp.FindWarehouseById(id)
+	_, err := s.rp.GetWarehouseById(id)
 	if err != nil {
 		return &custom_errors.ResourceNotFoundError{}
 	}
-	return s.rp.DeleteWarehouse(id)
+	return s.rp.DeleteWarehouseById(id)
 }

@@ -10,102 +10,110 @@ import (
 	"github.com/bootcamp-go/web/response"
 )
 
-type ProductController struct {
-	sv service.ProductServiceI
+func NewWarehouseDefault(sv service.IWarehouseService) *WarehouseDefault {
+	return &WarehouseDefault{sv: sv}
 }
 
-func NewProductController(service service.ProductServiceI) *ProductController {
-	return &ProductController{sv: service}
+type WarehouseDefault struct {
+	sv service.IWarehouseService
 }
 
-func (h *ProductController) GetAllProducts(w http.ResponseWriter, _ *http.Request) {
-	products, err := h.sv.GetAllProducts()
+func (h *WarehouseDefault) GetWarehouse(w http.ResponseWriter, r *http.Request) {
+
+	var data []models.Warehouse
+	data, err := h.sv.GetAllWarehouses()
+
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
+
 	response.JSON(w, http.StatusOK, map[string]any{
-		"data": products,
+		"data": data,
 	})
+	return
 }
 
-func (h *ProductController) GetProductById(w http.ResponseWriter, r *http.Request) {
+func (h *WarehouseDefault) GetWarehouseById(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	product, err := h.sv.GetProductById(id)
+	data, err := h.sv.GetWarehouseById(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
 	response.JSON(w, http.StatusOK, map[string]any{
-		"data": product,
+		"data": data,
 	})
+	return
 }
 
-func (h *ProductController) CreateProduct(w http.ResponseWriter, r *http.Request) {
-	var productRequest models.ProductRequest
-
-	productRequest, err := utils.InstantiateVarFromBody(&r.Body, productRequest)
+func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Request) {
+	// request
+	var wh models.Warehouse
+	wh, err := utils.InstantiateVarFromBody(&r.Body, wh)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	product, err := h.sv.CreateProduct(productRequest)
+	// process
+	data, err := h.sv.CreateWarehouse(wh)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
+	// response
 	response.JSON(w, http.StatusCreated, map[string]any{
-		"data": product,
+		"data": data,
 	})
+	return
 }
 
-func (h *ProductController) PatchProduct(w http.ResponseWriter, r *http.Request) {
+func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request) {
+
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	var productPatchRequest models.ProductPatchRequest
-	productPatchRequest, err = utils.InstantiateVarFromBody(&r.Body, productPatchRequest)
+	var wh models.Warehouse
+	wh, err = utils.InstantiateVarFromBody(&r.Body, wh)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	productPatchRequest.Id = id
-
-	product, err := h.sv.UpdateProductById(productPatchRequest)
+	data, err := h.sv.UpdateWarehouseById(id, wh)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
-
 	response.JSON(w, http.StatusOK, map[string]any{
-		"data": product,
+		"data": data,
 	})
+	return
 }
 
-func (h *ProductController) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+func (h *WarehouseDefault) DeleteWarehouse(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	err = h.sv.DeleteProductById(id)
+	err = h.sv.DeleteWarehouse(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
-
 	response.JSON(w, http.StatusNoContent, map[string]any{})
+	return
 }

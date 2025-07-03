@@ -20,8 +20,8 @@ func NewSellerRepositoryMap(database map[int]models.Seller) SellerRepositoryMap 
 	return SellerRepositoryMap{lock: sync.RWMutex{}, database: database}
 }
 
-// Save adds or updates the Seller and returns it
-func (r *SellerRepositoryMap) Save(seller models.Seller) (models.Seller, error) {
+// CreateSeller adds or updates the Seller and returns it
+func (r *SellerRepositoryMap) CreateSeller(seller models.Seller) (models.Seller, error) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
@@ -39,8 +39,8 @@ func (r *SellerRepositoryMap) Save(seller models.Seller) (models.Seller, error) 
 	return seller, nil
 }
 
-// GetById returns the Seller by id or an error if it does not exist
-func (r *SellerRepositoryMap) GetById(id int) (models.Seller, error) {
+// GetSellerById returns the Seller by id or an error if it does not exist
+func (r *SellerRepositoryMap) GetSellerById(id int) (models.Seller, error) {
 	r.lock.RLock()
 	defer r.lock.RUnlock()
 
@@ -66,8 +66,8 @@ func (r *SellerRepositoryMap) CompanyIdIsUsed(companyId int) (bool, error) {
 	return false, nil
 }
 
-// GetAll returns all the Sellers currently stored
-func (r *SellerRepositoryMap) GetAll() ([]models.Seller, error) {
+// GetAllSeller returns all the Sellers currently stored
+func (r *SellerRepositoryMap) GetAllSellers() ([]models.Seller, error) {
 	r.lock.RLock()
 	defer r.lock.RUnlock()
 
@@ -79,8 +79,8 @@ func (r *SellerRepositoryMap) GetAll() ([]models.Seller, error) {
 	return sellers, nil
 }
 
-// Delete removes a Seller by id
-func (r *SellerRepositoryMap) Delete(id int) error {
+// DeleteSeller removes a Seller by id
+func (r *SellerRepositoryMap) DeleteSellerById(id int) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
@@ -93,8 +93,8 @@ func (r *SellerRepositoryMap) Delete(id int) error {
 	return nil
 }
 
-// Update Updates the Seller and returns it
-func (r *SellerRepositoryMap) Update(seller models.Seller) (models.Seller, error) {
+// UpdateSeller Updates the Seller and returns it
+func (r *SellerRepositoryMap) UpdateSellerById(seller models.Seller) (models.Seller, error) {
 	r.database[seller.Id] = seller
 	return seller, nil
 }

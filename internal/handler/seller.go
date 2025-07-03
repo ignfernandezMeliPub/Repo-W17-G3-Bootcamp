@@ -5,9 +5,10 @@ import (
 	"app/internal/handler/utils"
 	"app/internal/service"
 	"app/pkg/models"
-	"github.com/bootcamp-go/web/response"
 	"net/http"
 	"strconv"
+
+	"github.com/bootcamp-go/web/response"
 )
 
 type SellerHandler struct {
@@ -18,8 +19,8 @@ func NewSellerHandler(service service.SellerService) SellerHandler {
 	return SellerHandler{service: service}
 }
 
-func (h *SellerHandler) GetAll(w http.ResponseWriter, _ *http.Request) {
-	all, err := h.service.GetAll()
+func (h *SellerHandler) GetAllSellers(w http.ResponseWriter, _ *http.Request) {
+	all, err := h.service.GetAllSellers()
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
@@ -30,14 +31,14 @@ func (h *SellerHandler) GetAll(w http.ResponseWriter, _ *http.Request) {
 	})
 }
 
-func (h *SellerHandler) GetById(w http.ResponseWriter, r *http.Request) {
+func (h *SellerHandler) GetSellerById(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	seller, err := h.service.GetById(id)
+	seller, err := h.service.GetSellerById(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
@@ -48,7 +49,7 @@ func (h *SellerHandler) GetById(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *SellerHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *SellerHandler) CreateSeller(w http.ResponseWriter, r *http.Request) {
 	var createSellerDto dto.CreateSellerDto
 	createSellerDto, err := utils.InstantiateVarFromBody(&r.Body, createSellerDto)
 	if err != nil {
@@ -56,7 +57,7 @@ func (h *SellerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newSeller, err := h.service.Create(*createSellerDto.CompanyId, *createSellerDto.CompanyName, *createSellerDto.Address, *createSellerDto.Telephone)
+	newSeller, err := h.service.CreateSeller(*createSellerDto.CompanyId, *createSellerDto.CompanyName, *createSellerDto.Address, *createSellerDto.Telephone)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
@@ -67,7 +68,7 @@ func (h *SellerHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *SellerHandler) Patch(w http.ResponseWriter, r *http.Request) {
+func (h *SellerHandler) PatchSeller(w http.ResponseWriter, r *http.Request) {
 	var patchSellerDto dto.PatchSellerDto
 	patchSellerDto, err := utils.InstantiateVarFromBody(&r.Body, patchSellerDto)
 	if err != nil {
@@ -75,7 +76,7 @@ func (h *SellerHandler) Patch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	seller, err := h.service.Patch(*patchSellerDto.Id, patchSellerDto.CompanyId, patchSellerDto.CompanyName, patchSellerDto.Address, patchSellerDto.Telephone)
+	seller, err := h.service.UpdateSellerById(*patchSellerDto.Id, patchSellerDto.CompanyId, patchSellerDto.CompanyName, patchSellerDto.Address, patchSellerDto.Telephone)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
@@ -86,14 +87,14 @@ func (h *SellerHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *SellerHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (h *SellerHandler) DeleteSeller(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	err = h.service.Delete(id)
+	err = h.service.DeleteSellerById(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return

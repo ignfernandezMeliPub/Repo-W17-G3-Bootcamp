@@ -11,8 +11,8 @@ type ProductServiceI interface {
 	GetAllProducts() ([]models.Product, error)
 	GetProductById(int) (models.Product, error)
 	CreateProduct(models.ProductRequest) (models.Product, error)
-	UpdateProduct(models.ProductPatchRequest) (models.Product, error)
-	DeleteProduct(int) error
+	UpdateProductById(models.ProductPatchRequest) (models.Product, error)
+	DeleteProductById(int) error
 }
 
 type ProductService struct {
@@ -26,16 +26,16 @@ func NewProductService(prodRepository product_repository.ProductRepository, type
 }
 
 func (p *ProductService) GetAllProducts() ([]models.Product, error) {
-	return p.ProductRepo.FindAllProducts()
+	return p.ProductRepo.GetAllProducts()
 }
 
 func (p *ProductService) GetProductById(id int) (models.Product, error) {
 
-	return p.ProductRepo.FindProductById(id)
+	return p.ProductRepo.GetProductById(id)
 }
 
-func (p *ProductService) DeleteProduct(id int) error {
-	return p.ProductRepo.DeleteProduct(id)
+func (p *ProductService) DeleteProductById(id int) error {
+	return p.ProductRepo.DeleteProductById(id)
 }
 
 func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Product, error) {
@@ -88,7 +88,7 @@ func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Pr
 		SellerId:                       product.SellerId,
 	}
 
-	newProduct, err := p.ProductRepo.SaveProduct(newProduct)
+	newProduct, err := p.ProductRepo.CreateProduct(newProduct)
 
 	if err != nil {
 		return newProduct, err
@@ -97,8 +97,8 @@ func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Pr
 
 }
 
-func (p *ProductService) UpdateProduct(updateProduct models.ProductPatchRequest) (models.Product, error) {
-	product, err := p.ProductRepo.FindProductById(updateProduct.Id)
+func (p *ProductService) UpdateProductById(updateProduct models.ProductPatchRequest) (models.Product, error) {
+	product, err := p.ProductRepo.GetProductById(updateProduct.Id)
 
 	if err != nil {
 		return models.Product{}, err
@@ -109,7 +109,7 @@ func (p *ProductService) UpdateProduct(updateProduct models.ProductPatchRequest)
 		return models.Product{}, err
 	}
 
-	return p.ProductRepo.UpdateProduct(updatedProduct)
+	return p.ProductRepo.UpdateProductById(updatedProduct)
 }
 
 func (p *ProductService) patchProduct(product models.Product, updateProduct models.ProductPatchRequest) (models.Product, error) {
@@ -191,7 +191,7 @@ func (p *ProductService) isValidateProductType(id int) bool {
 }
 
 func (p *ProductService) isValidateProductCode(code string) bool {
-	_, err := p.ProductRepo.FindProductByCode(code)
+	_, err := p.ProductRepo.GetProductByCode(code)
 
 	return err != nil
 }
@@ -200,7 +200,7 @@ func (p *ProductService) isValidSeller(id int) bool {
 	if id == 0 {
 		return true
 	}
-	_, err := p.SellerServices.GetById(id)
+	_, err := p.SellerServices.GetSellerById(id)
 
 	return err == nil
 }

@@ -35,7 +35,7 @@ func (r *WarehouseRepositoryMap) CreateWarehouse(wh models.Warehouse) (models.Wa
 	return wh, nil
 }
 
-func (r *WarehouseRepositoryMap) FindWarehouse() ([]models.Warehouse, error) {
+func (r *WarehouseRepositoryMap) GetAllWarehouses() ([]models.Warehouse, error) {
 
 	if len(r.db) == 0 {
 		return nil, &custom_errors.ResourceNotFoundError{}
@@ -50,7 +50,7 @@ func (r *WarehouseRepositoryMap) FindWarehouse() ([]models.Warehouse, error) {
 	return w, nil
 }
 
-func (r *WarehouseRepositoryMap) FindWarehouseById(id int) (models.Warehouse, error) {
+func (r *WarehouseRepositoryMap) GetWarehouseById(id int) (models.Warehouse, error) {
 	wh, exist := r.db[id]
 	if !exist {
 		return models.Warehouse{}, &custom_errors.ResourceNotFoundError{}
@@ -58,8 +58,8 @@ func (r *WarehouseRepositoryMap) FindWarehouseById(id int) (models.Warehouse, er
 	return wh, nil
 }
 
-func (r *WarehouseRepositoryMap) UpdateWarehouse(id int, w models.Warehouse) (models.Warehouse, error) {
-	if r.FindWarehouseByCode(w.WarehouseCode) {
+func (r *WarehouseRepositoryMap) UpdateWarehouseById(id int, w models.Warehouse) (models.Warehouse, error) {
+	if r.GetWarehouseByCode(w.WarehouseCode) {
 		return models.Warehouse{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "warehouse_code", Value: w.WarehouseCode}
 	}
 
@@ -67,12 +67,12 @@ func (r *WarehouseRepositoryMap) UpdateWarehouse(id int, w models.Warehouse) (mo
 	return w, nil
 }
 
-func (r *WarehouseRepositoryMap) DeleteWarehouse(id int) error {
+func (r *WarehouseRepositoryMap) DeleteWarehouseById(id int) error {
 	delete(r.db, id)
 	return nil
 }
 
-func (r *WarehouseRepositoryMap) FindWarehouseByCode(code string) bool {
+func (r *WarehouseRepositoryMap) GetWarehouseByCode(code string) bool {
 
 	for _, w := range r.db {
 		if strings.EqualFold(w.WarehouseCode, code) {

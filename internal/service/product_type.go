@@ -19,7 +19,7 @@ func NewProductTypeService(rp product_type_repository.ProductTypeRepository) *Pr
 }
 
 func (s *ProductTypeServiceImpl) GetProductTypeById(id int) (models.ProductType, error) {
-	return s.ProductTypeRepository.FindProductTypeById(id)
+	return s.ProductTypeRepository.GetProductTypeById(id)
 }
 
 func (s *ProductTypeServiceImpl) IsValidProductType(id int) bool {
