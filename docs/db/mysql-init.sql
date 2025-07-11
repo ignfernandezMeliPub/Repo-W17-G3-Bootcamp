@@ -1,0 +1,8 @@
+CREATE DATABASE fresh_db DEFAULT CHARACTER SET = 'utf8mb4';
+DROP TABLE IF EXISTS buyers;
+CREATE TABLE buyers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    card_number_id VARCHAR(10) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL
+);
