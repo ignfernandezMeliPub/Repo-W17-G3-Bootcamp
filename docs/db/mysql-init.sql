@@ -26,7 +26,7 @@ CREATE TABLE sellers (
     address VARCHAR(255) NOT NULL,
     telephone VARCHAR(255) NOT NULL
 );
-DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS products;
 CREATE TABLE products (
     id INT PRIMARY KEY AUTO_INCREMENT,
     product_code VARCHAR(255) NOT NULL,
@@ -90,12 +90,12 @@ CREATE TABLE warehouses (
 
 DROP TABLE IF EXISTS employees;
 CREATE TABLE employees (
-    Id INT PRIMARY KEY AUTO_INCREMENT,
-    CardNumberId VARCHAR(255) NOT NULL unique,
-    FirstName VARCHAR(255) NOT NULL,
-    LastName VARCHAR(255) NOT NULL,
-    WarehouseId INT,
-    FOREIGN KEY (WarehouseId) REFERENCES warehouses(Id)
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    card_number_id VARCHAR(255) NOT NULL unique,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    warehouse_id INT,
+    FOREIGN KEY (warehouse_id) REFERENCES warehouses(id)
 ); 
 
 DROP TABLE IF EXISTS sections;
@@ -141,15 +141,15 @@ CREATE TABLE `product_batches`
 );
 DROP TABLE IF EXISTS inbound_orders;
 CREATE TABLE inbound_orders (
-    Id INT PRIMARY KEY AUTO_INCREMENT,
-    OrderDate DATE NOT NULL,
-    OrderNumber VARCHAR(255) NOT NULL UNIQUE,
-    EmployeeId INT,
-    ProductBatchId INT,
-    WarehouseId INT,
-    FOREIGN KEY (EmployeeId) REFERENCES employees(Id) ON DELETE CASCADE,
-    FOREIGN KEY (ProductBatchId) REFERENCES product_batches(Id) ON DELETE CASCADE,
-    FOREIGN KEY (WarehouseId) REFERENCES warehouses(Id) ON DELETE CASCADE
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_date DATE NOT NULL,
+    order_number VARCHAR(255) NOT NULL UNIQUE,
+    employee_id INT,
+    product_batch_id INT,
+    warehouse_id INT,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_batch_id) REFERENCES product_batches(id) ON DELETE CASCADE,
+    FOREIGN KEY (warehouse_id) REFERENCES warehouses(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS purchase_orders;
