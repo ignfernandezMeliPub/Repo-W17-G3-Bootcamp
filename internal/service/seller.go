@@ -46,8 +46,7 @@ func (s *SellerServiceImpl) GetAllSellers() ([]models.Seller, error) {
 	return s.repository.GetAllSellers()
 }
 
-// UpdateSellerById allows to patch a resource's atts
-
+// UpdateSellerById allows to patch a resource's attributes
 func (s *SellerServiceImpl) UpdateSellerById(id int, companyId *int, companyName *string, address *string, telephone *string) (models.Seller, error) {
 	coincidence, err := s.GetSellerById(id)
 	if err != nil {
