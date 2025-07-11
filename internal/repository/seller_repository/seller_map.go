@@ -66,7 +66,7 @@ func (r *SellerRepositoryMap) CompanyIdIsUsed(companyId int) (bool, error) {
 	return false, nil
 }
 
-// GetAllSeller returns all the Sellers currently stored
+// GetAllSellers GetAllSeller returns all the Sellers currently stored
 func (r *SellerRepositoryMap) GetAllSellers() ([]models.Seller, error) {
 	r.lock.RLock()
 	defer r.lock.RUnlock()
@@ -79,7 +79,7 @@ func (r *SellerRepositoryMap) GetAllSellers() ([]models.Seller, error) {
 	return sellers, nil
 }
 
-// DeleteSeller removes a Seller by id
+// DeleteSellerById DeleteSeller removes a Seller by id
 func (r *SellerRepositoryMap) DeleteSellerById(id int) error {
 	r.lock.Lock()
 	defer r.lock.Unlock()
@@ -93,7 +93,7 @@ func (r *SellerRepositoryMap) DeleteSellerById(id int) error {
 	return nil
 }
 
-// UpdateSeller Updates the Seller and returns it
+// UpdateSellerById UpdateSeller Updates the Seller and returns it
 func (r *SellerRepositoryMap) UpdateSellerById(seller models.Seller) (models.Seller, error) {
 	r.database[seller.Id] = seller
 	return seller, nil
