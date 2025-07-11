@@ -3,6 +3,8 @@ package main
 import (
 	"app/internal/application"
 	"fmt"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -17,6 +19,14 @@ func main() {
 		ProductTypesFilePath: "docs/db/product_types.json",
 		ProductsFilePath:     "docs/db/products.json",
 		SectionsFilePath:     "docs/db/sections.json",
+
+		DbConf: &mysql.Config{
+			User:   "root",
+			Passwd: "",
+			Net:    "tcp",
+			Addr:   "localhost:3306",
+			DBName: "fresh_db",
+		},
 	}
 
 	// - app
