@@ -12,10 +12,12 @@ import (
 	"app/internal/repository/warehouse_repository"
 	"app/internal/service"
 	"app/pkg/models"
+	"database/sql"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-sql-driver/mysql"
 )
 
 // ConfigServerChi is a struct that represents the configuration for ServerChi
@@ -28,6 +30,7 @@ type ConfigServerChi struct {
 	BuyerLoaderFilePath  string
 	WarehouseFilePath    string
 	SectionsFilePath     string
+	DbConf               *mysql.Config
 }
 
 // NewServerChi is a function that returns a new instance of ServerChi
@@ -57,6 +60,9 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		if cfg.SectionsFilePath != "" {
 			defaultConfig.SectionsFilePath = cfg.SectionsFilePath
 		}
+		if cfg.DbConf != nil {
+			defaultConfig.DbConf = cfg.DbConf
+		}
 	}
 
 	return &ServerChi{
@@ -67,6 +73,7 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		productTypeFilePath: defaultConfig.ProductTypesFilePath,
 		productsFilePath:    defaultConfig.ProductsFilePath,
 		sectionsFilePath:    defaultConfig.SectionsFilePath,
+		DbConf:              defaultConfig.DbConf,
 	}
 }
 
@@ -80,10 +87,22 @@ type ServerChi struct {
 	productTypeFilePath string
 	productsFilePath    string
 	sectionsFilePath    string
+	DbConf              *mysql.Config
 }
 
 // Run is a method that runs the server
 func (a *ServerChi) Run() (err error) {
+	db, err := sql.Open("mysql", a.DbConf.FormatDSN())
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		return err
+	}
 
 	ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
 
