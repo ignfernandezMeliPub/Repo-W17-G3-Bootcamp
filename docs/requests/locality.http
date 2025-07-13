@@ -1,0 +1,15 @@
+### Variables
+@baseUrl = http://localhost:8081/api/v1
+
+### 1. Create Locality
+POST {{baseUrl}}/localities
+Content-Type: application/json
+
+{
+  "data": {
+    "id": "random",
+    "locality_name": "Locality A",
+    "province_name": "Province A",
+    "country_name": "Country A"
+  }
+}

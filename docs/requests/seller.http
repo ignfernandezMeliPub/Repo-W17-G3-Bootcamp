@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:8081/api/v1
-@sellerId = 123
+@sellerId = 2
 
 ### 1. Create Seller
 POST {{baseUrl}}/sellers
@@ -10,7 +10,8 @@ Content-Type: application/json
   "cid": 12345,
   "company_name": "Tech Solutions Inc",
   "address": "123 Main Street, New York, NY 10001",
-  "telephone": "+1-555-123-4567"
+  "telephone": "+1-555-123-4567",
+  "locality_id": "random"
 }
 
 ### 2. Get All Sellers

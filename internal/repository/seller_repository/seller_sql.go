@@ -24,7 +24,7 @@ func NewSellerRepositorySql(db *sql.DB) SellerRepositorySql {
 
 // CreateSeller adds or updates the Seller and returns it
 func (r *SellerRepositorySql) CreateSeller(seller models.Seller) (models.Seller, error) {
-	newId, err := sql_utils.Insert(r.db, "INSERT INTO sellers (cid, company_name, address, telephone) VALUES (?, ?, ?, ?)", []any{seller.CompanyId, seller.CompanyName, seller.Address, seller.Telephone})
+	newId, err := sql_utils.Insert(r.db, "INSERT INTO sellers (cid, company_name, address, telephone, locality_id) VALUES (?, ?, ?, ?, ?)", []any{seller.CompanyId, seller.CompanyName, seller.Address, seller.Telephone, seller.LocalityId})
 	if err != nil {
 		return seller, err
 	}
@@ -35,12 +35,12 @@ func (r *SellerRepositorySql) CreateSeller(seller models.Seller) (models.Seller,
 
 // GetSellerById returns the Seller by id or an error if it does not exist
 func (r *SellerRepositorySql) GetSellerById(id int) (models.Seller, error) {
-	return sql_utils.QueryRow[models.Seller](r.db, "SELECT id, cid, company_name, address, telephone FROM sellers WHERE id = ?", []any{id})
+	return sql_utils.QueryRow[models.Seller](r.db, "SELECT id, cid, company_name, address, telephone, locality_id FROM sellers WHERE id = ?", []any{id})
 }
 
 // GetAllSellers GetAllSeller returns all the Sellers currently stored
 func (r *SellerRepositorySql) GetAllSellers() ([]models.Seller, error) {
-	return sql_utils.Query[models.Seller](r.db, "SELECT id, cid, company_name, address, telephone FROM sellers", []any{})
+	return sql_utils.Query[models.Seller](r.db, "SELECT id, cid, company_name, address, telephone, locality_id FROM sellers", []any{})
 }
 
 // DeleteSellerById DeleteSeller removes a Seller by id
