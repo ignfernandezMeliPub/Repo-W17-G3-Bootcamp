@@ -10,8 +10,10 @@ import (
 )
 
 /* TODOs:
-1. Mejorar el mapeo de errores
-2. Integrar localities
+1. Realizar endpoint /api/v1/localities/reportSellers?id=6700
+2. Mejorar mapeo de errores
+3. Mejorar script SQL
+4. Mejorar organizacion de carpetas y directorios
 */
 
 type SellerRepositorySql struct {
