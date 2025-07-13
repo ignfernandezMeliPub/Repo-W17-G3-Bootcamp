@@ -104,7 +104,7 @@ func Query[T any](db *sql.DB, query string, args []any) ([]T, error) {
 	}
 	defer rows.Close() // TODO Controlar el error que puede devolver esto
 
-	var results []T
+	results := []T{} // Inicializamos el array por si tiene que volver vacio, caso contrario volvera como null
 
 	for rows.Next() {
 		var instance T
