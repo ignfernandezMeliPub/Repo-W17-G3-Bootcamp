@@ -7,6 +7,14 @@ import (
 	"database/sql"
 )
 
+/* TODOs:
+1. Borrar seller_map.go
+2. Hacer UpdateSellerById en capa repo
+3. Adaptar UpdateSellerById en capa service
+4. Hacer mapeo de errores
+5. Integrar localities
+*/
+
 type SellerRepositorySql struct {
 	db *sql.DB
 }
