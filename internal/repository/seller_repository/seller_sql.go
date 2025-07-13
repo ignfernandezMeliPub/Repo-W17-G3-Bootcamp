@@ -10,10 +10,8 @@ import (
 )
 
 /* TODOs:
-2. Hacer UpdateSellerById en capa repo
-3. Adaptar UpdateSellerById en capa service
-4. Hacer mapeo de errores
-5. Integrar localities
+1. Mejorar el mapeo de errores
+2. Integrar localities
 */
 
 type SellerRepositorySql struct {
