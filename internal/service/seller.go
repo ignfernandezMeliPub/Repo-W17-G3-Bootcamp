@@ -36,30 +36,9 @@ func (s *SellerServiceImpl) GetAllSellers() ([]models.Seller, error) {
 	return s.repository.GetAllSellers()
 }
 
-// UpdateSellerById allows to patch a resource's attributes
+// UpdateSellerById allows patching a seller's attributes
 func (s *SellerServiceImpl) UpdateSellerById(id int, companyId *int, companyName *string, address *string, telephone *string) (models.Seller, error) {
-	coincidence, err := s.GetSellerById(id)
-	if err != nil {
-		return models.Seller{}, err
-	}
-
-	if companyId != nil {
-		coincidence.CompanyId = *companyId
-	}
-
-	if companyName != nil {
-		coincidence.CompanyName = *companyName
-	}
-
-	if address != nil {
-		coincidence.Address = *address
-	}
-
-	if telephone != nil {
-		coincidence.Telephone = *telephone
-	}
-
-	return s.repository.UpdateSellerById(coincidence)
+	return s.repository.UpdateSellerById(id, companyId, companyName, address, telephone)
 }
 
 // DeleteSellerById removes a seller by its ID
