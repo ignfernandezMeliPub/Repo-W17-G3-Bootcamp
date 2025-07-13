@@ -14,6 +14,7 @@ import (
 2. Mejorar mapeo de errores
 3. Mejorar script SQL
 4. Mejorar organizacion de carpetas y directorios
+5. Mejorar manejo de config
 */
 
 type SellerRepositorySql struct {
