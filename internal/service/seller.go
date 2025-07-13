@@ -2,7 +2,6 @@ package service
 
 import (
 	"app/internal/repository/seller_repository"
-	"app/pkg/custom_errors"
 	"app/pkg/models"
 )
 
@@ -24,16 +23,7 @@ func NewSellerService(repository seller_repository.SellerRepository) SellerServi
 
 // CreateSeller Creates a new seller
 func (s *SellerServiceImpl) CreateSeller(companyId int, companyName string, address string, telephone string) (models.Seller, error) {
-	isUsed, err := s.repository.CompanyIdIsUsed(companyId)
-	if err != nil {
-		return models.Seller{}, err
-	}
-	if isUsed {
-		return models.Seller{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "companyId", Value: companyId}
-	}
-
-	seller := models.Seller{Id: -1, CompanyId: companyId, CompanyName: companyName, Address: address, Telephone: telephone}
-	return s.repository.CreateSeller(seller)
+	return s.repository.CreateSeller(models.Seller{Id: -1, CompanyId: companyId, CompanyName: companyName, Address: address, Telephone: telephone})
 }
 
 // GetSellerById retrieves a seller by its ID
@@ -53,18 +43,7 @@ func (s *SellerServiceImpl) UpdateSellerById(id int, companyId *int, companyName
 		return models.Seller{}, err
 	}
 
-	if companyId != nil && *companyId != coincidence.CompanyId {
-		println(coincidence.CompanyId)
-		println(*companyId)
-		println(coincidence.CompanyId == *companyId)
-		isUsed, err := s.repository.CompanyIdIsUsed(*companyId)
-		if err != nil {
-			return models.Seller{}, err
-		}
-		if isUsed {
-			return models.Seller{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "companyId", Value: *companyId}
-		}
-
+	if companyId != nil {
 		coincidence.CompanyId = *companyId
 	}
 
