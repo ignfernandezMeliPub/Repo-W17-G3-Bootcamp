@@ -7,6 +7,7 @@ type CreateSellerDto struct {
 	CompanyName *string `json:"company_name"`
 	Address     *string `json:"address"`
 	Telephone   *string `json:"telephone"`
+	LocalityId  *string `json:"locality_id"`
 }
 
 func (c CreateSellerDto) VerifyMandatoryFieldsPresence() error {
@@ -24,6 +25,10 @@ func (c CreateSellerDto) VerifyMandatoryFieldsPresence() error {
 
 	if c.Telephone == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "telephone"}
+	}
+
+	if c.LocalityId == nil {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "locality_id"}
 	}
 
 	return nil

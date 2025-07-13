@@ -8,7 +8,7 @@ import (
 type SellerService interface {
 	GetAllSellers() ([]models.Seller, error)
 	GetSellerById(id int) (models.Seller, error)
-	CreateSeller(companyId int, companyName string, address string, telephone string) (models.Seller, error)
+	CreateSeller(companyId int, companyName string, address string, telephone string, localityId string) (models.Seller, error)
 	UpdateSellerById(id int, companyId *int, companyName *string, address *string, telephone *string) (models.Seller, error)
 	DeleteSellerById(id int) error
 }
@@ -22,8 +22,8 @@ func NewSellerService(repository seller_repository.SellerRepository) SellerServi
 }
 
 // CreateSeller Creates a new seller
-func (s *SellerServiceImpl) CreateSeller(companyId int, companyName string, address string, telephone string) (models.Seller, error) {
-	return s.repository.CreateSeller(models.Seller{Id: -1, CompanyId: companyId, CompanyName: companyName, Address: address, Telephone: telephone})
+func (s *SellerServiceImpl) CreateSeller(companyId int, companyName string, address string, telephone string, localityId string) (models.Seller, error) {
+	return s.repository.CreateSeller(models.Seller{Id: -1, CompanyId: companyId, CompanyName: companyName, Address: address, Telephone: telephone, LocalityId: localityId})
 }
 
 // GetSellerById retrieves a seller by its ID
