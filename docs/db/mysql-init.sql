@@ -33,6 +33,7 @@ CREATE TABLE sellers (
     company_name    VARCHAR(255) NOT NULL,
     address         VARCHAR(255) NOT NULL,
     telephone       VARCHAR(255) NOT NULL,
+    locality_id     VARCHAR(255) NOT NULL,
     FOREIGN KEY (locality_id) REFERENCES localities(id)
 );
 
