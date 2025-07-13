@@ -5,10 +5,11 @@ import (
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"database/sql"
+	"fmt"
+	"strings"
 )
 
 /* TODOs:
-1. Borrar seller_map.go
 2. Hacer UpdateSellerById en capa repo
 3. Adaptar UpdateSellerById en capa service
 4. Hacer mapeo de errores
@@ -57,7 +58,64 @@ func (r *SellerRepositorySql) DeleteSellerById(id int) error {
 	return nil
 }
 
-// UpdateSellerById UpdateSeller Updates the Seller and returns it
-func (r *SellerRepositorySql) UpdateSellerById(seller models.Seller) (models.Seller, error) {
-	panic("TODO") // TODO
+// UpdateSellerById performs a partial update (PATCH) on a seller record by ID.
+//
+// This method updates only the fields that are explicitly provided (non-nil pointers),
+// allowing for flexible partial updates without affecting unchanged fields.
+//
+// Parameters:
+//   - id: The unique identifier of the seller to update
+//   - companyId: Optional pointer to new company ID. Pass nil to leave unchanged
+//   - companyName: Optional pointer to new company name. Pass nil to leave unchanged
+//   - address: Optional pointer to new address. Pass nil to leave unchanged
+//   - telephone: Optional pointer to new telephone. Pass nil to leave unchanged
+//
+// At least one optional parameter must be provided (non-nil) for the update to proceed.
+//
+// Returns:
+//   - models.Seller: The updated seller with all current field values
+//   - error: Possible errors include:
+//   - MandatoryArgMissingErr: When all optional parameters are nil
+//   - ErrNotFound: When no seller exists with the given ID
+//   - Database errors: Any SQL execution errors
+func (r *SellerRepositorySql) UpdateSellerById(id int, companyId *int, companyName *string, address *string, telephone *string) (models.Seller, error) {
+	var columnsToSet []string
+	var args []any
+
+	if companyId != nil {
+		columnsToSet = append(columnsToSet, "cid = ?")
+		args = append(args, *companyId)
+	}
+
+	if companyName != nil {
+		columnsToSet = append(columnsToSet, "company_name = ?")
+		args = append(args, *companyName)
+	}
+
+	if address != nil {
+		columnsToSet = append(columnsToSet, "address = ?")
+		args = append(args, *address)
+	}
+
+	if telephone != nil {
+		columnsToSet = append(columnsToSet, "telephone = ?")
+		args = append(args, *telephone)
+	}
+
+	if len(columnsToSet) == 0 {
+		return models.Seller{}, &custom_errors.MandatoryArgMissingErr{Argument: "companyId or companyName or address or telephone"}
+	}
+
+	query := fmt.Sprintf("UPDATE sellers SET %s WHERE id = ?", strings.Join(columnsToSet, ", "))
+	args = append(args, id)
+
+	affectedRows, err := sql_utils.Update(r.db, query, args)
+	if err != nil {
+		return models.Seller{}, err
+	}
+	if affectedRows == 0 {
+		return models.Seller{}, custom_errors.ErrNotFound
+	}
+
+	return r.GetSellerById(id) // Si bien es ineficiente, devolvemos GetSellerById para cumplir con el requisito del sprint 1 de la respuesta del patch con la data del objeto patcheado.
 }
