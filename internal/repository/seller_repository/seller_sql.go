@@ -109,13 +109,10 @@ func (r *SellerRepositorySql) UpdateSellerById(id int, companyId *int, companyNa
 	query := fmt.Sprintf("UPDATE sellers SET %s WHERE id = ?", strings.Join(columnsToSet, ", "))
 	args = append(args, id)
 
-	affectedRows, err := sql_utils.Update(r.db, query, args)
+	_, err := sql_utils.Update(r.db, query, args)
 	if err != nil {
 		return models.Seller{}, err
 	}
-	if affectedRows == 0 {
-		return models.Seller{}, custom_errors.ErrNotFound
-	}
 
-	return r.GetSellerById(id) // Si bien es ineficiente, devolvemos GetSellerById para cumplir con el requisito del sprint 1 de la respuesta del patch con la data del objeto patcheado.
+	return r.GetSellerById(id) // Si bien es ineficiente porque hacemos 2 llamadas a la base de datos, devolvemos GetSellerById para cumplir con el requisito del sprint 1 de la respuesta del patch con la data del objeto patcheado.
 }
