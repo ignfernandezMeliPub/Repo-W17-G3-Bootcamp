@@ -17,7 +17,7 @@ type SellerServiceImpl struct {
 	repository seller_repository.SellerRepository
 }
 
-func NewSellerService(repository seller_repository.SellerRepository) SellerServiceImpl {
+func NewSellerServiceImpl(repository seller_repository.SellerRepository) SellerServiceImpl {
 	return SellerServiceImpl{repository: repository}
 }
 
