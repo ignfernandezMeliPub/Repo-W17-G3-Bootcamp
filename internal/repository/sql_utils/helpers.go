@@ -65,6 +65,45 @@ func initInstanceWithRows(rows *sql.Rows, instance any) error {
 	return rows.Scan(scanDest...)
 }
 
+// getFields extracts struct fields and their reflection values, mapping them by database tag names.
+//
+// This function recursively traverses a struct (including embedded structs) and builds a map
+// where keys are database tag names and values are the corresponding reflect.Value objects.
+// It's designed to work with structs that use `db` tags for database field mapping.
+//
+// Parameters:
+//   - instance: Must be a pointer to a struct. The struct to extract fields from
+//   - fieldMap: A map to populate with the extracted fields. Pass an empty map or existing map
+//     Format: map[dbTagName]reflect.Value
+//
+// Returns:
+//   - map[string]reflect.Value: The populated fieldMap with database tag names as keys
+//     and settable reflect.Value objects as values
+//   - error: Possible errors include:
+//   - "instance must be a pointer": When instance is not a pointer
+//   - "instance must be a pointer to a struct": When instance doesn't point to a struct
+//   - Recursive errors from embedded struct processing
+//
+// Behavior:
+//   - Only includes fields that have a `db` tag defined
+//   - Only includes fields that are settable (CanSet() returns true)
+//   - Recursively processes embedded structs by taking their address
+//   - Skips fields without `db` tags or that are not settable
+//
+// Example usage:
+//
+//	type User struct {
+//	    ID   int    `db:"id"`
+//	    Name string `db:"name"
+//	}
+//
+//	user := &User{}
+//	fieldMap := make(map[string]reflect.Value)
+//	result, err := getFields(user, fieldMap)
+//	// result["id"] contains reflect.Value for user.ID
+//	// result["name"] contains reflect.Value for user.Name
+//
+// Note: This function modifies the passed fieldMap parameter and also returns it.
 func getFields(instance any, fieldMap map[string]reflect.Value) (map[string]reflect.Value, error) {
 	// ? Validar que 'instance' sea un puntero
 	instancePtr := reflect.ValueOf(instance)
@@ -86,7 +125,7 @@ func getFields(instance any, fieldMap map[string]reflect.Value) (map[string]refl
 		fieldValue := instanceValue.Field(i)
 		dbTag := field.Tag.Get(dbTagName)
 
-		// si es un struct embebido, ejecutamos recursivamente getFields()
+		// ? Si es un struct embebido, ejecutamos recursivamente getFields()
 		if field.Type.Kind() == reflect.Struct {
 			fieldPtr := fieldValue.Addr()
 			_, err := getFields(fieldPtr.Interface(), fieldMap)
@@ -94,7 +133,7 @@ func getFields(instance any, fieldMap map[string]reflect.Value) (map[string]refl
 			if err != nil {
 				return fieldMap, err
 			}
-			// Si es un atributo de dato primitivo lo agregamos al mapa si tiene el tag db y es seteable
+			// ? Si es un atributo de dato primitivo lo agregamos al mapa si tiene el tag db y es seteable
 		} else if dbTag != "" && fieldValue.CanSet() {
 			fieldMap[dbTag] = instanceValue.Field(i)
 		}
