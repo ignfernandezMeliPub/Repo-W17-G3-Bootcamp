@@ -5,6 +5,7 @@ import (
 	"app/internal/loader"
 	"app/internal/repository/buyer_repository"
 	"app/internal/repository/employee_repository"
+	"app/internal/repository/locality_repository"
 	"app/internal/repository/product_repository"
 	"app/internal/repository/product_type_repository"
 	"app/internal/repository/sections_repository"
@@ -113,9 +114,14 @@ func (a *ServerChi) Run() (err error) {
 	}
 
 	// Seller
-	sellerRepo := seller_repository.NewSellerRepositoryMap(make(map[int]models.Seller))
-	sellerService := service.NewSellerService(&sellerRepo)
+	sellerRepo := seller_repository.NewSellerRepositorySql(db)
+	sellerService := service.NewSellerServiceImpl(&sellerRepo)
 	sellerHandler := handler.NewSellerHandler(&sellerService)
+
+	// Locality
+	localityRepo := locality_repository.NewLocalityRepositorySql(db)
+	localityService := service.NewLocalityServiceImpl(&localityRepo)
+	localityHandler := handler.NewLocalityHandler(&localityService)
 
 	buyerLd := loader.NewBuyerLoaderJSONFile(a.buyerLoaderFilePath)
 	buyerDb, err := buyerLd.Load()
@@ -240,6 +246,10 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", buyerHd.CreateBuyer)
 			rt.Patch("/{id}", buyerHd.PatchBuyer)
 			rt.Delete("/{id}", buyerHd.DeleteBuyer)
+		})
+		// 7. Localities
+		rt.Route("/localities", func(rt chi.Router) {
+			rt.Post("/", localityHandler.CreateLocality)
 		})
 	})
 

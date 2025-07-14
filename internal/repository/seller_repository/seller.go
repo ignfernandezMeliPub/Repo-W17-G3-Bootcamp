@@ -6,9 +6,8 @@ import (
 
 type SellerRepository interface {
 	GetSellerById(id int) (models.Seller, error)
-	CompanyIdIsUsed(companyId int) (bool, error)
 	CreateSeller(seller models.Seller) (models.Seller, error)
 	GetAllSellers() ([]models.Seller, error)
 	DeleteSellerById(id int) error
-	UpdateSellerById(seller models.Seller) (models.Seller, error)
+	UpdateSellerById(id int, companyId *int, companyName *string, address *string, telephone *string) (models.Seller, error)
 }

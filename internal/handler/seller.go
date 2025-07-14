@@ -57,7 +57,7 @@ func (h *SellerHandler) CreateSeller(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newSeller, err := h.service.CreateSeller(*createSellerDto.CompanyId, *createSellerDto.CompanyName, *createSellerDto.Address, *createSellerDto.Telephone)
+	newSeller, err := h.service.CreateSeller(*createSellerDto.CompanyId, *createSellerDto.CompanyName, *createSellerDto.Address, *createSellerDto.Telephone, *createSellerDto.LocalityId)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
