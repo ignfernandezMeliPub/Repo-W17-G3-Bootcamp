@@ -5,10 +5,10 @@ import (
 )
 
 type Buyer struct {
-	Id           int    `json:"id"`
-	CardNumberId string `json:"card_number_id"`
-	FirstName    string `json:"first_name"`
-	LastName     string `json:"last_name"`
+	Id           int    `json:"id" db:"id"`
+	CardNumberId string `json:"card_number_id" db:"card_number_id"`
+	FirstName    string `json:"first_name" db:"first_name"`
+	LastName     string `json:"last_name" db:"last_name"`
 }
 
 type BuyerPatch struct {
