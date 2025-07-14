@@ -26,7 +26,7 @@ const queryStore = `INSERT INTO carries (
 
 //const queryGetById = ``
 
-func (r *CarriesSql) Store(c models.Carries) (int64, error) {
+func (r *CarriesSql) CreateCarries(c models.Carries) (int64, error) {
 	args := []any{c.Cid, c.CompanyName, c.Address, c.Telephone, c.LocalityId}
 	return sql_utils.Insert(r.db, queryStore, args)
 }

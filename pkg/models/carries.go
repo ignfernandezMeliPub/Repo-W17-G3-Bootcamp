@@ -6,5 +6,5 @@ type Carries struct {
 	CompanyName string `db:"company_name"`
 	Address     string `db:"address"`
 	Telephone   string `db:"telephone"`
-	LocalityId  int    `db:"locality_id"`
+	LocalityId  string `db:"locality_id"`
 }

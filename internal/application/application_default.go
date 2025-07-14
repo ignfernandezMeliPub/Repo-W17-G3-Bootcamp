@@ -137,12 +137,6 @@ func (a *ServerChi) Run() (err error) {
 		return
 	}
 
-	warehouseLb := loader.NewWarehouseJSONFile(a.warehouseFilePath)
-	warehouseDb, err := warehouseLb.Load()
-	if err != nil {
-		return
-	}
-
 	buyerRp := buyer_repository.NewBuyerMap(buyerDb)
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
@@ -159,7 +153,7 @@ func (a *ServerChi) Run() (err error) {
 	productHd := handler.NewProductController(&productSv)
 
 	// warehouse
-	warehouseRp := warehouse_repository.NewWarehouseMap(warehouseDb)
+	warehouseRp := warehouse_repository.NewWarehouseSql(db)
 	warehouseSv := service.NewWarehouseDefault(warehouseRp)
 	warehouseHd := handler.NewWarehouseDefault(warehouseSv)
 
