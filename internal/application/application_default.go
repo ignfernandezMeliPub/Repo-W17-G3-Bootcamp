@@ -123,16 +123,6 @@ func (a *ServerChi) Run() (err error) {
 		return
 	}
 
-	// load products_type
-	productLd := loader.NewProductLoaderJSONFile(a.productsFilePath)
-	productDb, err := productLd.Load()
-	if err != nil {
-		return
-	}
-
-	productTypeLd := loader.NewProductTypeLoaderJSONFile(a.productTypeFilePath)
-	productTypeDb, err := productTypeLd.Load()
-
 	if err != nil {
 		return
 	}
@@ -148,12 +138,12 @@ func (a *ServerChi) Run() (err error) {
 	buyerHd := handler.NewBuyerDefault(buyerSv)
 
 	// Product - repository
-	productRp := product_repository.NewProductRepositoryMap(productDb)
-	productTypeRp := product_type_repository.NewProductTypeRepositoryMap(productTypeDb)
+	productRpSQL := product_repository.NewProductRepositoryMySQL(db)
+	productTypeRpSQL := product_type_repository.NewProductTypeRepositoryMySQL(db)
 
 	// Product - service
-	productTypeSv := service.NewProductTypeService(productTypeRp)
-	productSv := service.NewProductService(productRp, productTypeSv, &sellerService)
+	productTypeSv := service.NewProductTypeService(productTypeRpSQL)
+	productSv := service.NewProductService(productRpSQL, productTypeSv, &sellerService)
 
 	// Product - handler
 	productHd := handler.NewProductController(&productSv)
