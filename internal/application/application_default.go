@@ -12,7 +12,6 @@ import (
 	"app/internal/repository/seller_repository"
 	"app/internal/repository/warehouse_repository"
 	"app/internal/service"
-	"app/pkg/models"
 	"database/sql"
 	"net/http"
 
@@ -30,7 +29,6 @@ type ConfigServerChi struct {
 	EmployeesFilePath    string
 	BuyerLoaderFilePath  string
 	WarehouseFilePath    string
-	SectionsFilePath     string
 	DbConf               *mysql.Config
 }
 
@@ -58,9 +56,6 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		if cfg.ProductsFilePath != "" {
 			defaultConfig.ProductsFilePath = cfg.ProductsFilePath
 		}
-		if cfg.SectionsFilePath != "" {
-			defaultConfig.SectionsFilePath = cfg.SectionsFilePath
-		}
 		if cfg.DbConf != nil {
 			defaultConfig.DbConf = cfg.DbConf
 		}
@@ -73,7 +68,6 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		warehouseFilePath:   defaultConfig.WarehouseFilePath,
 		productTypeFilePath: defaultConfig.ProductTypesFilePath,
 		productsFilePath:    defaultConfig.ProductsFilePath,
-		sectionsFilePath:    defaultConfig.SectionsFilePath,
 		DbConf:              defaultConfig.DbConf,
 	}
 }
@@ -87,7 +81,6 @@ type ServerChi struct {
 	warehouseFilePath   string
 	productTypeFilePath string
 	productsFilePath    string
-	sectionsFilePath    string
 	DbConf              *mysql.Config
 }
 
@@ -150,16 +143,8 @@ func (a *ServerChi) Run() (err error) {
 	warehouseHd := handler.NewWarehouseDefault(warehouseSv)
 
 	// sections
-	sectionsRp := sections_repository.NewSectionsRepositoryMap()
-	sectionsDb, err := loader.LoadDataFromFile[models.Section](a.sectionsFilePath)
-	if err != nil {
-		return err
-	}
-	err = sectionsRp.PoblateSectionsRepo(sectionsDb)
-	if err != nil {
-		return err
-	}
-	sectionsSv := service.NewSectionsService(sectionsRp, warehouseSv, productTypeSv)
+	sectionsRp := sections_repository.NewSectionsRepositorySQL(db)
+	sectionsSv := service.NewSectionsService(sectionsRp)
 	sectionsHd := handler.NewSectionsController(sectionsSv)
 
 	// Employee - repository
