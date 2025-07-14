@@ -123,23 +123,13 @@ func (a *ServerChi) Run() (err error) {
 	localityService := service.NewLocalityServiceImpl(&localityRepo)
 	localityHandler := handler.NewLocalityHandler(&localityService)
 
-	buyerLd := loader.NewBuyerLoaderJSONFile(a.buyerLoaderFilePath)
-	buyerDb, err := buyerLd.Load()
-	if err != nil {
-		return
-	}
-
-	if err != nil {
-		return
-	}
-
 	warehouseLb := loader.NewWarehouseJSONFile(a.warehouseFilePath)
 	warehouseDb, err := warehouseLb.Load()
 	if err != nil {
 		return
 	}
 
-	buyerRp := buyer_repository.NewBuyerMap(buyerDb)
+	buyerRp := buyer_repository.NewBuyerSQL(db)
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
 
