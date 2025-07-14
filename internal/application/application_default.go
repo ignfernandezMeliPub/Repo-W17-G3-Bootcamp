@@ -105,9 +105,9 @@ func (a *ServerChi) Run() (err error) {
 		return err
 	}
 
-	ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
+	//ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
 
-	dbEmployee, err := ldEmployee.Load()
+	//dbEmployee, err := ldEmployee.Load()
 
 	if err != nil {
 		return
@@ -123,20 +123,6 @@ func (a *ServerChi) Run() (err error) {
 	localityService := service.NewLocalityServiceImpl(&localityRepo)
 	localityHandler := handler.NewLocalityHandler(&localityService)
 
-	// load products_type
-	productLd := loader.NewProductLoaderJSONFile(a.productsFilePath)
-	productDb, err := productLd.Load()
-	if err != nil {
-		return
-	}
-
-	productTypeLd := loader.NewProductTypeLoaderJSONFile(a.productTypeFilePath)
-	productTypeDb, err := productTypeLd.Load()
-
-	if err != nil {
-		return
-	}
-
 	warehouseLb := loader.NewWarehouseJSONFile(a.warehouseFilePath)
 	warehouseDb, err := warehouseLb.Load()
 	if err != nil {
@@ -148,12 +134,12 @@ func (a *ServerChi) Run() (err error) {
 	buyerHd := handler.NewBuyerDefault(buyerSv)
 
 	// Product - repository
-	productRp := product_repository.NewProductRepositoryMap(productDb)
-	productTypeRp := product_type_repository.NewProductTypeRepositoryMap(productTypeDb)
+	productRpSQL := product_repository.NewProductRepositoryMySQL(db)
+	productTypeRpSQL := product_type_repository.NewProductTypeRepositoryMySQL(db)
 
 	// Product - service
-	productTypeSv := service.NewProductTypeService(productTypeRp)
-	productSv := service.NewProductService(productRp, productTypeSv, &sellerService)
+	productTypeSv := service.NewProductTypeService(productTypeRpSQL)
+	productSv := service.NewProductService(productRpSQL, productTypeSv, &sellerService)
 
 	// Product - handler
 	productHd := handler.NewProductController(&productSv)
@@ -177,7 +163,7 @@ func (a *ServerChi) Run() (err error) {
 	sectionsHd := handler.NewSectionsController(sectionsSv)
 
 	// Employee - repository
-	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
+	rpEmployee := employee_repository.NewEmployeeDb(db)
 	// Employee - service
 	svEmployee := service.NewEmployeeService(rpEmployee, *warehouseSv)
 	// Employee - handler

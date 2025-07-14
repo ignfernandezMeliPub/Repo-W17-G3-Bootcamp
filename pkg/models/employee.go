@@ -3,14 +3,14 @@ package models
 import "app/pkg/custom_errors"
 
 type EmployeeAttributes struct {
-	CardNumberId string `json:"card_number_id"`
-	FirstName    string `json:"first_name"`
-	LastName     string `json:"last_name"`
-	WarehouseId  int    `json:"warehouse_id"`
+	CardNumberId string `json:"card_number_id" db:"CardNumberId"`
+	FirstName    string `json:"first_name" db:"FirstName"`
+	LastName     string `json:"last_name" db:"LastName"`
+	WarehouseId  int    `json:"warehouse_id" db:"WarehouseId"`
 }
 
 type Employee struct {
-	Id int `json:"id"`
+	Id int `json:"id" db:"Id"`
 	EmployeeAttributes
 }
 
