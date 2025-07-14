@@ -15,13 +15,11 @@ type SectionsService interface {
 }
 
 type SectionsServiceImpl struct {
-	rp            sections_repository.SectionsRepository
-	svWarehouse   IWarehouseService
-	svProductType ProductTypeServices
+	rp sections_repository.SectionsRepository
 }
 
-func NewSectionsService(rp sections_repository.SectionsRepository, wh IWarehouseService, pt ProductTypeServices) *SectionsServiceImpl {
-	return &SectionsServiceImpl{rp: rp, svWarehouse: wh, svProductType: pt}
+func NewSectionsService(rp sections_repository.SectionsRepository) *SectionsServiceImpl {
+	return &SectionsServiceImpl{rp: rp}
 }
 
 func (s *SectionsServiceImpl) GetAllSections() ([]models.Section, error) {
@@ -33,29 +31,21 @@ func (s *SectionsServiceImpl) GetSectionById(id int) (models.Section, error) {
 }
 
 func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (models.Section, error) {
-	if section.SectionNumber == nil {
-		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "section_number"}
+	mandatoryFields := map[string]any{
+		"section_number":      section.SectionNumber,
+		"current_temperature": section.CurrentTemperature,
+		"minimum_temperature": section.MinimumTemperature,
+		"current_capacity":    section.CurrentCapacity,
+		"minimum_capacity":    section.MinimumCapacity,
+		"maximum_capacity":    section.MaximumCapacity,
+		"warehouse_id":        section.WarehouseId,
+		"product_type_id":     section.ProductTypeId,
 	}
-	if section.ProductTypeId == nil {
-		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "current_temperature"}
-	}
-	if section.WarehouseId == nil {
-		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "minimum_temperature"}
-	}
-	if section.MaximumCapacity == nil {
-		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "current_capacity"}
-	}
-	if section.MinimumCapacity == nil {
-		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "minimum_capacity"}
-	}
-	if section.MinimumTemperature == nil {
-		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "maximum_capacity"}
-	}
-	if section.CurrentCapacity == nil {
-		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "warehouse_id"}
-	}
-	if section.CurrentTemperature == nil {
-		return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: "product_type_id"}
+
+	for field, value := range mandatoryFields {
+		if value == nil {
+			return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: field}
+		}
 	}
 	newSection := models.Section{
 		SectionNumber:      *section.SectionNumber,
@@ -67,18 +57,6 @@ func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (mode
 		WarehouseId:        *section.WarehouseId,
 		ProductTypeId:      *section.ProductTypeId,
 	}
-	err := s.ValidateSection(newSection.ID, newSection.SectionNumber)
-	if err != nil {
-		return models.Section{}, err
-	}
-	_, err = s.svWarehouse.GetWarehouseById(newSection.WarehouseId)
-	if err != nil {
-		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: newSection.WarehouseId, ExtraInfo: "warehouse not found"}
-	}
-	_, err = s.svProductType.GetProductTypeById(newSection.ProductTypeId)
-	if err != nil {
-		return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: newSection.ProductTypeId, ExtraInfo: "product type not found"}
-	}
 	return s.rp.CreateSection(newSection)
 }
 
@@ -86,12 +64,6 @@ func (s *SectionsServiceImpl) UpdateSectionById(id int, section models.SectionRe
 	oldSec, err := s.rp.GetSectionById(id)
 	if err != nil {
 		return models.Section{}, err
-	}
-	if section.SectionNumber != nil {
-		err = s.ValidateSection(id, *section.SectionNumber)
-		if err != nil {
-			return models.Section{}, err
-		}
 	}
 
 	if section.SectionNumber != nil {
@@ -113,40 +85,14 @@ func (s *SectionsServiceImpl) UpdateSectionById(id int, section models.SectionRe
 		oldSec.MaximumCapacity = *section.MaximumCapacity
 	}
 	if section.WarehouseId != nil {
-		_, err = s.svWarehouse.GetWarehouseById(*section.WarehouseId)
-		if err != nil {
-			return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "warehouse_id", Value: *section.WarehouseId, ExtraInfo: "warehouse not found"}
-		}
 		oldSec.WarehouseId = *section.WarehouseId
 	}
 	if section.ProductTypeId != nil {
-		_, err = s.svProductType.GetProductTypeById(*section.ProductTypeId)
-		if err != nil {
-			return models.Section{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: *section.ProductTypeId, ExtraInfo: "product type not found"}
-		}
 		oldSec.ProductTypeId = *section.ProductTypeId
 	}
-
 	return s.rp.UpdateSectionById(oldSec)
 }
 
 func (s *SectionsServiceImpl) DeleteSectionById(id int) error {
-	_, err := s.rp.GetSectionById(id)
-	if err != nil {
-		return err
-	}
 	return s.rp.DeleteSectionById(id)
-}
-
-func (s *SectionsServiceImpl) ValidateSection(id int, sectionNumber string) error {
-	sections, err := s.rp.GetAllSections()
-	if err != nil {
-		return err
-	}
-	for _, section := range sections {
-		if section.SectionNumber == sectionNumber && id != section.ID {
-			return &custom_errors.UniqueAttributeViolationErr{AttributeName: "section_number", Value: sectionNumber}
-		}
-	}
-	return nil
 }
