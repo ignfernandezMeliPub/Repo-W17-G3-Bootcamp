@@ -20,7 +20,6 @@ func NewWarehouseMap(db map[int]models.Warehouse) *WarehouseRepositoryMap {
 }
 
 func (r *WarehouseRepositoryMap) CreateWarehouse(wh models.Warehouse) (models.Warehouse, error) {
-
 	var newId int
 	for id, w := range r.db {
 		if id >= newId {

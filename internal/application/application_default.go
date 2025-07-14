@@ -116,13 +116,8 @@ func (a *ServerChi) Run() (err error) {
 	localityService := service.NewLocalityServiceImpl(&localityRepo)
 	localityHandler := handler.NewLocalityHandler(&localityService)
 
-	warehouseLb := loader.NewWarehouseJSONFile(a.warehouseFilePath)
-	warehouseDb, err := warehouseLb.Load()
-	if err != nil {
-		return
-	}
 
-	buyerRp := buyer_repository.NewBuyerSQL(db)
+	buyerRp := buyer_repository.NewBuyerMap(buyerDb)
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
 
@@ -138,7 +133,7 @@ func (a *ServerChi) Run() (err error) {
 	productHd := handler.NewProductController(&productSv)
 
 	// warehouse
-	warehouseRp := warehouse_repository.NewWarehouseMap(warehouseDb)
+	warehouseRp := warehouse_repository.NewWarehouseSql(db)
 	warehouseSv := service.NewWarehouseDefault(warehouseRp)
 	warehouseHd := handler.NewWarehouseDefault(warehouseSv)
 

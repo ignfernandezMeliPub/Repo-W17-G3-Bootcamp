@@ -59,7 +59,7 @@ CREATE TABLE products (
 DROP TABLE IF EXISTS carries;
 CREATE TABLE carries (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    cid INT NOT NULL UNIQUE,
+    cid VARCHAR(255) NOT NULL UNIQUE,
     company_name VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     telephone VARCHAR(255) NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE carries (
 DROP TABLE IF EXISTS warehouses;
 CREATE TABLE warehouses (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    warehouse_code VARCHAR(255) NOT NULL,
+    warehouse_code VARCHAR(255) NOT NULL UNIQUE,
     address VARCHAR(255) NOT NULL,
     telephone VARCHAR(255) NOT NULL,
     minimum_capacity INT NOT NULL,
