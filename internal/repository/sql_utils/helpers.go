@@ -26,17 +26,6 @@ const dbTagName = "db"
 //   - Columns returned from the query that do not have a corresponding tagged field
 //     in the struct are safely ignored.
 func initInstanceWithRows(rows *sql.Rows, instance any) error {
-	// ? Validar que 'instance' sea un puntero
-	instancePtr := reflect.ValueOf(instance)
-	if instancePtr.Kind() != reflect.Ptr {
-		return fmt.Errorf("instance must be a pointer")
-	}
-
-	// ? Validar que 'instance' apunte a un struct
-	instanceValue := instancePtr.Elem()
-	if instanceValue.Kind() != reflect.Struct {
-		return fmt.Errorf("instance must be a pointer to a struct")
-	}
 
 	// ? Obtener los nombres de las columnas del resultado de la query.
 	columns, err := rows.Columns()
@@ -46,16 +35,14 @@ func initInstanceWithRows(rows *sql.Rows, instance any) error {
 
 	// ? Creamos un mapa que mapeara 'dbTagName -> structAttribute'
 	fieldMap := make(map[string]reflect.Value)
-	instanceType := instanceValue.Type()
 
-	for i := 0; i < instanceValue.NumField(); i++ {
-		field := instanceType.Field(i)
-		dbTag := field.Tag.Get(dbTagName)
+	// ? Obtenemos los tags de db de la estructura recibida, se hace uso de la recursividad en caso de reribir un struct con strutcs embebidos
+	fieldMap, err = getFields(instance, fieldMap)
 
-		// ? Si el atributo esta tageado con dbTagName y es seteable (esta exportado), lo agregamos al mapa
-		if dbTag != "" && instanceValue.Field(i).CanSet() {
-			fieldMap[dbTag] = instanceValue.Field(i)
-		}
+	if err != nil {
+
+		return err
+
 	}
 
 	// ? Preparamos el slice de punteros que 'Scan()' inicializara. Este slice DEBE tener el mismo orden y tamaño que las columnas de la query.
@@ -76,4 +63,42 @@ func initInstanceWithRows(rows *sql.Rows, instance any) error {
 
 	// ? Ejecutamos 'Scan()' para inicializar los pointers
 	return rows.Scan(scanDest...)
+}
+
+func getFields(instance any, fieldMap map[string]reflect.Value) (map[string]reflect.Value, error) {
+	// ? Validar que 'instance' sea un puntero
+	instancePtr := reflect.ValueOf(instance)
+	if instancePtr.Kind() != reflect.Ptr {
+		return fieldMap, fmt.Errorf("instance must be a pointer")
+	}
+
+	// ? Validar que 'instance' apunte a un struct
+	instanceValue := instancePtr.Elem()
+	if instanceValue.Kind() != reflect.Struct {
+		return fieldMap, fmt.Errorf("instance must be a pointer to a struct")
+	}
+
+	// ? Llenamos el mapa con el formato 'dbTagName -> structAttribute'
+	instanceType := instanceValue.Type()
+
+	for i := 0; i < instanceValue.NumField(); i++ {
+		field := instanceType.Field(i)
+		fieldValue := instanceValue.Field(i)
+		dbTag := field.Tag.Get(dbTagName)
+
+		// si es un struct embebido, ejecutamos recursivamente getFields()
+		if field.Type.Kind() == reflect.Struct {
+			fieldPtr := fieldValue.Addr()
+			_, err := getFields(fieldPtr.Interface(), fieldMap)
+
+			if err != nil {
+				return fieldMap, err
+			}
+			// Si es un atributo de dato primitivo lo agregamos al mapa si tiene el tag db y es seteable
+		} else if dbTag != "" && fieldValue.CanSet() {
+			fieldMap[dbTag] = instanceValue.Field(i)
+		}
+	}
+
+	return fieldMap, nil
 }
