@@ -2,6 +2,7 @@ package buyer_repository
 
 import (
 	"app/internal/repository/sql_utils"
+	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"database/sql"
 )
@@ -36,6 +37,7 @@ func (r *BuyerRepositorySQL) CreateBuyer(_b models.Buyer) (b models.Buyer, err e
 		return
 	}
 
+	b = _b
 	b.Id = int(newId)
 	return
 }
@@ -50,9 +52,14 @@ func (r *BuyerRepositorySQL) UpdateBuyer(_b models.Buyer) (b models.Buyer, err e
 }
 
 func (r *BuyerRepositorySQL) DeleteBuyerById(id int) (err error) {
-	_, err = sql_utils.Delete(r.db, "DELETE FROM buyers WHERE id = ?", []any{id})
+	affectedRows, err := sql_utils.Delete(r.db, "DELETE FROM buyers WHERE id = ?", []any{id})
 	if err != nil {
 		return
 	}
+
+	if affectedRows == 0 {
+		return custom_errors.ErrNotFound
+	}
+
 	return
 }
