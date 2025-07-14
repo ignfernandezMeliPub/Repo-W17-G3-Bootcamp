@@ -2,7 +2,6 @@ package application
 
 import (
 	"app/internal/handler"
-	"app/internal/loader"
 	"app/internal/repository/buyer_repository"
 	"app/internal/repository/employee_repository"
 	"app/internal/repository/locality_repository"
@@ -116,8 +115,7 @@ func (a *ServerChi) Run() (err error) {
 	localityService := service.NewLocalityServiceImpl(&localityRepo)
 	localityHandler := handler.NewLocalityHandler(&localityService)
 
-
-	buyerRp := buyer_repository.NewBuyerMap(buyerDb)
+	buyerRp := buyer_repository.NewBuyerSQL(db)
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
 
