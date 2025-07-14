@@ -37,8 +37,23 @@ const queryUpdateWarehouseById = `
 		minimum_temperature = ? 
 		WHERE id = ?`
 
-const queryGetAllWarehouses = `SELECT * FROM warehouses`
-const queryGetWarehouseById = `SELECT * FROM warehouses WHERE id = ?`
+const queryGetAllWarehouses = `
+	SELECT 
+		warehouse_code,
+		address,
+		telephone,
+		minimum_capacity,
+		minimum_temperature
+		FROM warehouses`
+const queryGetWarehouseById = `
+	SELECT 
+		warehouse_code,
+		address,
+		telephone,
+		minimum_capacity,
+		minimum_temperature 
+		FROM warehouses 
+		WHERE id = ?`
 const queryDeleteWarehouseById = `DELETE FROM warehouses WHERE id = ?`
 
 func (r *WarehouseSql) CreateWarehouse(wh models.Warehouse) (models.Warehouse, error) {
