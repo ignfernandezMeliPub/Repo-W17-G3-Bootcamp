@@ -19,6 +19,12 @@ type ProductRecordRequest struct {
 	ProductID      *int     `json:"product_id"`
 }
 
+type ProductRecordReport struct {
+	ProductID    int    `json:"product_id" db:"product_id"`
+	Description  string `json:"description" db:"description"`
+	RecordsCount int    `json:"records_count" db:"records_count"`
+}
+
 func (p ProductRecordRequest) VerifyMandatoryFieldsPresence() error {
 	if p.LastUpdateDate == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "last_update_date"}

@@ -74,3 +74,27 @@ func (r *ProductRepositoryMySQL) DeleteProductById(id int) error {
 	}
 	return nil
 }
+
+func (r *ProductRepositoryMySQL) GetReportRecords(id int) ([]models.ProductRecordReport, error) {
+	ProductRecordReport, err := sql_utils.Query[models.ProductRecordReport](r.db,
+		`SELECT r.product_id, p.description, COUNT(*) as records_count 
+		FROM product_records r 
+		JOIN products p ON r.product_id = p.id 
+		WHERE r.product_id = ? GROUP BY r.product_id, p.description`, []any{id})
+	if err != nil {
+		return nil, err
+	}
+	return ProductRecordReport, nil
+}
+
+func (r *ProductRepositoryMySQL) GetAllReportRecords() ([]models.ProductRecordReport, error) {
+	ProductRecordReport, err := sql_utils.Query[models.ProductRecordReport](r.db,
+		`SELECT r.product_id, p.description, COUNT(*) as records_count 
+		FROM product_records r 
+		JOIN products p ON r.product_id = p.id 
+		GROUP BY r.product_id, p.description`, []any{})
+	if err != nil {
+		return nil, err
+	}
+	return ProductRecordReport, nil
+}
