@@ -6,7 +6,7 @@ USE fresh_db;
 DROP TABLE IF EXISTS buyers;
 CREATE TABLE buyers (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    card_number_id VARCHAR(10) NOT NULL,
+    card_number_id VARCHAR(10) NOT NULL UNIQUE,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL
 );
