@@ -5,13 +5,13 @@ import (
 	"app/internal/loader"
 	"app/internal/repository/buyer_repository"
 	"app/internal/repository/employee_repository"
+	"app/internal/repository/locality_repository"
 	"app/internal/repository/product_repository"
 	"app/internal/repository/product_type_repository"
 	"app/internal/repository/sections_repository"
 	"app/internal/repository/seller_repository"
 	"app/internal/repository/warehouse_repository"
 	"app/internal/service"
-	"app/pkg/models"
 	"database/sql"
 	"net/http"
 
@@ -29,7 +29,6 @@ type ConfigServerChi struct {
 	EmployeesFilePath    string
 	BuyerLoaderFilePath  string
 	WarehouseFilePath    string
-	SectionsFilePath     string
 	DbConf               *mysql.Config
 }
 
@@ -57,9 +56,6 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		if cfg.ProductsFilePath != "" {
 			defaultConfig.ProductsFilePath = cfg.ProductsFilePath
 		}
-		if cfg.SectionsFilePath != "" {
-			defaultConfig.SectionsFilePath = cfg.SectionsFilePath
-		}
 		if cfg.DbConf != nil {
 			defaultConfig.DbConf = cfg.DbConf
 		}
@@ -72,7 +68,6 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		warehouseFilePath:   defaultConfig.WarehouseFilePath,
 		productTypeFilePath: defaultConfig.ProductTypesFilePath,
 		productsFilePath:    defaultConfig.ProductsFilePath,
-		sectionsFilePath:    defaultConfig.SectionsFilePath,
 		DbConf:              defaultConfig.DbConf,
 	}
 }
@@ -86,7 +81,6 @@ type ServerChi struct {
 	warehouseFilePath   string
 	productTypeFilePath string
 	productsFilePath    string
-	sectionsFilePath    string
 	DbConf              *mysql.Config
 }
 
@@ -104,50 +98,36 @@ func (a *ServerChi) Run() (err error) {
 		return err
 	}
 
-	ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
+	//ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
 
-	dbEmployee, err := ldEmployee.Load()
+	//dbEmployee, err := ldEmployee.Load()
 
 	if err != nil {
 		return
 	}
 
 	// Seller
-	sellerRepo := seller_repository.NewSellerRepositoryMap(make(map[int]models.Seller))
-	sellerService := service.NewSellerService(&sellerRepo)
+	sellerRepo := seller_repository.NewSellerRepositorySql(db)
+	sellerService := service.NewSellerServiceImpl(&sellerRepo)
 	sellerHandler := handler.NewSellerHandler(&sellerService)
 
-	buyerLd := loader.NewBuyerLoaderJSONFile(a.buyerLoaderFilePath)
-	buyerDb, err := buyerLd.Load()
-	if err != nil {
-		return
-	}
+	// Locality
+	localityRepo := locality_repository.NewLocalityRepositorySql(db)
+	localityService := service.NewLocalityServiceImpl(&localityRepo)
+	localityHandler := handler.NewLocalityHandler(&localityService)
 
-	// load products_type
-	productLd := loader.NewProductLoaderJSONFile(a.productsFilePath)
-	productDb, err := productLd.Load()
-	if err != nil {
-		return
-	}
-
-	productTypeLd := loader.NewProductTypeLoaderJSONFile(a.productTypeFilePath)
-	productTypeDb, err := productTypeLd.Load()
-
-	if err != nil {
-		return
-	}
 
 	buyerRp := buyer_repository.NewBuyerMap(buyerDb)
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
 
 	// Product - repository
-	productRp := product_repository.NewProductRepositoryMap(productDb)
-	productTypeRp := product_type_repository.NewProductTypeRepositoryMap(productTypeDb)
+	productRpSQL := product_repository.NewProductRepositoryMySQL(db)
+	productTypeRpSQL := product_type_repository.NewProductTypeRepositoryMySQL(db)
 
 	// Product - service
-	productTypeSv := service.NewProductTypeService(productTypeRp)
-	productSv := service.NewProductService(productRp, productTypeSv, &sellerService)
+	productTypeSv := service.NewProductTypeService(productTypeRpSQL)
+	productSv := service.NewProductService(productRpSQL, productTypeSv, &sellerService)
 
 	// Product - handler
 	productHd := handler.NewProductController(&productSv)
@@ -158,20 +138,12 @@ func (a *ServerChi) Run() (err error) {
 	warehouseHd := handler.NewWarehouseDefault(warehouseSv)
 
 	// sections
-	sectionsRp := sections_repository.NewSectionsRepositoryMap()
-	sectionsDb, err := loader.LoadDataFromFile[models.Section](a.sectionsFilePath)
-	if err != nil {
-		return err
-	}
-	err = sectionsRp.PoblateSectionsRepo(sectionsDb)
-	if err != nil {
-		return err
-	}
-	sectionsSv := service.NewSectionsService(sectionsRp, warehouseSv, productTypeSv)
+	sectionsRp := sections_repository.NewSectionsRepositorySQL(db)
+	sectionsSv := service.NewSectionsService(sectionsRp)
 	sectionsHd := handler.NewSectionsController(sectionsSv)
 
 	// Employee - repository
-	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
+	rpEmployee := employee_repository.NewEmployeeDb(db)
 	// Employee - service
 	svEmployee := service.NewEmployeeService(rpEmployee, *warehouseSv)
 	// Employee - handler
@@ -234,6 +206,10 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", buyerHd.CreateBuyer)
 			rt.Patch("/{id}", buyerHd.PatchBuyer)
 			rt.Delete("/{id}", buyerHd.DeleteBuyer)
+		})
+		// 7. Localities
+		rt.Route("/localities", func(rt chi.Router) {
+			rt.Post("/", localityHandler.CreateLocality)
 		})
 	})
 

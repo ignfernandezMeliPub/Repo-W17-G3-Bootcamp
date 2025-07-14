@@ -2,7 +2,6 @@ package service
 
 import (
 	"app/internal/repository/buyer_repository"
-	"app/internal/service/utils"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"strings"
@@ -43,18 +42,6 @@ func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err 
 		return
 	}
 
-	_, err = s.rp.GetBuyerByCardNumberId(_b.CardNumberId)
-
-	if err = utils.ExpectError(
-		err,
-		custom_errors.ErrNotFound,
-		&custom_errors.UniqueAttributeViolationErr{
-			AttributeName: "card_number_id",
-			Value:         _b.CardNumberId,
-		}); err != nil {
-		return
-	}
-
 	b, err = s.rp.CreateBuyer(_b)
 	return
 }
@@ -73,35 +60,11 @@ func (s *BuyerServiceDefault) UpdateBuyerById(id int, _b models.BuyerPatch) (b m
 		return
 	}
 
-	if _b.CardNumberId != nil {
-
-		oldBuyer, e := s.rp.GetBuyerByCardNumberId(*_b.CardNumberId)
-		err = e
-
-		if err = utils.ExpectErrorOrNilCondition(
-			err,
-			oldBuyer.Id != id,
-			custom_errors.ErrNotFound,
-			&custom_errors.UniqueAttributeViolationErr{
-				AttributeName: "card_number_id",
-				Value:         *_b.CardNumberId,
-			}); err != nil {
-			return
-		}
-	}
-
 	b, err = s.rp.UpdateBuyer(buyer)
 	return
 }
 
 func (s *BuyerServiceDefault) DeleteBuyerById(id int) (err error) {
-
-	_, err = s.rp.GetBuyerById(id)
-
-	if err != nil {
-		return
-	}
-
 	err = s.rp.DeleteBuyerById(id)
 	return
 }

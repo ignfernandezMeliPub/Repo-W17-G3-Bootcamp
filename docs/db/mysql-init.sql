@@ -6,7 +6,7 @@ USE fresh_db;
 DROP TABLE IF EXISTS buyers;
 CREATE TABLE buyers (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    card_number_id VARCHAR(10) NOT NULL,
+    card_number_id VARCHAR(10) NOT NULL UNIQUE,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL
 );
@@ -18,14 +18,25 @@ CREATE TABLE product_types (
     description TEXT
 );
 
+DROP TABLE IF EXISTS localities;
+CREATE TABLE localities (
+    id             VARCHAR(255) PRIMARY KEY,
+    locality_name  VARCHAR(255) NOT NULL,
+    province_name  VARCHAR(255) NOT NULL,
+    country_name   VARCHAR(255) NOT NULL
+);
+
 DROP TABLE IF EXISTS sellers;
 CREATE TABLE sellers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    cid INT NOT NULL UNIQUE,
-    company_name VARCHAR(255) NOT NULL,
-    address VARCHAR(255) NOT NULL,
-    telephone VARCHAR(255) NOT NULL
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    cid             INT NOT NULL UNIQUE,
+    company_name    VARCHAR(255) NOT NULL,
+    address         VARCHAR(255) NOT NULL,
+    telephone       VARCHAR(255) NOT NULL,
+    locality_id     VARCHAR(255) NOT NULL,
+    FOREIGN KEY (locality_id) REFERENCES localities(id)
 );
+
 DROP TABLE IF EXISTS products;
 CREATE TABLE products (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -45,28 +56,6 @@ CREATE TABLE products (
     UNIQUE (product_code)
 );
 
-DROP TABLE IF EXISTS countries;
-CREATE TABLE countries (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    country_name VARCHAR(255) NOT NULL
-);
-
-DROP TABLE IF EXISTS provinces;
-CREATE TABLE provinces (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    province_name VARCHAR(255) NOT NULL,
-    country_id INT NOT NULL,
-    FOREIGN KEY (country_id) REFERENCES countries(id)   
-);
-
-DROP TABLE IF EXISTS localities;
-CREATE TABLE localities (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    locality_name VARCHAR(255) NOT NULL,
-    province_id INT NOT NULL,
-    FOREIGN KEY (province_id) REFERENCES provinces(id)
-);
-
 DROP TABLE IF EXISTS carries;
 CREATE TABLE carries (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,7 +63,7 @@ CREATE TABLE carries (
     company_name VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     telephone VARCHAR(255) NOT NULL,
-    locality_id INT NOT NULL,
+    locality_id VARCHAR(255) NOT NULL,
     FOREIGN KEY (locality_id) REFERENCES localities(id)
 );
 

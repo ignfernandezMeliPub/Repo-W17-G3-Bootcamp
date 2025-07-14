@@ -18,7 +18,6 @@ func main() {
 		WarehouseFilePath:    "docs/db/warehouse.json",
 		ProductTypesFilePath: "docs/db/product_types.json",
 		ProductsFilePath:     "docs/db/products.json",
-		SectionsFilePath:     "docs/db/sections.json",
 
 		DbConf: &mysql.Config{
 			User:   "root",
