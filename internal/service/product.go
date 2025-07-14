@@ -4,7 +4,6 @@ import (
 	"app/internal/repository/product_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"fmt"
 )
 
 type ProductServiceI interface {
@@ -39,20 +38,23 @@ func (p *ProductService) DeleteProductById(id int) error {
 }
 
 func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Product, error) {
-	// validar que productType exista
-	if !p.isValidateProductType(*product.ProductTypeId) {
-		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Product Type ID"}
-	}
 
-	// validar que el producto con productCode no exista
-	if !p.isValidateProductCode(*product.ProductCode) {
-		return models.Product{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "product_code", Value: *product.ProductCode}
-	}
+	/*
+		// validar que productType exista
+		if !p.isValidateProductType(*product.ProductTypeId) {
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Product Type ID"}
+		}
 
-	// validar que el seller exista
-	if !p.isValidSeller(product.SellerId) {
-		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "seller_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Seller ID"}
-	}
+		// validar que el producto con productCode no exista
+		if !p.isValidateProductCode(*product.ProductCode) {
+			return models.Product{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "product_code", Value: *product.ProductCode}
+		}
+
+		// validar que el seller exista
+		if !p.isValidSeller(product.SellerId) {
+			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "seller_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Seller ID"}
+		}
+	*/
 
 	// Validaciones de valores positivos y mayores a 0
 	if *product.Width <= 0.0 {
@@ -70,7 +72,7 @@ func (p *ProductService) CreateProduct(product models.ProductRequest) (models.Pr
 	if *product.ExpirationRate <= 0 {
 		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "expiration_rate", Value: *product.ExpirationRate, ExtraInfo: "Expiration rate must be greater than 0"}
 	}
-	if *product.FreezingRate <= 0 {
+	if *product.FreezingRate < 0 {
 		return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "freezing_rate", Value: *product.FreezingRate, ExtraInfo: "Freezing rate must be greater than 0"}
 	}
 
@@ -118,9 +120,6 @@ func (p *ProductService) patchProduct(product models.Product, updateProduct mode
 			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "product_code", Value: *updateProduct.ProductCode, ExtraInfo: "Product code cannot be empty"}
 		}
 
-		if product.ProductCode != *updateProduct.ProductCode && !p.isValidateProductCode(*updateProduct.ProductCode) {
-			return models.Product{}, &custom_errors.UniqueAttributeViolationErr{AttributeName: "product_code", Value: *updateProduct.ProductCode}
-		}
 		product.ProductCode = *updateProduct.ProductCode
 	}
 
@@ -164,43 +163,45 @@ func (p *ProductService) patchProduct(product models.Product, updateProduct mode
 		product.RecommendedFreezingTemperature = *updateProduct.RecommendedFreezingTemperature
 	}
 	if updateProduct.FreezingRate != nil {
-		if *updateProduct.FreezingRate <= 0 {
+		if *updateProduct.FreezingRate < 0 {
 			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "freezing_rate", Value: *updateProduct.FreezingRate, ExtraInfo: "Freezing rate must be greater than 0"}
 		}
 		product.FreezingRate = *updateProduct.FreezingRate
 	}
 	if updateProduct.ProductTypeId != nil {
-		if !p.isValidateProductType(*updateProduct.ProductTypeId) {
-			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "product_type_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Product Type ID"}
-		}
 		product.ProductTypeId = *updateProduct.ProductTypeId
 	}
+
 	if updateProduct.SellerId != nil {
-		if !p.isValidSeller(*updateProduct.SellerId) {
-			return models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "seller_id", Value: fmt.Sprint(product.SellerId), ExtraInfo: "Invalid Seller ID"}
+		if *updateProduct.SellerId == 0 {
+			product.SellerId = nil
+		} else {
+			product.SellerId = updateProduct.SellerId
 		}
-		product.SellerId = *updateProduct.SellerId
 	}
 
 	return product, nil
 
 }
 
+// esto se va a deprecar ya que las validaciones las va a hacer la base de datos
 func (p *ProductService) isValidateProductType(id int) bool {
 	return p.ProductTypeService.IsValidProductType(id)
 }
 
+// esto se va a deprecar ya que las validaciones las va a hacer la base de datos
 func (p *ProductService) isValidateProductCode(code string) bool {
 	_, err := p.ProductRepo.GetProductByCode(code)
 
 	return err != nil
 }
 
-func (p *ProductService) isValidSeller(id int) bool {
-	if id == 0 {
+// esto se va a deprecar ya que las validaciones las va a hacer la base de datos
+func (p *ProductService) isValidSeller(id *int) bool {
+	if id == nil || *id == 0 {
 		return true
 	}
-	_, err := p.SellerServices.GetSellerById(id)
+	_, err := p.SellerServices.GetSellerById(*id)
 
 	return err == nil
 }
