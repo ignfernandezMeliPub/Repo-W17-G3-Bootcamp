@@ -105,9 +105,9 @@ func (a *ServerChi) Run() (err error) {
 		return err
 	}
 
-	ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
+	//ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
 
-	dbEmployee, err := ldEmployee.Load()
+	//dbEmployee, err := ldEmployee.Load()
 
 	if err != nil {
 		return
@@ -183,7 +183,7 @@ func (a *ServerChi) Run() (err error) {
 	sectionsHd := handler.NewSectionsController(sectionsSv)
 
 	// Employee - repository
-	rpEmployee := employee_repository.NewEmployeeMap(dbEmployee)
+	rpEmployee := employee_repository.NewEmployeeDb(db)
 	// Employee - service
 	svEmployee := service.NewEmployeeService(rpEmployee, *warehouseSv)
 	// Employee - handler
