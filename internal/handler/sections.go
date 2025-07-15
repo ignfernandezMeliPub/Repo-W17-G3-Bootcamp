@@ -3,6 +3,7 @@ package handler
 import (
 	"app/internal/handler/utils"
 	"app/internal/service"
+	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"net/http"
 	"strconv"
@@ -48,7 +49,7 @@ func (c *SectionsController) GetSectionById(w http.ResponseWriter, r *http.Reque
 func (c *SectionsController) CreateSection(w http.ResponseWriter, r *http.Request) {
 	var section models.SectionRequest
 	if err := request.JSON(r, &section); err != nil {
-		utils.ResponseHttpError(w, err)
+		utils.ResponseHttpError(w, &custom_errors.InvalidBodyError{})
 		return
 	}
 	res, err := c.sv.CreateSection(section)
@@ -109,7 +110,7 @@ func (c *SectionsController) GetAllProductBatchesBySection(w http.ResponseWriter
 	}
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		utils.ResponseHttpError(w, err)
+		utils.ResponseHttpError(w, &custom_errors.UrlParamDecodeError{UrlParam: "id"})
 		return
 	}
 	res, err := c.sv.GetProductBatchBySectionId(id)

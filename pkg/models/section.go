@@ -1,5 +1,7 @@
 package models
 
+import "app/pkg/custom_errors"
+
 type Section struct {
 	ID                 int     `json:"id" db:"id"`
 	SectionNumber      string  `json:"section_number" db:"section_number"`
@@ -21,4 +23,24 @@ type SectionRequest struct {
 	MaximumCapacity    *int     `json:"maximum_capacity,omitempty"`
 	WarehouseId        *int     `json:"warehouse_id,omitempty"`
 	ProductTypeId      *int     `json:"product_type_id,omitempty"`
+}
+
+func (s SectionRequest) VerifyMandatoryFieldsPresence() error {
+	mandatoryFields := map[string]any{
+		"section_number":      s.SectionNumber,
+		"current_temperature": s.CurrentTemperature,
+		"minimum_temperature": s.MinimumTemperature,
+		"current_capacity":    s.CurrentCapacity,
+		"minimum_capacity":    s.MinimumCapacity,
+		"maximum_capacity":    s.MaximumCapacity,
+		"warehouse_id":        s.WarehouseId,
+		"product_type_id":     s.ProductTypeId,
+	}
+
+	for field, value := range mandatoryFields {
+		if value == nil {
+			return &custom_errors.MandatoryArgMissingErr{Argument: field}
+		}
+	}
+	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"app/internal/repository/sections_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"reflect"
 )
 
 type SectionsService interface {
@@ -46,7 +47,8 @@ func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (mode
 	}
 
 	for field, value := range mandatoryFields {
-		if value == nil {
+		v := reflect.ValueOf(value)
+		if v.Kind() == reflect.Ptr && v.IsNil() {
 			return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: field}
 		}
 	}

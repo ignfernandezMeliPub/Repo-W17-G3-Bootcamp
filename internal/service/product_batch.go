@@ -4,6 +4,7 @@ import (
 	"app/internal/repository/product_batch_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"reflect"
 	"time"
 )
 
@@ -34,14 +35,15 @@ func (p ProductBatchServiceImpl) CreateProductBatch(pb models.ProductBatchReques
 	}
 	dateLayout := "2006-01-02"
 	if _, err := time.Parse(dateLayout, *pb.DueDate); err != nil {
-		return prod, &custom_errors.InvalidArgValueErr{Argument: "due_date", Value: *pb.DueDate, ExtraInfo: "Incorrect date"}
+		return prod, &custom_errors.InvalidArgValueErr{Argument: "due_date", Value: *pb.DueDate, ExtraInfo: "Invalid date format."}
 	}
 	if _, err := time.Parse(dateLayout, *pb.ManufacturingDate); err != nil {
-		return prod, &custom_errors.InvalidArgValueErr{Argument: "manufacturing_date", Value: *pb.ManufacturingDate, ExtraInfo: "Incorrect date"}
+		return prod, &custom_errors.InvalidArgValueErr{Argument: "manufacturing_date", Value: *pb.ManufacturingDate, ExtraInfo: "Invalid date format."}
 	}
 
 	for field, value := range mandatoryFields {
-		if value == nil {
+		v := reflect.ValueOf(value)
+		if v.Kind() == reflect.Ptr && v.IsNil() {
 			return prod, &custom_errors.MandatoryArgMissingErr{Argument: field}
 		}
 	}
