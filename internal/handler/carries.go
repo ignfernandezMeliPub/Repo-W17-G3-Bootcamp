@@ -42,23 +42,6 @@ func (h *CarriesHandler) CreateCarrie(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *CarriesHandler) GetCarriesReport(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
-	var idPtr *string
-	if id != "" {
-		idPtr = &id
-	}
-	report, err := h.sv.GetCarriesReport(idPtr)
-	if err != nil {
-		utils.ResponseHttpError(w, err)
-		return
-	}
-
-	response.JSON(w, http.StatusOK, map[string]any{
-		"data": report,
-	})
-}
-
 func validateCarriesAttributes(c models.Carries) error {
 	if strings.TrimSpace(c.Cid) == "" {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "cid"}

@@ -7,6 +7,9 @@ import (
 
 type LocalityService interface {
 	CreateLocality(id string, localityName string, provinceName string, countryName string) (models.Locality, error)
+
+	GetCarriesReport(localityId string) ([]models.CarriesReport, error)
+
 	GetLocalitySellerCount(localityId string) (models.LocalitySellerCount, error)
 	GetLocalitiesSellerCount() ([]models.LocalitySellerCount, error)
 }
@@ -22,6 +25,11 @@ func NewLocalityServiceImpl(repository locality_repository.LocalityRepository) L
 // CreateLocality Creates a new locality
 func (s *LocalityServiceImpl) CreateLocality(id string, localityName string, provinceName string, countryName string) (models.Locality, error) {
 	return s.repository.CreateLocality(models.Locality{Id: id, LocalityName: localityName, ProvinceName: provinceName, CountryName: countryName})
+}
+
+// GetCarriesReport Returns the carries report for a locality
+func (s *LocalityServiceImpl) GetCarriesReport(localityId string) ([]models.CarriesReport, error) {
+	return s.repository.GetCarriesReport(localityId)
 }
 
 // GetLocalitySellerCount Returns LocalitySellerCount for a specific locality
