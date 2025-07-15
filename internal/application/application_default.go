@@ -54,17 +54,13 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 // ServerChi is a struct that implements the Application interface
 type ServerChi struct {
 	// serverAddress is the address where the server will be listening
-	serverAddress       string
-	buyerLoaderFilePath string
-	warehouseFilePath   string
-	productTypeFilePath string
-	productsFilePath    string
-	DbConf              *mysql.Config
+	serverAddress string
+	DbConf        *mysql.Config
 }
 
 // Run is a method that runs the server
 func (a *ServerChi) Run() (err error) {
-	db, err := sql.Open("mysql", a.DbConf.FormatDSN())
+	db, err := sql.Open(DbDriverName, a.DbConf.FormatDSN())
 	if err != nil {
 		return err
 	}
@@ -91,23 +87,21 @@ func (a *ServerChi) Run() (err error) {
 	carriesService := service.NewCarriesService(carriesRepo)
 	carriesHandler := handler.NewCarriesHandler(carriesService)
 
+	// Buyer
 	buyerRp := buyer_repository.NewBuyerSQL(db)
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
 
+	// PurchaseOrders
 	purchaseOrderRp := purchase_order_repository.NewPurchaseOrderRepositorySQL(db)
 	purchaseOrderSv := service.NewPurchaseOrderDefault(purchaseOrderRp)
 	purchaseOrderHd := handler.NewPurchaseOrderDefault(purchaseOrderSv)
 
-	// Product - repository
+	// Product
 	productRpSQL := product_repository.NewProductRepositoryMySQL(db)
 	productTypeRpSQL := product_type_repository.NewProductTypeRepositoryMySQL(db)
-
-	// Product - service
 	productTypeSv := service.NewProductTypeService(productTypeRpSQL)
 	productSv := service.NewProductService(productRpSQL, productTypeSv, &sellerService)
-
-	// Product - handler
 	productHd := handler.NewProductController(&productSv)
 
 	// warehouse
@@ -125,25 +119,19 @@ func (a *ServerChi) Run() (err error) {
 	productBatchSv := service.NewProductBatchService(productBatchRP)
 	productBatchHd := handler.NewProductBatchController(productBatchSv)
 
-	// Employee - repository
+	// Employee
 	rpEmployee := employee_repository.NewEmployeeDb(db)
-	// Employee - service
 	svEmployee := service.NewEmployeeService(rpEmployee)
-	// Employee - handler
 	hdEmployee := handler.NewEmployeeController(svEmployee)
 
-	// Product Record - repository
+	// Product Record
 	productRecordRp := product_record_repository.NewProductRecordRepositorySQL(db)
-	// Product Record - service
 	productRecordSv := service.NewProductRecordService(productRecordRp)
-	// Product Record - handler
 	productRecordHd := handler.NewProductRecordHandler(productRecordSv)
 
-	// InbounOrders - repository
+	// InboundOrders
 	rpInbounOrders := inbound_order_repository.NewInboundOrderDb(db)
-	// InbounOrders - service
 	svInbounOrders := service.NewInboundOrderService(rpInbounOrders)
-	// InbounOrders - handler
 	hdInbounOrders := handler.NewInboundOrderController(svInbounOrders)
 
 	// - router
@@ -170,7 +158,6 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", warehouseHd.CreateWarehouse)
 			rt.Patch("/{id}", warehouseHd.PatchWarehouse)
 			rt.Delete("/{id}", warehouseHd.DeleteWarehouse)
-
 		})
 		// 3. Sections
 		rt.Route("/sections", func(rt chi.Router) {
@@ -179,14 +166,8 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", sectionsHd.CreateSection)
 			rt.Patch("/{id}", sectionsHd.PatchSection)
 			rt.Delete("/{id}", sectionsHd.DeleteSection)
-
 			rt.Get("/reportProducts", sectionsHd.GetAllProductBatchesBySection)
 		})
-
-		rt.Route("/productBatches", func(rt chi.Router) {
-			rt.Post("/", productBatchHd.CreateProductBatch)
-		})
-
 		// 4. Products
 		rt.Route("/products", func(rt chi.Router) {
 			rt.Get("/", productHd.GetAllProducts)
@@ -217,14 +198,11 @@ func (a *ServerChi) Run() (err error) {
 		// 7. Localities
 		rt.Route("/localities", func(rt chi.Router) {
 			rt.Post("/", localityHandler.CreateLocality)
-
-			// requerimiento 2
 			rt.Get("/reportCarries", localityHandler.GetCarriesReport)
 		})
 		// 8. Carries
 		rt.Route("/carries", func(rt chi.Router) {
 			rt.Post("/", carriesHandler.CreateCarrie)
-
 			rt.Get("/reportSellers", localityHandler.GetLocalitySellerCount)
 		})
 		// 9. Product Records
@@ -232,7 +210,11 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/", productRecordHd.GetAllProductRecords)
 			rt.Post("/", productRecordHd.CreateProductRecord)
 		})
-		// 11. InbounOrders
+		// 10. ProductBatches
+		rt.Route("/productBatches", func(rt chi.Router) {
+			rt.Post("/", productBatchHd.CreateProductBatch)
+		})
+		// 11. InboundOrders
 		rt.Route("/inboundOrders", func(rt chi.Router) {
 			rt.Post("/", hdInbounOrders.CreateInboundOrder)
 		})
