@@ -10,7 +10,6 @@ import (
 )
 
 /* TODOs:
-1. Realizar endpoint /api/v1/localities/reportSellers?id=6700
 2. Mejorar mapeo de errores
 3. Mejorar organizacion de carpetas y directorios
 4. Mejorar manejo de config
