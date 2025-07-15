@@ -95,3 +95,28 @@ func (c *SectionsController) DeleteSection(w http.ResponseWriter, r *http.Reques
 	}
 	response.JSON(w, http.StatusNoContent, nil)
 }
+
+func (c *SectionsController) GetAllProductBatchesBySection(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		res, err := c.sv.GetAllProductBatchesBySection()
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+		response.JSON(w, http.StatusOK, map[string]any{"data": res})
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.ResponseHttpError(w, err)
+		return
+	}
+	res, err := c.sv.GetProductBatchBySectionId(id)
+	if err != nil {
+		utils.ResponseHttpError(w, err)
+		return
+	}
+	response.JSON(w, http.StatusOK, map[string]any{"data": res})
+	return
+}

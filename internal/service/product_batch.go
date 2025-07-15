@@ -4,12 +4,11 @@ import (
 	"app/internal/repository/product_batch_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"time"
 )
 
 type ProductBatchService interface {
 	CreateProductBatch(productBatch models.ProductBatchRequest) (models.ProductBatch, error)
-	GetAllProductBatchesBySection() ([]models.ProductBatchResponse, error)
-	GetProductBatchBySectionId(sectionId int) (models.ProductBatchResponse, error)
 }
 
 type ProductBatchServiceImpl struct {
@@ -33,6 +32,14 @@ func (p ProductBatchServiceImpl) CreateProductBatch(pb models.ProductBatchReques
 		"product_id":          pb.ProductId,
 		"section_id":          pb.SectionId,
 	}
+	dateLayout := "2006-01-02"
+	if _, err := time.Parse(dateLayout, *pb.DueDate); err != nil {
+		return prod, &custom_errors.InvalidArgValueErr{Argument: "due_date", Value: *pb.DueDate, ExtraInfo: "Incorrect date"}
+	}
+	if _, err := time.Parse(dateLayout, *pb.ManufacturingDate); err != nil {
+		return prod, &custom_errors.InvalidArgValueErr{Argument: "manufacturing_date", Value: *pb.ManufacturingDate, ExtraInfo: "Incorrect date"}
+	}
+
 	for field, value := range mandatoryFields {
 		if value == nil {
 			return prod, &custom_errors.MandatoryArgMissingErr{Argument: field}
@@ -51,12 +58,4 @@ func (p ProductBatchServiceImpl) CreateProductBatch(pb models.ProductBatchReques
 		SectionId:          *pb.SectionId,
 	}
 	return p.rp.CreateProductBatch(newProdBatch)
-}
-
-func (p ProductBatchServiceImpl) GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error) {
-	return p.rp.GetAllProductBatchesBySection()
-}
-
-func (p ProductBatchServiceImpl) GetProductBatchBySectionId(sectionId int) (prods models.ProductBatchResponse, err error) {
-	return p.rp.GetProductBatchBySectionId(sectionId)
 }

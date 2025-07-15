@@ -5,6 +5,7 @@ import (
 	"app/internal/repository/buyer_repository"
 	"app/internal/repository/employee_repository"
 	"app/internal/repository/locality_repository"
+	"app/internal/repository/product_batch_repository"
 	"app/internal/repository/product_repository"
 	"app/internal/repository/product_type_repository"
 	"app/internal/repository/sections_repository"
@@ -140,6 +141,11 @@ func (a *ServerChi) Run() (err error) {
 	sectionsSv := service.NewSectionsService(sectionsRp)
 	sectionsHd := handler.NewSectionsController(sectionsSv)
 
+	// product-batch
+	productBatchRP := product_batch_repository.NewProductBatchRepositorySQL(db)
+	productBatchSv := service.NewProductBatchService(productBatchRP)
+	productBatchHd := handler.NewProductBatchController(productBatchSv)
+
 	// Employee - repository
 	rpEmployee := employee_repository.NewEmployeeDb(db)
 	// Employee - service
@@ -180,7 +186,14 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", sectionsHd.CreateSection)
 			rt.Patch("/{id}", sectionsHd.PatchSection)
 			rt.Delete("/{id}", sectionsHd.DeleteSection)
+
+			rt.Get("/reportProducts", sectionsHd.GetAllProductBatchesBySection)
 		})
+
+		rt.Route("/productBatches", func(rt chi.Router) {
+			rt.Post("/", productBatchHd.CreateProductBatch)
+		})
+
 		// 4. Products
 		rt.Route("/products", func(rt chi.Router) {
 			rt.Get("/", productHd.GetAllProducts)
