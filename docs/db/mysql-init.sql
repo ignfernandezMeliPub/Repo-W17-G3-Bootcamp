@@ -144,7 +144,7 @@ CREATE TABLE inbound_orders (
 DROP TABLE IF EXISTS purchase_orders;
 CREATE TABLE purchase_orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    order_number VARCHAR(255) NOT NULL,
+    order_number VARCHAR(255) NOT NULL UNIQUE,
     order_date DATETIME NOT NULL,
     tracking_code VARCHAR(255) NOT NULL,
     buyer_id INT NOT NULL,

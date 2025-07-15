@@ -27,6 +27,21 @@ func GetURLParamAs[T any](request *http.Request, urlParamKey string, parser func
 	return result, nil
 }
 
+func GetQueryParamAs[T any](request *http.Request, queryParamKey string, parser func(string) (T, error)) (*T, error) {
+	valueStr := request.URL.Query().Get(queryParamKey)
+
+	if valueStr == "" {
+		return nil, nil
+	}
+
+	result, err := parser(valueStr)
+	if err != nil {
+		return nil, &custom_errors.QueryParamDecodeError{QueryParam: queryParamKey, BaseErr: err}
+	}
+
+	return &result, nil
+}
+
 // BodyInstantiableStruct should be implemented by any struct type intended to be
 // instantiated from a request body. The VerifyMandatoryFieldsPresence method is used
 // to enforce presence/validation of required fields after decoding from JSON.

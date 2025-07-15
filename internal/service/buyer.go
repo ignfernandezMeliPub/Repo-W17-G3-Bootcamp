@@ -14,6 +14,8 @@ type BuyerService interface {
 	CreateBuyer(_b models.Buyer) (b models.Buyer, err error)
 	UpdateBuyerById(id int, _b models.BuyerPatch) (b models.Buyer, err error)
 	DeleteBuyerById(id int) (err error)
+	GetBuyerPurchaseOrdersCount(buyerId int) (p []models.BuyerPurchaseOrdersCount, err error)
+	GetBuyersPurchaseOrdersCount() (p []models.BuyerPurchaseOrdersCount, err error)
 }
 
 type BuyerServiceDefault struct {
@@ -95,4 +97,14 @@ func validateBuyerAttributes(buyer models.Buyer) error {
 		}
 	}
 	return nil
+}
+
+func (s *BuyerServiceDefault) GetBuyerPurchaseOrdersCount(buyerId int) (p []models.BuyerPurchaseOrdersCount, err error) {
+	p, err = s.rp.GetBuyerPurchaseOrdersCount(buyerId)
+	return
+}
+
+func (s *BuyerServiceDefault) GetBuyersPurchaseOrdersCount() (p []models.BuyerPurchaseOrdersCount, err error) {
+	p, err = s.rp.GetBuyersPurchaseOrdersCount()
+	return
 }

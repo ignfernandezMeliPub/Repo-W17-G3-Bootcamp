@@ -66,3 +66,11 @@ func (b BuyerCreateRequest) ToBuyer() Buyer {
 		LastName:     *b.LastName,
 	}
 }
+
+type BuyerPurchaseOrdersCount struct {
+	Id                  int    `json:"id" db:"id"`
+	CardNumberId        string `json:"card_number_id" db:"card_number_id"`
+	FirstName           string `json:"first_name" db:"first_name"`
+	LastName            string `json:"last_name" db:"last_name"`
+	PurchaseOrdersCount int    `json:"purchase_orders_count" db:"purchase_orders_count"`
+}
