@@ -5,6 +5,7 @@ import (
 	"app/internal/repository/buyer_repository"
 	"app/internal/repository/carries_repository"
 	"app/internal/repository/employee_repository"
+	"app/internal/repository/inbound_order_repository"
 	"app/internal/repository/locality_repository"
 	"app/internal/repository/product_record_repository"
 	"app/internal/repository/product_repository"
@@ -28,7 +29,6 @@ type ConfigServerChi struct {
 	ServerAddress        string
 	ProductTypesFilePath string
 	ProductsFilePath     string
-	EmployeesFilePath    string
 	BuyerLoaderFilePath  string
 	WarehouseFilePath    string
 	DbConf               *mysql.Config
@@ -42,9 +42,6 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 	if cfg != nil {
 		if cfg.ServerAddress != "" {
 			defaultConfig.ServerAddress = cfg.ServerAddress
-		}
-		if cfg.EmployeesFilePath != "" {
-			defaultConfig.EmployeesFilePath = cfg.EmployeesFilePath
 		}
 		if cfg.BuyerLoaderFilePath != "" {
 			defaultConfig.BuyerLoaderFilePath = cfg.BuyerLoaderFilePath
@@ -65,7 +62,6 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 
 	return &ServerChi{
 		serverAddress:       defaultConfig.ServerAddress,
-		employeesFilePath:   defaultConfig.EmployeesFilePath,
 		buyerLoaderFilePath: defaultConfig.BuyerLoaderFilePath,
 		warehouseFilePath:   defaultConfig.WarehouseFilePath,
 		productTypeFilePath: defaultConfig.ProductTypesFilePath,
@@ -78,7 +74,6 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 type ServerChi struct {
 	// serverAddress is the address where the server will be listening
 	serverAddress       string
-	employeesFilePath   string
 	buyerLoaderFilePath string
 	warehouseFilePath   string
 	productTypeFilePath string
@@ -98,14 +93,6 @@ func (a *ServerChi) Run() (err error) {
 	err = db.Ping()
 	if err != nil {
 		return err
-	}
-
-	// ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
-
-	// dbEmployee, err := ldEmployee.Load()
-
-	if err != nil {
-		return
 	}
 
 	// Seller
@@ -155,7 +142,7 @@ func (a *ServerChi) Run() (err error) {
 	// Employee - repository
 	rpEmployee := employee_repository.NewEmployeeDb(db)
 	// Employee - service
-	svEmployee := service.NewEmployeeService(rpEmployee, *warehouseSv)
+	svEmployee := service.NewEmployeeService(rpEmployee)
 	// Employee - handler
 	hdEmployee := handler.NewEmployeeController(svEmployee)
 
@@ -165,6 +152,13 @@ func (a *ServerChi) Run() (err error) {
 	productRecordSv := service.NewProductRecordService(productRecordRp)
 	// Product Record - handler
 	productRecordHd := handler.NewProductRecordHandler(productRecordSv)
+
+	// InbounOrders - repository
+	rpInbounOrders := inbound_order_repository.NewInboundOrderDb(db)
+	// InbounOrders - service
+	svInbounOrders := service.NewInboundOrderService(rpInbounOrders)
+	// InbounOrders - handler
+	hdInbounOrders := handler.NewInboundOrderController(svInbounOrders)
 
 	// - router
 	rt := chi.NewRouter()
@@ -213,6 +207,7 @@ func (a *ServerChi) Run() (err error) {
 		rt.Route("/employees", func(rt chi.Router) {
 			rt.Get("/", hdEmployee.GetAllEmployees)
 			rt.Get("/{id}", hdEmployee.GetEmployeeById)
+			rt.Get("/reportInboundOrders", hdEmployee.GetReportInboundOrders)
 			rt.Post("/", hdEmployee.CreateEmployee)
 			rt.Patch("/{id}", hdEmployee.PatchEmployee)
 			rt.Delete("/{id}", hdEmployee.DeleteEmployee)
@@ -239,14 +234,18 @@ func (a *ServerChi) Run() (err error) {
 
 			rt.Get("/reportSellers", localityHandler.GetLocalitySellerCount)
 		})
-		// 12. Purchase Orders
-		rt.Route("/purchaseOrders", func(rt chi.Router) {
-			rt.Post("/", purchaseOrderHd.CreatePurchaseOrder)
-		})
-		// 12. Product Records
+		// 9. Product Records
 		rt.Route("/product-records", func(rt chi.Router) {
 			rt.Get("/", productRecordHd.GetAllProductRecords)
 			rt.Post("/", productRecordHd.CreateProductRecord)
+		})
+		//11. InbounOrders
+		rt.Route("/inboundOrders", func(rt chi.Router) {
+			rt.Post("/", hdInbounOrders.CreateInboundOrder)
+		})
+		// 12. Purchase Orders
+		rt.Route("/purchaseOrders", func(rt chi.Router) {
+			rt.Post("/", purchaseOrderHd.CreatePurchaseOrder)
 		})
 	})
 

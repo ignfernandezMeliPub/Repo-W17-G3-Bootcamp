@@ -3,30 +3,15 @@ package models
 import "app/pkg/custom_errors"
 
 type EmployeeAttributes struct {
-	CardNumberId string `json:"card_number_id" db:"CardNumberId"`
-	FirstName    string `json:"first_name" db:"FirstName"`
-	LastName     string `json:"last_name" db:"LastName"`
-	WarehouseId  int    `json:"warehouse_id" db:"WarehouseId"`
+	CardNumberId string `json:"card_number_id" db:"card_number_id"`
+	FirstName    string `json:"first_name" db:"first_name"`
+	LastName     string `json:"last_name" db:"last_name"`
+	WarehouseId  int    `json:"warehouse_id" db:"warehouse_id"`
 }
 
 type Employee struct {
-	Id int `json:"id" db:"Id"`
+	Id int `json:"id" db:"id"`
 	EmployeeAttributes
-}
-
-func (e *Employee) Patch(patch EmployeePatchRequestBody) {
-	if patch.CardNumberId != nil {
-		e.CardNumberId = *patch.CardNumberId
-	}
-	if patch.FirstName != nil {
-		e.FirstName = *patch.FirstName
-	}
-	if patch.LastName != nil {
-		e.LastName = *patch.LastName
-	}
-	if patch.WarehouseId != nil {
-		e.WarehouseId = *patch.WarehouseId
-	}
 }
 
 type EmployeePatchRequestBody struct {
@@ -41,6 +26,11 @@ type EmployeePostRequestBody struct {
 	FirstName    *string `json:"first_name"`
 	LastName     *string `json:"last_name"`
 	WarehouseId  *int    `json:"warehouse_id"`
+}
+
+type InboundOrderEmployee struct {
+	Employee
+	InboundOrdersCount int `json:"inbound_orders_count" db:"inbound_orders_count"`
 }
 
 func (c EmployeePatchRequestBody) VerifyMandatoryFieldsPresence() error {
