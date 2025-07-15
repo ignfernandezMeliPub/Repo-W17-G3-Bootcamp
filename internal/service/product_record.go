@@ -1,7 +1,7 @@
 package service
 
 import (
-	"app/internal/repository/product_record_repository"
+	"app/internal/repository/repositories/product_record_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"time"
