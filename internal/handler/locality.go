@@ -53,4 +53,34 @@ func (h *LocalityHandler) GetCarriesReport(w http.ResponseWriter, r *http.Reques
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": report,
 	})
+
+}
+
+// GetLocalitySellerCount retrieves seller count statistics for localities.
+func (h *LocalityHandler) GetLocalitySellerCount(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+
+	// ? LocalitySellerCount de una locality en particular
+	if id != "" {
+		result, err := h.service.GetLocalitySellerCount(id)
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": []models.LocalitySellerCount{result},
+		})
+		// ? LocalitySellerCount de cada una de las localities
+	} else {
+		result, err := h.service.GetLocalitiesSellerCount()
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": result,
+		})
+	}
 }
