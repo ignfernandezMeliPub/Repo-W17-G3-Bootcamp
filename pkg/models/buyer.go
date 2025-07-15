@@ -2,6 +2,7 @@ package models
 
 import (
 	"app/pkg/custom_errors"
+	"strings"
 )
 
 type Buyer struct {
@@ -20,6 +21,30 @@ type BuyerPatch struct {
 func (b BuyerPatch) Verify() error {
 	if b.CardNumberId == nil && b.FirstName == nil && b.LastName == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "card_number_id or first_name or last_name"}
+	}
+
+	if b.CardNumberId != nil && strings.TrimSpace(*b.CardNumberId) == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "card_number_id",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
+	}
+
+	if b.FirstName != nil && strings.TrimSpace(*b.FirstName) == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "first_name",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
+	}
+
+	if b.LastName != nil && strings.TrimSpace(*b.LastName) == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "last_name",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
 	}
 	return nil
 }
@@ -54,6 +79,30 @@ func (b BuyerCreateRequest) Verify() error {
 
 	if b.LastName == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "last_name"}
+	}
+
+	if strings.TrimSpace(*b.CardNumberId) == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "card_number_id",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
+	}
+
+	if strings.TrimSpace(*b.FirstName) == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "first_name",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
+	}
+
+	if strings.TrimSpace(*b.LastName) == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "last_name",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
 	}
 
 	return nil
