@@ -39,6 +39,7 @@ const queryUpdateWarehouseById = `
 
 const queryGetAllWarehouses = `
 	SELECT 
+	id,
 		warehouse_code,
 		address,
 		telephone,
@@ -47,6 +48,7 @@ const queryGetAllWarehouses = `
 		FROM warehouses`
 const queryGetWarehouseById = `
 	SELECT 
+	id,
 		warehouse_code,
 		address,
 		telephone,

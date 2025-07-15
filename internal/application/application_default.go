@@ -3,6 +3,7 @@ package application
 import (
 	"app/internal/handler"
 	"app/internal/repository/buyer_repository"
+	"app/internal/repository/carries_repository"
 	"app/internal/repository/employee_repository"
 	"app/internal/repository/locality_repository"
 	"app/internal/repository/product_repository"
@@ -115,6 +116,11 @@ func (a *ServerChi) Run() (err error) {
 	localityService := service.NewLocalityServiceImpl(&localityRepo)
 	localityHandler := handler.NewLocalityHandler(&localityService)
 
+	// Carries
+	carriesRepo := carries_repository.NewCarriesSql(db)
+	carriesService := service.NewCarriesService(carriesRepo)
+	carriesHandler := handler.NewCarriesHandler(carriesService)
+
 	buyerRp := buyer_repository.NewBuyerSQL(db)
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
@@ -208,6 +214,14 @@ func (a *ServerChi) Run() (err error) {
 		// 7. Localities
 		rt.Route("/localities", func(rt chi.Router) {
 			rt.Post("/", localityHandler.CreateLocality)
+
+			//requerimiento 2
+			rt.Get("/reportCarries", carriesHandler.GetCarriesReport)
+		})
+		// 8. Carries
+		rt.Route("/carries", func(rt chi.Router) {
+			rt.Post("/", carriesHandler.CreateCarrie)
+
 			rt.Get("/reportSellers", localityHandler.GetLocalitySellerCount)
 		})
 	})

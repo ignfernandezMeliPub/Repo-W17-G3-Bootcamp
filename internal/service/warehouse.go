@@ -4,7 +4,6 @@ import (
 	warehouserepository "app/internal/repository/warehouse_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"strings"
 )
 
 type IWarehouseService interface {
@@ -24,10 +23,6 @@ type WarehouseDefault struct {
 }
 
 func (s *WarehouseDefault) CreateWarehouse(vh models.Warehouse) (models.Warehouse, error) {
-
-	if err := validateAttributes(vh); err != nil {
-		return models.Warehouse{}, err
-	}
 
 	return s.rp.CreateWarehouse(vh)
 }
@@ -60,23 +55,4 @@ func (s *WarehouseDefault) DeleteWarehouse(id int) error {
 		return &custom_errors.ResourceNotFoundError{}
 	}
 	return s.rp.DeleteWarehouseById(id)
-}
-
-func validateAttributes(wh models.Warehouse) error {
-	if strings.TrimSpace(wh.WarehouseCode) == "" {
-		return &custom_errors.InvalidArgValueErr{Argument: "warehouse_code", Value: wh.WarehouseCode, ExtraInfo: "warehouse_code cannot be empty"}
-	}
-	if strings.TrimSpace(wh.Address) == "" {
-		return &custom_errors.InvalidArgValueErr{Argument: "address", Value: wh.Address, ExtraInfo: "address cannot be empty"}
-	}
-	if strings.TrimSpace(wh.Telephone) == "" {
-		return &custom_errors.InvalidArgValueErr{Argument: "telephone", Value: wh.Telephone, ExtraInfo: "telephone cannot be empty"}
-	}
-	if wh.MinimumCapacity < 0 {
-		return &custom_errors.InvalidArgValueErr{Argument: "minimun_capacity", Value: wh.MinimumCapacity, ExtraInfo: "minimun_capacity cannot be less than zero"}
-	}
-	if wh.MinimumTemperature == nil {
-		return &custom_errors.InvalidArgValueErr{Argument: "minimun_temperature", Value: wh.MinimumTemperature, ExtraInfo: "minimun_temperature cannot be empty"}
-	}
-	return nil
 }
