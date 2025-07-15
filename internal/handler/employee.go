@@ -153,8 +153,7 @@ func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *h
 
 	if idParam != "" {
 
-		// replace for utils.GetQueryParamAs
-		id, idError := strconv.Atoi(r.URL.Query().Get("id"))
+		id, idError := utils.GetQueryParamAs(r, "id", strconv.Atoi)
 
 		// id format invalid
 		if idError != nil {
@@ -164,7 +163,7 @@ func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *h
 
 		}
 
-		inboundOrder, err := c.svEmployee.GetReportInboundOrderByEmployee(id)
+		inboundOrder, err := c.svEmployee.GetReportInboundOrderByEmployee(*id)
 
 		if err != nil {
 
