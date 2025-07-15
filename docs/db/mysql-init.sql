@@ -80,7 +80,7 @@ CREATE TABLE warehouses (
 DROP TABLE IF EXISTS employees;
 CREATE TABLE employees (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    card_number_id VARCHAR(255) NOT NULL unique,
+    card_number_id VARCHAR(10) NOT NULL UNIQUE,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     warehouse_id INT,
