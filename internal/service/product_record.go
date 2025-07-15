@@ -41,7 +41,7 @@ func (s *ProductRecordServiceImpl) CreateProductRecord(productRecord models.Prod
 	}
 
 	productRecordModel := models.ProductRecord{
-		LastUpdateDate: *productRecord.LastUpdateDate, //poner time.now()?
+		LastUpdateDate: *productRecord.LastUpdateDate,
 		PurchasePrice:  *productRecord.PurchasePrice,
 		SalePrice:      *productRecord.SalePrice,
 		ProductID:      *productRecord.ProductID,
