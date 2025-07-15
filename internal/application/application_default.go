@@ -84,7 +84,7 @@ func (a *ServerChi) Run() (err error) {
 
 	// Carries
 	carriesRepo := carries_repository.NewCarriesSql(db)
-	carriesService := service.NewCarriesService(carriesRepo)
+	carriesService := service.NewCarriesServiceDefault(carriesRepo)
 	carriesHandler := handler.NewCarriesHandler(carriesService)
 
 	// Buyer
