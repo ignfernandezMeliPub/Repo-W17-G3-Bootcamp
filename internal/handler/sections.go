@@ -3,6 +3,7 @@ package handler
 import (
 	"app/internal/handler/utils"
 	"app/internal/service"
+	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"net/http"
 	"strconv"
@@ -47,7 +48,8 @@ func (c *SectionsController) GetSectionById(w http.ResponseWriter, r *http.Reque
 
 func (c *SectionsController) CreateSection(w http.ResponseWriter, r *http.Request) {
 	var section models.SectionRequest
-	if err := request.JSON(r, &section); err != nil {
+	section, err := utils.InstantiateVarFromBody(&r.Body, section)
+	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
@@ -94,4 +96,29 @@ func (c *SectionsController) DeleteSection(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	response.JSON(w, http.StatusNoContent, nil)
+}
+
+func (c *SectionsController) GetAllProductBatchesBySection(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		res, err := c.sv.GetAllProductBatchesBySection()
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+		response.JSON(w, http.StatusOK, map[string]any{"data": res})
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.ResponseHttpError(w, &custom_errors.UrlParamDecodeError{UrlParam: "id"})
+		return
+	}
+	res, err := c.sv.GetProductBatchBySectionId(id)
+	if err != nil {
+		utils.ResponseHttpError(w, err)
+		return
+	}
+	response.JSON(w, http.StatusOK, map[string]any{"data": res})
+	return
 }

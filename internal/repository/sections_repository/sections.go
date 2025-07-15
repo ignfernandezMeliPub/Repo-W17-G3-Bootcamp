@@ -8,4 +8,7 @@ type SectionsRepository interface {
 	CreateSection(section models.Section) (models.Section, error)
 	UpdateSectionById(section models.Section) (models.Section, error)
 	DeleteSectionById(id int) error
+
+	GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error)
+	GetProductBatchBySectionId(sectionId int) (prod models.ProductBatchResponse, err error)
 }
