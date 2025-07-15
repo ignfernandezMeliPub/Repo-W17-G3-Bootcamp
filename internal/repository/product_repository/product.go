@@ -9,4 +9,6 @@ type ProductRepository interface {
 	GetProductByCode(code string) (models.Product, error)
 	UpdateProductById(product models.Product) (models.Product, error)
 	DeleteProductById(id int) error
+	GetReportRecords(id int) ([]models.ProductRecordReport, error)
+	GetAllReportRecords() ([]models.ProductRecordReport, error)
 }
