@@ -87,15 +87,11 @@ func (r *EmployeeDb) UpdateEmployeeById(id int, attributes models.EmployeePatchR
 	query += " WHERE id = ?"
 	args = append(args, id)
 
-	rowsAffected, err := sql_utils.Update(r.db, query, args)
+	_, err = sql_utils.Update(r.db, query, args)
 
 	if err != nil {
 		err = sql_utils.HandleSqlError(err)
 		return
-	}
-
-	if rowsAffected == 0 {
-		return models.Employee{}, custom_errors.ErrNotFound
 	}
 
 	updatedEmployee, err = r.GetEmployeeById(id)

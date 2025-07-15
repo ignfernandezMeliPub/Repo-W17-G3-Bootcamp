@@ -53,7 +53,7 @@ func (s *SectionsRepositorySQL) CreateSection(sc models.Section) (models.Section
 func (s *SectionsRepositorySQL) UpdateSectionById(section models.Section) (models.Section, error) {
 	args := []any{section.SectionNumber, section.CurrentTemperature, section.MinimumTemperature, section.CurrentCapacity, section.MinimumCapacity, section.MaximumCapacity, section.WarehouseId, section.ProductTypeId, section.ID}
 
-	rowsAffc, err := sql_utils.Update(s.db, `
+	_, err := sql_utils.Update(s.db, `
 		UPDATE sections SET
 			section_number = ?,
 			current_temperature = ?,
@@ -68,12 +68,6 @@ func (s *SectionsRepositorySQL) UpdateSectionById(section models.Section) (model
 	)
 	if err != nil {
 		return models.Section{}, sql_utils.HandleSqlError(err)
-
-	}
-
-	if rowsAffc == 0 {
-
-		return models.Section{}, custom_errors.ErrNotFound
 
 	}
 

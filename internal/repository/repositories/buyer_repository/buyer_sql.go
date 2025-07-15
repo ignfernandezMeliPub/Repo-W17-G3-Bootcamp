@@ -45,11 +45,7 @@ func (r *BuyerRepositorySQL) CreateBuyer(buyer models.Buyer) (newBuyer models.Bu
 	return newBuyer, nil
 }
 func (r *BuyerRepositorySQL) UpdateBuyer(buyer models.Buyer) (newBuyer models.Buyer, err error) {
-	rowsAffected, err := sql_utils.Update(r.db, "UPDATE buyers SET card_number_id = ?, first_name = ?, last_name = ? WHERE id = ?", []any{buyer.CardNumberId, buyer.FirstName, buyer.LastName, buyer.Id})
-
-	if rowsAffected == 0 {
-		return newBuyer, custom_errors.ErrNotFound
-	}
+	_, err = sql_utils.Update(r.db, "UPDATE buyers SET card_number_id = ?, first_name = ?, last_name = ? WHERE id = ?", []any{buyer.CardNumberId, buyer.FirstName, buyer.LastName, buyer.Id})
 
 	if err != nil {
 		return newBuyer, sql_utils.HandleSqlError(err)
