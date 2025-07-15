@@ -3,9 +3,7 @@ package handler
 import (
 	"app/internal/handler/utils"
 	"app/internal/service"
-	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"github.com/bootcamp-go/web/request"
 	"github.com/bootcamp-go/web/response"
 	"net/http"
 )
@@ -20,8 +18,9 @@ func NewProductBatchController(sv service.ProductBatchService) *ProductBatchCont
 
 func (p *ProductBatchController) CreateProductBatch(w http.ResponseWriter, r *http.Request) {
 	var prodBatch models.ProductBatchRequest
-	if err := request.JSON(r, &prodBatch); err != nil {
-		utils.ResponseHttpError(w, &custom_errors.InvalidBodyError{})
+	prodBatch, err := utils.InstantiateVarFromBody(&r.Body, prodBatch)
+	if err != nil {
+		utils.ResponseHttpError(w, err)
 		return
 	}
 	res, err := p.sv.CreateProductBatch(prodBatch)

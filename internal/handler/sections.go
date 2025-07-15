@@ -48,8 +48,9 @@ func (c *SectionsController) GetSectionById(w http.ResponseWriter, r *http.Reque
 
 func (c *SectionsController) CreateSection(w http.ResponseWriter, r *http.Request) {
 	var section models.SectionRequest
-	if err := request.JSON(r, &section); err != nil {
-		utils.ResponseHttpError(w, &custom_errors.InvalidBodyError{})
+	section, err := utils.InstantiateVarFromBody(&r.Body, section)
+	if err != nil {
+		utils.ResponseHttpError(w, err)
 		return
 	}
 	res, err := c.sv.CreateSection(section)

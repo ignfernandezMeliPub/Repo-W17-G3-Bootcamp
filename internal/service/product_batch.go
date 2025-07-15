@@ -2,10 +2,7 @@ package service
 
 import (
 	"app/internal/repository/product_batch_repository"
-	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"reflect"
-	"time"
 )
 
 type ProductBatchService interface {
@@ -21,32 +18,6 @@ func NewProductBatchService(rp product_batch_repository.ProductBatchRepository) 
 }
 
 func (p ProductBatchServiceImpl) CreateProductBatch(pb models.ProductBatchRequest) (prod models.ProductBatch, err error) {
-	mandatoryFields := map[string]any{
-		"batch_number":        pb.BatchNumber,
-		"current_quantity":    pb.CurrentQuantity,
-		"current_temperature": pb.CurrentTemperature,
-		"due_date":            pb.DueDate,
-		"initial_quantity":    pb.InitialQuantity,
-		"manufacturing_date":  pb.ManufacturingDate,
-		"manufacturing_hour":  pb.ManufacturingHour,
-		"minimum_temperature": pb.MinimumTemperature,
-		"product_id":          pb.ProductId,
-		"section_id":          pb.SectionId,
-	}
-	dateLayout := "2006-01-02"
-	if _, err := time.Parse(dateLayout, *pb.DueDate); err != nil {
-		return prod, &custom_errors.InvalidArgValueErr{Argument: "due_date", Value: *pb.DueDate, ExtraInfo: "Invalid date format."}
-	}
-	if _, err := time.Parse(dateLayout, *pb.ManufacturingDate); err != nil {
-		return prod, &custom_errors.InvalidArgValueErr{Argument: "manufacturing_date", Value: *pb.ManufacturingDate, ExtraInfo: "Invalid date format."}
-	}
-
-	for field, value := range mandatoryFields {
-		v := reflect.ValueOf(value)
-		if v.Kind() == reflect.Ptr && v.IsNil() {
-			return prod, &custom_errors.MandatoryArgMissingErr{Argument: field}
-		}
-	}
 	newProdBatch := models.ProductBatch{
 		BatchNumber:        *pb.BatchNumber,
 		CurrentQuantity:    *pb.CurrentQuantity,
