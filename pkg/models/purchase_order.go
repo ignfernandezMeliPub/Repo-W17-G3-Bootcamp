@@ -33,7 +33,7 @@ type PurchaseOrderCreateRequest struct {
 	PurchaseOrderDetails []PurchaseOrderDetailRequest `json:"purchase_order_details"`
 }
 
-func (p PurchaseOrderCreateRequest) VerifyMandatoryFieldsPresence() error {
+func (p PurchaseOrderCreateRequest) Verify() error {
 	if p.OrderNumber == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "order_number"}
 	}

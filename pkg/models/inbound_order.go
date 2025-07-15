@@ -27,7 +27,7 @@ type InboundOrderData struct {
 	WarehouseId    *int    `json:"warehouse_id"`
 }
 
-func (c InboundOrderRequestBody) VerifyMandatoryFieldsPresence() error {
+func (c InboundOrderRequestBody) Verify() error {
 	if c.Data == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "data"}
 	}

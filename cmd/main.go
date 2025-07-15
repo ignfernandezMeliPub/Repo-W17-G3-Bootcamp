@@ -8,22 +8,15 @@ import (
 )
 
 func main() {
-	// - env
-
 	// - config
 	cfg := &application.ConfigServerChi{
-		ServerAddress:        ":8080",
-		BuyerLoaderFilePath:  "docs/db/buyers.json",
-		WarehouseFilePath:    "docs/db/warehouse.json",
-		ProductTypesFilePath: "docs/db/product_types.json",
-		ProductsFilePath:     "docs/db/products.json",
-
+		ServerAddress: application.ServerAddress,
 		DbConf: &mysql.Config{
-			User:   "root",
-			Passwd: "",
-			Net:    "tcp",
-			Addr:   "localhost:3306",
-			DBName: "fresh_db",
+			User:   application.DbUser,
+			Passwd: application.DbPassword,
+			Net:    application.DbProtocol,
+			Addr:   application.DbAddress,
+			DBName: application.DbName,
 		},
 	}
 

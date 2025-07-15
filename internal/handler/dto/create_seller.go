@@ -10,7 +10,7 @@ type CreateSellerDto struct {
 	LocalityId  *string `json:"locality_id"`
 }
 
-func (c CreateSellerDto) VerifyMandatoryFieldsPresence() error {
+func (c CreateSellerDto) Verify() error {
 	if c.CompanyId == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "cid"}
 	}

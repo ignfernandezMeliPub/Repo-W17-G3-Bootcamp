@@ -9,7 +9,7 @@ type PatchSellerDto struct {
 	Telephone   *string `json:"telephone"`
 }
 
-func (c PatchSellerDto) VerifyMandatoryFieldsPresence() error {
+func (c PatchSellerDto) Verify() error {
 	if c.CompanyId == nil && c.CompanyName == nil && c.Address == nil && c.Telephone == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "cid or company_name or address or telephone"}
 	}

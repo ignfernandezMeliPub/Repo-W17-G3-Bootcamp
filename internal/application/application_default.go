@@ -2,19 +2,19 @@ package application
 
 import (
 	"app/internal/handler"
-	"app/internal/repository/buyer_repository"
-	"app/internal/repository/carries_repository"
-	"app/internal/repository/employee_repository"
-	"app/internal/repository/inbound_order_repository"
-	"app/internal/repository/locality_repository"
-	"app/internal/repository/product_batch_repository"
-	"app/internal/repository/product_record_repository"
-	"app/internal/repository/product_repository"
-	"app/internal/repository/product_type_repository"
-	"app/internal/repository/purchase_order_repository"
-	"app/internal/repository/sections_repository"
-	"app/internal/repository/seller_repository"
-	"app/internal/repository/warehouse_repository"
+	"app/internal/repository/repositories/buyer_repository"
+	"app/internal/repository/repositories/carries_repository"
+	"app/internal/repository/repositories/employee_repository"
+	"app/internal/repository/repositories/inbound_order_repository"
+	"app/internal/repository/repositories/locality_repository"
+	"app/internal/repository/repositories/product_batch_repository"
+	"app/internal/repository/repositories/product_record_repository"
+	"app/internal/repository/repositories/product_repository"
+	"app/internal/repository/repositories/product_type_repository"
+	"app/internal/repository/repositories/purchase_order_repository"
+	"app/internal/repository/repositories/sections_repository"
+	"app/internal/repository/repositories/seller_repository"
+	"app/internal/repository/repositories/warehouse_repository"
 	"app/internal/service"
 	"database/sql"
 	"net/http"
@@ -27,12 +27,8 @@ import (
 // ConfigServerChi is a struct that represents the configuration for ServerChi
 type ConfigServerChi struct {
 	// ServerAddress is the address where the server will be listening
-	ServerAddress        string
-	ProductTypesFilePath string
-	ProductsFilePath     string
-	BuyerLoaderFilePath  string
-	WarehouseFilePath    string
-	DbConf               *mysql.Config
+	ServerAddress string
+	DbConf        *mysql.Config
 }
 
 // NewServerChi is a function that returns a new instance of ServerChi
@@ -44,47 +40,27 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		if cfg.ServerAddress != "" {
 			defaultConfig.ServerAddress = cfg.ServerAddress
 		}
-		if cfg.BuyerLoaderFilePath != "" {
-			defaultConfig.BuyerLoaderFilePath = cfg.BuyerLoaderFilePath
-		}
-		if cfg.WarehouseFilePath != "" {
-			defaultConfig.WarehouseFilePath = cfg.WarehouseFilePath
-		}
-		if cfg.ProductTypesFilePath != "" {
-			defaultConfig.ProductTypesFilePath = cfg.ProductTypesFilePath
-		}
-		if cfg.ProductsFilePath != "" {
-			defaultConfig.ProductsFilePath = cfg.ProductsFilePath
-		}
 		if cfg.DbConf != nil {
 			defaultConfig.DbConf = cfg.DbConf
 		}
 	}
 
 	return &ServerChi{
-		serverAddress:       defaultConfig.ServerAddress,
-		buyerLoaderFilePath: defaultConfig.BuyerLoaderFilePath,
-		warehouseFilePath:   defaultConfig.WarehouseFilePath,
-		productTypeFilePath: defaultConfig.ProductTypesFilePath,
-		productsFilePath:    defaultConfig.ProductsFilePath,
-		DbConf:              defaultConfig.DbConf,
+		serverAddress: defaultConfig.ServerAddress,
+		DbConf:        defaultConfig.DbConf,
 	}
 }
 
 // ServerChi is a struct that implements the Application interface
 type ServerChi struct {
 	// serverAddress is the address where the server will be listening
-	serverAddress       string
-	buyerLoaderFilePath string
-	warehouseFilePath   string
-	productTypeFilePath string
-	productsFilePath    string
-	DbConf              *mysql.Config
+	serverAddress string
+	DbConf        *mysql.Config
 }
 
 // Run is a method that runs the server
 func (a *ServerChi) Run() (err error) {
-	db, err := sql.Open("mysql", a.DbConf.FormatDSN())
+	db, err := sql.Open(DbDriverName, a.DbConf.FormatDSN())
 	if err != nil {
 		return err
 	}
@@ -108,26 +84,24 @@ func (a *ServerChi) Run() (err error) {
 
 	// Carries
 	carriesRepo := carries_repository.NewCarriesSql(db)
-	carriesService := service.NewCarriesService(carriesRepo)
+	carriesService := service.NewCarriesServiceDefault(carriesRepo)
 	carriesHandler := handler.NewCarriesHandler(carriesService)
 
+	// Buyer
 	buyerRp := buyer_repository.NewBuyerSQL(db)
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
 
+	// PurchaseOrders
 	purchaseOrderRp := purchase_order_repository.NewPurchaseOrderRepositorySQL(db)
 	purchaseOrderSv := service.NewPurchaseOrderDefault(purchaseOrderRp)
 	purchaseOrderHd := handler.NewPurchaseOrderDefault(purchaseOrderSv)
 
-	// Product - repository
+	// Product
 	productRpSQL := product_repository.NewProductRepositoryMySQL(db)
 	productTypeRpSQL := product_type_repository.NewProductTypeRepositoryMySQL(db)
-
-	// Product - service
 	productTypeSv := service.NewProductTypeService(productTypeRpSQL)
 	productSv := service.NewProductService(productRpSQL, productTypeSv, &sellerService)
-
-	// Product - handler
 	productHd := handler.NewProductController(&productSv)
 
 	// warehouse
@@ -145,25 +119,19 @@ func (a *ServerChi) Run() (err error) {
 	productBatchSv := service.NewProductBatchService(productBatchRP)
 	productBatchHd := handler.NewProductBatchController(productBatchSv)
 
-	// Employee - repository
+	// Employee
 	rpEmployee := employee_repository.NewEmployeeDb(db)
-	// Employee - service
 	svEmployee := service.NewEmployeeService(rpEmployee)
-	// Employee - handler
 	hdEmployee := handler.NewEmployeeController(svEmployee)
 
-	// Product Record - repository
+	// Product Record
 	productRecordRp := product_record_repository.NewProductRecordRepositorySQL(db)
-	// Product Record - service
 	productRecordSv := service.NewProductRecordService(productRecordRp)
-	// Product Record - handler
 	productRecordHd := handler.NewProductRecordHandler(productRecordSv)
 
-	// InbounOrders - repository
+	// InboundOrders
 	rpInbounOrders := inbound_order_repository.NewInboundOrderDb(db)
-	// InbounOrders - service
 	svInbounOrders := service.NewInboundOrderService(rpInbounOrders)
-	// InbounOrders - handler
 	hdInbounOrders := handler.NewInboundOrderController(svInbounOrders)
 
 	// - router
@@ -190,7 +158,6 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", warehouseHd.CreateWarehouse)
 			rt.Patch("/{id}", warehouseHd.PatchWarehouse)
 			rt.Delete("/{id}", warehouseHd.DeleteWarehouse)
-
 		})
 		// 3. Sections
 		rt.Route("/sections", func(rt chi.Router) {
@@ -199,14 +166,8 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", sectionsHd.CreateSection)
 			rt.Patch("/{id}", sectionsHd.PatchSection)
 			rt.Delete("/{id}", sectionsHd.DeleteSection)
-
 			rt.Get("/reportProducts", sectionsHd.GetAllProductBatchesBySection)
 		})
-
-		rt.Route("/productBatches", func(rt chi.Router) {
-			rt.Post("/", productBatchHd.CreateProductBatch)
-		})
-
 		// 4. Products
 		rt.Route("/products", func(rt chi.Router) {
 			rt.Get("/", productHd.GetAllProducts)
@@ -237,14 +198,11 @@ func (a *ServerChi) Run() (err error) {
 		// 7. Localities
 		rt.Route("/localities", func(rt chi.Router) {
 			rt.Post("/", localityHandler.CreateLocality)
-
-			//requerimiento 2
 			rt.Get("/reportCarries", localityHandler.GetCarriesReport)
 		})
 		// 8. Carries
 		rt.Route("/carries", func(rt chi.Router) {
 			rt.Post("/", carriesHandler.CreateCarrie)
-
 			rt.Get("/reportSellers", localityHandler.GetLocalitySellerCount)
 		})
 		// 9. Product Records
@@ -252,7 +210,11 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/", productRecordHd.GetAllProductRecords)
 			rt.Post("/", productRecordHd.CreateProductRecord)
 		})
-		//11. InbounOrders
+		// 10. ProductBatches
+		rt.Route("/productBatches", func(rt chi.Router) {
+			rt.Post("/", productBatchHd.CreateProductBatch)
+		})
+		// 11. InboundOrders
 		rt.Route("/inboundOrders", func(rt chi.Router) {
 			rt.Post("/", hdInbounOrders.CreateInboundOrder)
 		})

@@ -6,7 +6,7 @@ type CreateLocalityDto struct {
 	Data *CreateLocalityData `json:"data"`
 }
 
-func (c CreateLocalityDto) VerifyMandatoryFieldsPresence() error {
+func (c CreateLocalityDto) Verify() error {
 	if c.Data == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "data"}
 	}

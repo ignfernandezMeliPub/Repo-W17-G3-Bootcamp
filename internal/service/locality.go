@@ -1,7 +1,7 @@
 package service
 
 import (
-	"app/internal/repository/locality_repository"
+	"app/internal/repository/repositories/locality_repository"
 	"app/pkg/models"
 )
 

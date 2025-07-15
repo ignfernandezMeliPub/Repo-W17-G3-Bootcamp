@@ -13,7 +13,7 @@ type Warehouse struct {
 	MinimumTemperature *float64 `json:"minimum_temperature" db:"minimum_temperature"`
 }
 
-func (w Warehouse) VerifyMandatoryFieldsPresence() error {
+func (w Warehouse) Verify() error {
 	if w.WarehouseCode == "" {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "warehouse_code"}
 	}

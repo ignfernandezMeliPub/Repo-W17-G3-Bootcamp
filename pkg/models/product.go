@@ -47,7 +47,7 @@ type ProductPatchRequest struct {
 	SellerId                       *int     `json:"seller_id"`
 }
 
-func (c ProductRequest) VerifyMandatoryFieldsPresence() error {
+func (c ProductRequest) Verify() error {
 	if c.ProductCode == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "product_code"}
 	}
@@ -90,6 +90,6 @@ func (c ProductRequest) VerifyMandatoryFieldsPresence() error {
 	return nil
 }
 
-func (c ProductPatchRequest) VerifyMandatoryFieldsPresence() error {
+func (c ProductPatchRequest) Verify() error {
 	return nil
 }

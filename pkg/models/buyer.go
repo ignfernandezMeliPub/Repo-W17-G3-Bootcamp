@@ -17,7 +17,7 @@ type BuyerPatch struct {
 	LastName     *string `json:"last_name"`
 }
 
-func (b BuyerPatch) VerifyMandatoryFieldsPresence() error {
+func (b BuyerPatch) Verify() error {
 	if b.CardNumberId == nil && b.FirstName == nil && b.LastName == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "card_number_id or first_name or last_name"}
 	}
@@ -43,7 +43,7 @@ type BuyerCreateRequest struct {
 	LastName     *string `json:"last_name"`
 }
 
-func (b BuyerCreateRequest) VerifyMandatoryFieldsPresence() error {
+func (b BuyerCreateRequest) Verify() error {
 	if b.CardNumberId == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "card_number_id"}
 	}

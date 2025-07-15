@@ -1,7 +1,7 @@
 package service
 
 import (
-	"app/internal/repository/employee_repository"
+	"app/internal/repository/repositories/employee_repository"
 	"app/pkg/models"
 )
 
