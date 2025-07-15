@@ -21,25 +21,19 @@ func NewBuyerSQL(db *sql.DB) *BuyerRepositorySQL {
 
 func (r *BuyerRepositorySQL) GetAllBuyers() (b []models.Buyer, err error) {
 	b, err = sql_utils.Query[models.Buyer](r.db, "SELECT id, card_number_id, first_name, last_name FROM buyers", []any{})
-	if err != nil {
-		err = sql_utils.HandleSqlError(err)
-	}
+	err = sql_utils.HandleSqlError(err)
 	return
 }
 
 func (r *BuyerRepositorySQL) GetBuyerById(id int) (b models.Buyer, err error) {
 	b, err = sql_utils.QueryRow[models.Buyer](r.db, "SELECT id, card_number_id, first_name, last_name FROM buyers WHERE id = ?", []any{id})
-	if err != nil {
-		err = sql_utils.HandleSqlError(err)
-	}
+	err = sql_utils.HandleSqlError(err)
 	return
 }
 
 func (r *BuyerRepositorySQL) GetBuyerByCardNumberId(cardNumberId string) (b models.Buyer, err error) {
 	b, err = sql_utils.QueryRow[models.Buyer](r.db, "SELECT id, card_number_id, first_name, last_name FROM buyers WHERE card_number_id = ?", []any{cardNumberId})
-	if err != nil {
-		err = sql_utils.HandleSqlError(err)
-	}
+	err = sql_utils.HandleSqlError(err)
 	return
 }
 
@@ -81,16 +75,12 @@ func (r *BuyerRepositorySQL) DeleteBuyerById(id int) (err error) {
 
 func (r *BuyerRepositorySQL) GetBuyerPurchaseOrdersCount(buyerId int) (p []models.BuyerPurchaseOrdersCount, err error) {
 	p, err = sql_utils.Query[models.BuyerPurchaseOrdersCount](r.db, "SELECT buyers.id as id, buyers.card_number_id, buyers.first_name, buyers.last_name, COUNT(*) as purchase_orders_count FROM buyers LEFT JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id WHERE buyers.id = ? GROUP BY buyers.id", []any{buyerId})
-	if err != nil {
-		err = sql_utils.HandleSqlError(err)
-	}
+	err = sql_utils.HandleSqlError(err)
 	return
 }
 
 func (r *BuyerRepositorySQL) GetBuyersPurchaseOrdersCount() (p []models.BuyerPurchaseOrdersCount, err error) {
 	p, err = sql_utils.Query[models.BuyerPurchaseOrdersCount](r.db, "SELECT buyers.id as id, buyers.card_number_id, buyers.first_name, buyers.last_name, COUNT(*) as purchase_orders_count FROM buyers LEFT JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id GROUP BY buyers.id", []any{})
-	if err != nil {
-		err = sql_utils.HandleSqlError(err)
-	}
+	err = sql_utils.HandleSqlError(err)
 	return
 }

@@ -21,10 +21,7 @@ func (m *EmployeeDb) GetAllEmployees() (employees []models.Employee, err error) 
 
 	employees, err = sql_utils.Query[models.Employee](m.db, "SELECT Id, CardNumberId, FirstName, LastName, WarehouseId FROM employees", nil)
 
-	if len(employees) == 0 {
-		err = &custom_errors.ResourceNotFoundError{}
-		return
-	}
+	err = sql_utils.HandleSqlError(err)
 
 	return
 
@@ -37,12 +34,7 @@ func (m *EmployeeDb) GetEmployeeById(id int) (employee models.Employee, err erro
 
 	employee, err = sql_utils.QueryRow[models.Employee](m.db, "SELECT Id, CardNumberId, FirstName, LastName, WarehouseId FROM employees WHERE Id = ?", args)
 
-	// should be a 404
-	if err != nil {
-
-		return models.Employee{}, err
-
-	}
+	err = sql_utils.HandleSqlError(err)
 
 	return
 
@@ -55,9 +47,8 @@ func (m *EmployeeDb) CreateEmployee(attributes models.EmployeeAttributes) (newEm
 	lastId, err := sql_utils.Insert(m.db, "INSERT INTO `employees` (`CardNumberId`,`FirstName`,`LastName`,`WarehouseId`) VALUES (?,?,?,?)", args)
 
 	if err != nil {
-
-		return models.Employee{}, err
-
+		err = sql_utils.HandleSqlError(err)
+		return
 	}
 
 	newEmployee = models.Employee{
@@ -99,15 +90,12 @@ func (m *EmployeeDb) UpdateEmployeeById(id int, attributes models.EmployeePatchR
 	rowsAffected, err := sql_utils.Update(m.db, query, args)
 
 	if err != nil {
-
-		return models.Employee{}, err
-
+		err = sql_utils.HandleSqlError(err)
+		return
 	}
 
 	if rowsAffected == 0 {
-
-		return models.Employee{}, &custom_errors.ResourceNotFoundError{}
-
+		return models.Employee{}, custom_errors.ErrNotFound
 	}
 
 	updatedEmployee, err = m.GetEmployeeById(id)
@@ -123,6 +111,7 @@ func (m *EmployeeDb) DeleteEmployee(id int) (err error) {
 
 	_, err = sql_utils.Delete(m.db, "DELETE FROM `employees` where `id` = ?", args)
 
+	err = sql_utils.HandleSqlError(err)
 	return
 
 }
