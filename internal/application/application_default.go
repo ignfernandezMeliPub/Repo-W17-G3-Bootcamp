@@ -27,12 +27,8 @@ import (
 // ConfigServerChi is a struct that represents the configuration for ServerChi
 type ConfigServerChi struct {
 	// ServerAddress is the address where the server will be listening
-	ServerAddress        string
-	ProductTypesFilePath string
-	ProductsFilePath     string
-	BuyerLoaderFilePath  string
-	WarehouseFilePath    string
-	DbConf               *mysql.Config
+	ServerAddress string
+	DbConf        *mysql.Config
 }
 
 // NewServerChi is a function that returns a new instance of ServerChi
@@ -44,30 +40,14 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		if cfg.ServerAddress != "" {
 			defaultConfig.ServerAddress = cfg.ServerAddress
 		}
-		if cfg.BuyerLoaderFilePath != "" {
-			defaultConfig.BuyerLoaderFilePath = cfg.BuyerLoaderFilePath
-		}
-		if cfg.WarehouseFilePath != "" {
-			defaultConfig.WarehouseFilePath = cfg.WarehouseFilePath
-		}
-		if cfg.ProductTypesFilePath != "" {
-			defaultConfig.ProductTypesFilePath = cfg.ProductTypesFilePath
-		}
-		if cfg.ProductsFilePath != "" {
-			defaultConfig.ProductsFilePath = cfg.ProductsFilePath
-		}
 		if cfg.DbConf != nil {
 			defaultConfig.DbConf = cfg.DbConf
 		}
 	}
 
 	return &ServerChi{
-		serverAddress:       defaultConfig.ServerAddress,
-		buyerLoaderFilePath: defaultConfig.BuyerLoaderFilePath,
-		warehouseFilePath:   defaultConfig.WarehouseFilePath,
-		productTypeFilePath: defaultConfig.ProductTypesFilePath,
-		productsFilePath:    defaultConfig.ProductsFilePath,
-		DbConf:              defaultConfig.DbConf,
+		serverAddress: defaultConfig.ServerAddress,
+		DbConf:        defaultConfig.DbConf,
 	}
 }
 

@@ -12,12 +12,7 @@ func main() {
 
 	// - config
 	cfg := &application.ConfigServerChi{
-		ServerAddress:        ":8080",
-		BuyerLoaderFilePath:  "docs/db/buyers.json",
-		WarehouseFilePath:    "docs/db/warehouse.json",
-		ProductTypesFilePath: "docs/db/product_types.json",
-		ProductsFilePath:     "docs/db/products.json",
-
+		ServerAddress: ":8080",
 		DbConf: &mysql.Config{
 			User:   "root",
 			Passwd: "",
