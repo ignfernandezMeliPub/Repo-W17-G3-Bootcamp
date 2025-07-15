@@ -19,77 +19,59 @@ type BuyerDefault struct {
 }
 
 func (h *BuyerDefault) GetAllBuyers(w http.ResponseWriter, _ *http.Request) {
-	// request
-
-	// process
-	// process
 	b, err := h.sv.GetAllBuyers()
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
-
-	// response
-	data := b
-
 	response.JSON(w, http.StatusOK, map[string]any{
-		"data": data,
+		"data": b,
 	})
 }
 
 func (h *BuyerDefault) GetBuyerById(w http.ResponseWriter, r *http.Request) {
-	// request
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
-	// process
 
 	b, err := h.sv.GetBuyerById(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
-	// response
 
-	data := b
 	response.JSON(w, http.StatusOK, map[string]any{
-		"data": data,
+		"data": b,
 	})
 }
 
 func (h *BuyerDefault) CreateBuyer(w http.ResponseWriter, r *http.Request) {
-	// request
-	var _buyerRequest models.BuyerCreateRequest
+	var buyerRequest models.BuyerCreateRequest
 
-	buyerRequest, err := utils.InstantiateVarFromBody(&r.Body, _buyerRequest)
+	buyerRequest, err := utils.InstantiateVarFromBody(&r.Body, buyerRequest)
 
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	// process
+	buyerFromRequest := buyerRequest.ToBuyer()
 
-	_b := buyerRequest.ToBuyer()
-
-	b, err := h.sv.CreateBuyer(_b)
+	newBuyer, err := h.sv.CreateBuyer(buyerFromRequest)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	// response
-	data := b
 	response.JSON(w, http.StatusCreated, map[string]any{
-		"data": data,
+		"data": newBuyer,
 	})
 }
 
 func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) {
-	// request
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
 	if err != nil {
@@ -97,38 +79,33 @@ func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var _buyerPatch models.BuyerPatch
+	var buyerPatch models.BuyerPatch
 
-	buyerPatch, err := utils.InstantiateVarFromBody(&r.Body, _buyerPatch)
+	buyerPatch, err = utils.InstantiateVarFromBody(&r.Body, buyerPatch)
 
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	// process
-	b, err := h.sv.UpdateBuyerById(id, buyerPatch)
+	updatedBuyer, err := h.sv.UpdateBuyerById(id, buyerPatch)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	// response
-	data := b
 	response.JSON(w, http.StatusOK, map[string]any{
-		"data": data,
+		"data": updatedBuyer,
 	})
 }
 
 func (h *BuyerDefault) DeleteBuyer(w http.ResponseWriter, r *http.Request) {
-	// request
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
-	// process
 
 	err = h.sv.DeleteBuyerById(id)
 
@@ -136,11 +113,8 @@ func (h *BuyerDefault) DeleteBuyer(w http.ResponseWriter, r *http.Request) {
 		utils.ResponseHttpError(w, err)
 		return
 	}
-	// response
 
-	response.JSON(w, http.StatusNoContent, map[string]any{
-		"data": nil,
-	})
+	response.JSON(w, http.StatusNoContent, nil)
 }
 
 func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *http.Request) {
@@ -152,25 +126,25 @@ func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *ht
 	}
 
 	if id != nil {
-		// Purchase orders by buyer id
-		data, err := h.sv.GetBuyerPurchaseOrdersCount(*id)
+		// Purchase orders qty by buyer id
+		b, err := h.sv.GetBuyerPurchaseOrdersCount(*id)
 		if err != nil {
 			utils.ResponseHttpError(w, err)
 			return
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
-			"data": data,
+			"data": b,
 		})
 		return
 	}
 
-	// Purchase orders qty by buyer
-	data, err := h.sv.GetBuyersPurchaseOrdersCount()
+	// Purchase orders qty by every buyer
+	b, err := h.sv.GetBuyersPurchaseOrdersCount()
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 	response.JSON(w, http.StatusOK, map[string]any{
-		"data": data,
+		"data": b,
 	})
 }

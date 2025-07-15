@@ -9,11 +9,11 @@ type BuyerService interface {
 	GetAllBuyers() (b []models.Buyer, err error)
 	GetBuyerById(id int) (b models.Buyer, err error)
 	GetBuyerByCardNumberId(cardNumberId string) (b models.Buyer, err error)
-	CreateBuyer(_b models.Buyer) (b models.Buyer, err error)
-	UpdateBuyerById(id int, _b models.BuyerPatch) (b models.Buyer, err error)
+	CreateBuyer(buyer models.Buyer) (newBuyer models.Buyer, err error)
+	UpdateBuyerById(id int, buyerPatch models.BuyerPatch) (updatedBuyer models.Buyer, err error)
 	DeleteBuyerById(id int) (err error)
-	GetBuyerPurchaseOrdersCount(buyerId int) (p []models.BuyerPurchaseOrdersCount, err error)
-	GetBuyersPurchaseOrdersCount() (p []models.BuyerPurchaseOrdersCount, err error)
+	GetBuyerPurchaseOrdersCount(buyerId int) (b []models.BuyerPurchaseOrdersCount, err error)
+	GetBuyersPurchaseOrdersCount() (b []models.BuyerPurchaseOrdersCount, err error)
 }
 
 type BuyerServiceDefault struct {
@@ -33,11 +33,11 @@ func (s *BuyerServiceDefault) GetBuyerById(id int) (b models.Buyer, err error) {
 func (s *BuyerServiceDefault) GetBuyerByCardNumberId(cardNumberId string) (b models.Buyer, err error) {
 	return s.rp.GetBuyerByCardNumberId(cardNumberId)
 }
-func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err error) {
-	return s.rp.CreateBuyer(_b)
+func (s *BuyerServiceDefault) CreateBuyer(buyer models.Buyer) (newBuyer models.Buyer, err error) {
+	return s.rp.CreateBuyer(buyer)
 }
 
-func (s *BuyerServiceDefault) UpdateBuyerById(id int, _b models.BuyerPatch) (b models.Buyer, err error) {
+func (s *BuyerServiceDefault) UpdateBuyerById(id int, buyerPatch models.BuyerPatch) (updatedBuyer models.Buyer, err error) {
 
 	buyer, err := s.rp.GetBuyerById(id)
 
@@ -45,9 +45,9 @@ func (s *BuyerServiceDefault) UpdateBuyerById(id int, _b models.BuyerPatch) (b m
 		return
 	}
 
-	buyer.Patch(_b)
+	buyer.Patch(buyerPatch)
 
-	b, err = s.rp.UpdateBuyer(buyer)
+	updatedBuyer, err = s.rp.UpdateBuyer(buyer)
 	return
 }
 
@@ -55,10 +55,10 @@ func (s *BuyerServiceDefault) DeleteBuyerById(id int) (err error) {
 	return s.rp.DeleteBuyerById(id)
 }
 
-func (s *BuyerServiceDefault) GetBuyerPurchaseOrdersCount(buyerId int) (p []models.BuyerPurchaseOrdersCount, err error) {
+func (s *BuyerServiceDefault) GetBuyerPurchaseOrdersCount(buyerId int) (b []models.BuyerPurchaseOrdersCount, err error) {
 	return s.rp.GetBuyerPurchaseOrdersCount(buyerId)
 }
 
-func (s *BuyerServiceDefault) GetBuyersPurchaseOrdersCount() (p []models.BuyerPurchaseOrdersCount, err error) {
+func (s *BuyerServiceDefault) GetBuyersPurchaseOrdersCount() (b []models.BuyerPurchaseOrdersCount, err error) {
 	return s.rp.GetBuyersPurchaseOrdersCount()
 }

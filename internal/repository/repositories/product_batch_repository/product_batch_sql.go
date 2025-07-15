@@ -21,8 +21,8 @@ func (p *ProductBatchRepositorySQL) CreateProductBatch(pb models.ProductBatch) (
 			"VALUES (?,?,?,?,?,?,?,?,?,?)", args,
 	)
 	if err != nil {
-		return
+		return models.ProductBatch{}, sql_utils.HandleSqlError(err)
 	}
 	pb.ID = int(lastId)
-	return pb, err
+	return pb, nil
 }

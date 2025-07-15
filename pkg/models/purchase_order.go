@@ -2,6 +2,7 @@ package models
 
 import (
 	"app/pkg/custom_errors"
+	"strings"
 	"time"
 )
 
@@ -38,6 +39,14 @@ func (p PurchaseOrderCreateRequest) Verify() error {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "order_number"}
 	}
 
+	if strings.TrimSpace(*p.OrderNumber) == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "order_number",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
+	}
+
 	if p.OrderDate == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "order_date"}
 	}
@@ -55,8 +64,24 @@ func (p PurchaseOrderCreateRequest) Verify() error {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "tracking_code"}
 	}
 
+	if strings.TrimSpace(*p.TrackingCode) == "" {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "tracking_code",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
+	}
+
 	if p.BuyerId == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "buyer_id"}
+	}
+
+	if *p.BuyerId <= 0 {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "buyer_id",
+			Value:     "",
+			ExtraInfo: "Value must be non-empty",
+		}
 	}
 
 	if len(p.PurchaseOrderDetails) == 0 {
@@ -67,8 +92,23 @@ func (p PurchaseOrderCreateRequest) Verify() error {
 		if detail.ProductRecordId == nil {
 			return &custom_errors.MandatoryArgMissingErr{Argument: "product_record_id"}
 		}
+		if *detail.ProductRecordId <= 0 {
+			return &custom_errors.InvalidArgValueErr{
+				Argument:  "product_record_id",
+				Value:     detail.ProductRecordId,
+				ExtraInfo: "Value must be greater than 0",
+			}
+		}
+
 		if detail.Quantity == nil {
 			return &custom_errors.MandatoryArgMissingErr{Argument: "quantity"}
+		}
+		if *detail.Quantity <= 0 {
+			return &custom_errors.InvalidArgValueErr{
+				Argument:  "quantity",
+				Value:     detail.Quantity,
+				ExtraInfo: "Value must be greater than 0",
+			}
 		}
 	}
 
