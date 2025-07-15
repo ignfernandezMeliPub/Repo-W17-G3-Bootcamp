@@ -26,23 +26,6 @@ const queryCreateCarrie = `INSERT INTO carries (
 				locality_id
 				) VALUES(?, ?, ?, ?, ?)`
 
-const queryGetCarriesReportById = `SELECT 
-			l.id AS locality_id, 
-			l.locality_name, 
-			COUNT(c.id) AS carries_count
-			FROM localities l 
-			LEFT JOIN carries c ON l.id = c.locality_id
-			WHERE l.id = ?
-			GROUP BY l.id, l.locality_name`
-
-const queryGetCarriesReport = `SELECT 
-		l.id AS locality_id, 
-		l.locality_name, 
-		COUNT(c.id) AS carries_count
-		FROM localities l 
-		LEFT JOIN carries c ON l.id = c.locality_id
-		GROUP BY l.id, l.locality_name`
-
 func (r *CarriesSql) CreateCarrie(c models.Carries) (models.Carries, error) {
 	args := []any{c.Cid, c.CompanyName, c.Address, c.Telephone, c.LocalityId}
 	newId, err := sql_utils.Insert(r.db, queryCreateCarrie, args)
@@ -51,18 +34,4 @@ func (r *CarriesSql) CreateCarrie(c models.Carries) (models.Carries, error) {
 	}
 	c.Id = int(newId)
 	return c, nil
-}
-
-func (r *CarriesSql) GetCarriesReport(localityId *string) ([]models.CarriesReport, error) {
-	var query string
-	var args []any
-
-	if localityId != nil {
-		query = queryGetCarriesReportById
-		args = []any{*localityId}
-
-	} else {
-		query = queryGetCarriesReport
-	}
-	return sql_utils.Query[models.CarriesReport](r.db, query, args)
 }

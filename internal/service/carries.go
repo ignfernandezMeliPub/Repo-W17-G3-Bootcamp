@@ -10,7 +10,6 @@ import (
 
 type ICarriesService interface {
 	CreateCarrie(c models.Carries) (models.Carries, error)
-	GetCarriesReport(localityId *string) ([]models.CarriesReport, error)
 }
 
 func NewCarriesService(rp carries_repository.CarriesRepository) *CarriesService {
@@ -34,10 +33,6 @@ func (s *CarriesService) CreateCarrie(c models.Carries) (models.Carries, error) 
 		return models.Carries{}, err
 	}
 	return carrie, nil
-}
-
-func (s *CarriesService) GetCarriesReport(localityId *string) ([]models.CarriesReport, error) {
-	return s.rp.GetCarriesReport(localityId)
 }
 
 func isUniqueConstraintError(err error) bool {
