@@ -3,10 +3,8 @@ package handler
 import (
 	"app/internal/handler/utils"
 	"app/internal/service"
-	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"net/http"
-	"time"
 
 	"github.com/bootcamp-go/web/response"
 )
@@ -37,19 +35,6 @@ func (h *ProductRecordHandler) CreateProductRecord(w http.ResponseWriter, r *htt
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
-	}
-
-	// Validar formato de fecha
-	if productRecordRequest.LastUpdateDate != nil {
-		_, err := time.Parse("2006-01-02", *productRecordRequest.LastUpdateDate)
-		if err != nil {
-			utils.ResponseHttpError(w, &custom_errors.InvalidArgValueErr{
-				Argument:  "last_update_date",
-				Value:     *productRecordRequest.LastUpdateDate,
-				ExtraInfo: "Date format must be YYYY-MM-DD",
-			})
-			return
-		}
 	}
 
 	productRecordModel, err := h.service.CreateProductRecord(productRecordRequest)
