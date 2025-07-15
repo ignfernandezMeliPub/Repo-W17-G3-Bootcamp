@@ -23,3 +23,13 @@ func (r *LocalityRepositorySql) CreateLocality(locality models.Locality) (models
 
 	return locality, nil
 }
+
+// GetLocalitySellerCount Returns LocalitySellerCount for received localityId
+func (r *LocalityRepositorySql) GetLocalitySellerCount(localityId string) (models.LocalitySellerCount, error) {
+	return sql_utils.QueryRow[models.LocalitySellerCount](r.db, "SELECT l.id, l.locality_name, COUNT(s.id) AS sellers_count FROM sellers s RIGHT JOIN localities l ON s.locality_id = l.id WHERE l.id = ? GROUP BY l.id", []any{localityId})
+}
+
+// GetLocalitiesSellerCount Returns a []LocalitySellerCount with an LocalitySellerCount for every locality
+func (r *LocalityRepositorySql) GetLocalitiesSellerCount() ([]models.LocalitySellerCount, error) {
+	return sql_utils.Query[models.LocalitySellerCount](r.db, "SELECT l.id, l.locality_name, COUNT(s.id) AS sellers_count FROM sellers s RIGHT JOIN localities l ON s.locality_id = l.id GROUP BY l.id", []any{})
+}
