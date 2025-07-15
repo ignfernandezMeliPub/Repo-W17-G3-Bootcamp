@@ -3,5 +3,6 @@ package carries_repository
 import "app/pkg/models"
 
 type CarriesRepository interface {
-	CreateCarries(c models.Carries) (int64, error)
+	CreateCarrie(c models.Carries) (models.Carries, error)
+	GetCarriesReport(localityId *string) ([]models.CarriesReport, error)
 }
