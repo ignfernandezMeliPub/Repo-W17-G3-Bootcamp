@@ -26,7 +26,7 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 	case errors.As(err, &custom_errors.ErrInvalidBodyError) || errors.As(err, &custom_errors.ErrDecodeError) || errors.As(err, &custom_errors.UrlParamDecodeErrorI) || errors.As(err, &custom_errors.QueryParamDecodeErrorI):
 		status = http.StatusBadRequest
 		message = "Bad request"
-	case errors.As(err, &custom_errors.ErrUniqueAttributeViolationError) || strings.Contains(err.Error(), sqlUniqueAttributeViolationErrString):
+	case errors.As(err, &custom_errors.ErrUniqueAttributeViolationError) || strings.Contains(err.Error(), sqlUniqueAttributeViolationErrString) || errors.As(err, &custom_errors.ErrForeignKeyViolation):
 		status = http.StatusConflict
 		message = "Conflict"
 	case errors.As(err, &custom_errors.ErrInvalidArgs) || errors.As(err, &custom_errors.ErrMandatoryArgMissing):
