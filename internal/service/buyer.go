@@ -2,9 +2,7 @@ package service
 
 import (
 	"app/internal/repository/repositories/buyer_repository"
-	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"strings"
 )
 
 type BuyerService interface {
@@ -27,25 +25,16 @@ func NewBuyerDefault(rp buyer_repository.BuyerRepository) *BuyerServiceDefault {
 }
 
 func (s *BuyerServiceDefault) GetAllBuyers() (b []models.Buyer, err error) {
-	b, err = s.rp.GetAllBuyers()
-	return
+	return s.rp.GetAllBuyers()
 }
 func (s *BuyerServiceDefault) GetBuyerById(id int) (b models.Buyer, err error) {
-	b, err = s.rp.GetBuyerById(id)
-	return
+	return s.rp.GetBuyerById(id)
 }
 func (s *BuyerServiceDefault) GetBuyerByCardNumberId(cardNumberId string) (b models.Buyer, err error) {
-	b, err = s.rp.GetBuyerByCardNumberId(cardNumberId)
-	return
+	return s.rp.GetBuyerByCardNumberId(cardNumberId)
 }
 func (s *BuyerServiceDefault) CreateBuyer(_b models.Buyer) (b models.Buyer, err error) {
-
-	if err = validateBuyerAttributes(_b); err != nil {
-		return
-	}
-
-	b, err = s.rp.CreateBuyer(_b)
-	return
+	return s.rp.CreateBuyer(_b)
 }
 
 func (s *BuyerServiceDefault) UpdateBuyerById(id int, _b models.BuyerPatch) (b models.Buyer, err error) {
@@ -58,53 +47,18 @@ func (s *BuyerServiceDefault) UpdateBuyerById(id int, _b models.BuyerPatch) (b m
 
 	buyer.Patch(_b)
 
-	if err = validateBuyerAttributes(buyer); err != nil {
-		return
-	}
-
 	b, err = s.rp.UpdateBuyer(buyer)
 	return
 }
 
 func (s *BuyerServiceDefault) DeleteBuyerById(id int) (err error) {
-	err = s.rp.DeleteBuyerById(id)
-	return
-}
-
-func validateBuyerAttributes(buyer models.Buyer) error {
-
-	if strings.TrimSpace(buyer.CardNumberId) == "" {
-		return &custom_errors.InvalidArgValueErr{
-			Argument:  "card_number_id",
-			Value:     "",
-			ExtraInfo: "Value must be non-empty",
-		}
-	}
-
-	if strings.TrimSpace(buyer.FirstName) == "" {
-		return &custom_errors.InvalidArgValueErr{
-			Argument:  "first_name",
-			Value:     "",
-			ExtraInfo: "Value must be non-empty",
-		}
-	}
-
-	if strings.TrimSpace(buyer.LastName) == "" {
-		return &custom_errors.InvalidArgValueErr{
-			Argument:  "last_name",
-			Value:     "",
-			ExtraInfo: "Value must be non-empty",
-		}
-	}
-	return nil
+	return s.rp.DeleteBuyerById(id)
 }
 
 func (s *BuyerServiceDefault) GetBuyerPurchaseOrdersCount(buyerId int) (p []models.BuyerPurchaseOrdersCount, err error) {
-	p, err = s.rp.GetBuyerPurchaseOrdersCount(buyerId)
-	return
+	return s.rp.GetBuyerPurchaseOrdersCount(buyerId)
 }
 
 func (s *BuyerServiceDefault) GetBuyersPurchaseOrdersCount() (p []models.BuyerPurchaseOrdersCount, err error) {
-	p, err = s.rp.GetBuyersPurchaseOrdersCount()
-	return
+	return s.rp.GetBuyersPurchaseOrdersCount()
 }

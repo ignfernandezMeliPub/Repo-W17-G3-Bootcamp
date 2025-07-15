@@ -19,30 +19,21 @@ func (r *ProductRepositoryMySQL) GetAllProducts() ([]models.Product, error) {
 	products, err := sql_utils.Query[models.Product](r.db,
 		`SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id 
 	FROM products`, []any{})
-	if err != nil {
-		return nil, err
-	}
-	return products, nil
+	return products, sql_utils.HandleSqlError(err)
 }
 
 func (r *ProductRepositoryMySQL) GetProductById(id int) (models.Product, error) {
 	product, err := sql_utils.QueryRow[models.Product](r.db,
 		`SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id 
 	FROM products WHERE id = ?`, []any{id})
-	if err != nil {
-		return models.Product{}, err
-	}
-	return product, nil
+	return product, sql_utils.HandleSqlError(err)
 }
 
 func (r *ProductRepositoryMySQL) GetProductByCode(code string) (models.Product, error) {
 	product, err := sql_utils.QueryRow[models.Product](r.db,
 		`SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id 
 	FROM products WHERE product_code = ?`, []any{code})
-	if err != nil {
-		return models.Product{}, err
-	}
-	return product, nil
+	return product, sql_utils.HandleSqlError(err)
 }
 
 func (r *ProductRepositoryMySQL) CreateProduct(p models.Product) (models.Product, error) {
@@ -50,29 +41,22 @@ func (r *ProductRepositoryMySQL) CreateProduct(p models.Product) (models.Product
 		`INSERT INTO products (product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id) 
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, []any{p.ProductCode, p.Description, p.Width, p.Height, p.Length, p.NetWeight, p.ExpirationRate, p.RecommendedFreezingTemperature, p.FreezingRate, p.ProductTypeId, p.SellerId})
 	if err != nil {
-		return models.Product{}, err
+		return models.Product{}, sql_utils.HandleSqlError(err)
 	}
 	p.ID = int(id)
-	return p, nil
+	return p, sql_utils.HandleSqlError(err)
 }
 
 func (r *ProductRepositoryMySQL) UpdateProductById(p models.Product) (models.Product, error) {
 	_, err := sql_utils.Update(r.db,
 		`UPDATE products SET product_code = ?, description = ?, width = ?, height = ?, length = ?, net_weight = ?, expiration_rate = ?, recommended_freezing_temperature = ?, freezing_rate = ?, product_type_id = ?, seller_id = ? WHERE id = ?`, []any{p.ProductCode, p.Description, p.Width, p.Height, p.Length, p.NetWeight, p.ExpirationRate, p.RecommendedFreezingTemperature, p.FreezingRate, p.ProductTypeId, p.SellerId, p.ID})
-	if err != nil {
-		return models.Product{}, err
-	}
-
-	return p, nil
+	return p, sql_utils.HandleSqlError(err)
 }
 
 func (r *ProductRepositoryMySQL) DeleteProductById(id int) error {
 	_, err := sql_utils.Delete(r.db,
 		`DELETE FROM products WHERE id = ?`, []any{id})
-	if err != nil {
-		return err
-	}
-	return nil
+	return sql_utils.HandleSqlError(err)
 }
 
 func (r *ProductRepositoryMySQL) GetReportRecords(id int) ([]models.ProductRecordReport, error) {
@@ -81,10 +65,7 @@ func (r *ProductRepositoryMySQL) GetReportRecords(id int) ([]models.ProductRecor
 		FROM products p 
 		LEFT JOIN product_records r ON r.product_id = p.id
 		WHERE p.id = ? GROUP BY p.id, p.description`, []any{id})
-	if err != nil {
-		return nil, err
-	}
-	return ProductRecordReport, nil
+	return ProductRecordReport, sql_utils.HandleSqlError(err)
 }
 
 func (r *ProductRepositoryMySQL) GetAllReportRecords() ([]models.ProductRecordReport, error) {
@@ -93,8 +74,5 @@ func (r *ProductRepositoryMySQL) GetAllReportRecords() ([]models.ProductRecordRe
 		FROM products p 
 		LEFT JOIN product_records r ON r.product_id = p.id
 		GROUP BY p.id, p.description`, []any{})
-	if err != nil {
-		return nil, err
-	}
-	return ProductRecordReport, nil
+	return ProductRecordReport, sql_utils.HandleSqlError(err)
 }
