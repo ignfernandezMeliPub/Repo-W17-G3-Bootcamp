@@ -149,11 +149,9 @@ func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Requ
 
 func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *http.Request) {
 
-	idParam := r.URL.Query().Get("id")
+	id, idError := utils.GetQueryParamAs(r, "id", strconv.Atoi)
 
-	if idParam != "" {
-
-		id, idError := utils.GetQueryParamAs(r, "id", strconv.Atoi)
+	if id != nil {
 
 		// id format invalid
 		if idError != nil {
@@ -184,6 +182,7 @@ func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *h
 			utils.ResponseHttpError(w, err)
 			return
 		}
+
 		response.JSON(w, http.StatusOK, map[string]any{"data": res})
 
 	}

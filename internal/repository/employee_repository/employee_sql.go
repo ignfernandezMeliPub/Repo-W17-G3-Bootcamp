@@ -128,6 +128,12 @@ func (r *EmployeeDb) DeleteEmployee(id int) (err error) {
 
 	rowsAffected, err := sql_utils.Delete(r.db, "DELETE FROM `employees` where `id` = ?", args)
 
+	if err != nil {
+
+		return
+
+	}
+
 	if rowsAffected == 0 {
 
 		err = &custom_errors.ResourceNotFoundError{}
@@ -157,7 +163,7 @@ func (r *EmployeeDb) GetReportInboundOrderByEmployee(id int) (inboundOrder model
 
 func (r *EmployeeDb) GetReportInboundOrders() (inboundOrders []models.InboundOrderEmployee, err error) {
 
-	inboundOrders, err = sql_utils.Query[models.InboundOrderEmployee](r.db, "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id GROUP BY e.id, e.card_number_id, e.first_name, e.last_name, e.warehouse_id;", nil)
+	inboundOrders, err = sql_utils.Query[models.InboundOrderEmployee](r.db, "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id GROUP BY e.id;", nil)
 
 	if err != nil {
 
