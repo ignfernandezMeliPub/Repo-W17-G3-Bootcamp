@@ -1,9 +1,16 @@
 package sql_utils
 
 import (
+	"app/pkg/custom_errors"
 	"database/sql"
 	"fmt"
 	"reflect"
+	"regexp"
+	"strings"
+
+	"errors"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 const dbTagName = "db"
@@ -140,4 +147,74 @@ func getFields(instance any, fieldMap map[string]reflect.Value) (map[string]refl
 	}
 
 	return fieldMap, nil
+}
+
+// HandleSqlError inspects an error returned from a SQL operation and converts it into a more meaningful custom error type.
+// It handles standard Go SQL errors (like sql.ErrNoRows), as well as MySQL-specific errors such as unique constraint violations
+// and foreign key constraint violations. If the error does not match any known patterns, it is returned as-is.
+//
+// Example usage:
+//
+//	result, err := db.Exec(query, args...)
+//	if err != nil {
+//	    return HandleSqlError(err)
+//	}
+//
+// Returns:
+//   - custom_errors.ErrNotFound if no rows are found
+//   - custom_errors.UniqueAttributeViolationErr for duplicate entry errors
+//   - custom_errors.ForeignKeyViolationError for foreign key constraint errors
+//   - The original error if it does not match any known patterns
+
+func HandleSqlError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	// Handle standard Go SQL errors first
+	if errors.Is(err, sql.ErrNoRows) {
+		return custom_errors.ErrNotFound
+	}
+
+	// Handle MySQL-specific errors
+	mysqlErr, ok := err.(*mysql.MySQLError)
+	if !ok {
+		return err
+	}
+
+	switch mysqlErr.Number {
+	case 1062: // Duplicate entry for unique constraint
+		var duplicateEntryRegex = regexp.MustCompile(`Duplicate entry '([^']*)' for key '([^']*)'`)
+
+		matches := duplicateEntryRegex.FindStringSubmatch(mysqlErr.Message)
+		attributeName := "unknown"
+		value := ""
+		if len(matches) == 3 {
+			fullKey := matches[2]
+			parts := strings.Split(fullKey, ".")
+			if len(parts) == 2 {
+				attributeName = parts[1]
+			} else {
+				attributeName = fullKey
+			}
+			value = matches[1]
+		}
+		return &custom_errors.UniqueAttributeViolationErr{
+			AttributeName: attributeName,
+			Value:         value,
+		}
+	case 1451, 1452: // Cannot delete or update a child or parent row: a foreign key constraint fails
+		var fkConstraintRegex = regexp.MustCompile("FOREIGN KEY \\(`([^`]*)`\\)")
+		matches := fkConstraintRegex.FindStringSubmatch(mysqlErr.Message)
+		constraintName := "unknown"
+		if len(matches) >= 2 {
+			constraintName = matches[1]
+		}
+		return &custom_errors.ForeignKeyViolationError{
+			ConstraintName: constraintName,
+			Details:        mysqlErr.Message,
+		}
+	}
+
+	return err
 }

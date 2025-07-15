@@ -21,16 +21,7 @@ func (r *EmployeeDb) GetAllEmployees() (employees []models.Employee, err error) 
 
 	employees, err = sql_utils.Query[models.Employee](r.db, "SELECT id, card_number_id, first_name, last_name, warehouse_id FROM employees", nil)
 
-	if err != nil {
-
-		return nil, err
-
-	}
-
-	if len(employees) == 0 {
-		err = &custom_errors.ResourceNotFoundError{}
-		return
-	}
+	err = sql_utils.HandleSqlError(err)
 
 	return
 
@@ -43,11 +34,7 @@ func (r *EmployeeDb) GetEmployeeById(id int) (employee models.Employee, err erro
 
 	employee, err = sql_utils.QueryRow[models.Employee](r.db, "SELECT id, card_number_id, first_name, last_name, warehouse_id FROM employees WHERE id = ?", args)
 
-	if err != nil {
-
-		return models.Employee{}, err
-
-	}
+	err = sql_utils.HandleSqlError(err)
 
 	return
 
@@ -60,9 +47,8 @@ func (r *EmployeeDb) CreateEmployee(attributes models.EmployeeAttributes) (newEm
 	lastId, err := sql_utils.Insert(r.db, "INSERT INTO `employees` (`card_number_id`,`first_name`,`last_name`,`warehouse_id`) VALUES (?,?,?,?)", args)
 
 	if err != nil {
-
-		return models.Employee{}, err
-
+		err = sql_utils.HandleSqlError(err)
+		return
 	}
 
 	newEmployee = models.Employee{
@@ -104,15 +90,12 @@ func (r *EmployeeDb) UpdateEmployeeById(id int, attributes models.EmployeePatchR
 	rowsAffected, err := sql_utils.Update(r.db, query, args)
 
 	if err != nil {
-
-		return models.Employee{}, err
-
+		err = sql_utils.HandleSqlError(err)
+		return
 	}
 
 	if rowsAffected == 0 {
-
-		return models.Employee{}, &custom_errors.ResourceNotFoundError{}
-
+		return models.Employee{}, custom_errors.ErrNotFound
 	}
 
 	updatedEmployee, err = r.GetEmployeeById(id)
@@ -129,15 +112,12 @@ func (r *EmployeeDb) DeleteEmployee(id int) (err error) {
 	rowsAffected, err := sql_utils.Delete(r.db, "DELETE FROM `employees` where `id` = ?", args)
 
 	if err != nil {
-
+		err = sql_utils.HandleSqlError(err)
 		return
-
 	}
 
 	if rowsAffected == 0 {
-
-		err = &custom_errors.ResourceNotFoundError{}
-
+		err = custom_errors.ErrNotFound
 	}
 
 	return
@@ -150,13 +130,7 @@ func (r *EmployeeDb) GetReportInboundOrderByEmployee(id int) (inboundOrder model
 	args[0] = id
 
 	inboundOrder, err = sql_utils.QueryRow[models.InboundOrderEmployee](r.db, "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id WHERE e.id = ? GROUP BY e.id, e.card_number_id, e.first_name, e.last_name, e.warehouse_id;", args)
-
-	if err != nil {
-
-		return models.InboundOrderEmployee{}, err
-
-	}
-
+	err = sql_utils.HandleSqlError(err)
 	return
 
 }
@@ -164,13 +138,6 @@ func (r *EmployeeDb) GetReportInboundOrderByEmployee(id int) (inboundOrder model
 func (r *EmployeeDb) GetReportInboundOrders() (inboundOrders []models.InboundOrderEmployee, err error) {
 
 	inboundOrders, err = sql_utils.Query[models.InboundOrderEmployee](r.db, "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id GROUP BY e.id;", nil)
-
-	if err != nil {
-
-		return nil, err
-
-	}
-
+	err = sql_utils.HandleSqlError(err)
 	return
-
 }

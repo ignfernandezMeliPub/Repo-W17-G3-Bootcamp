@@ -30,7 +30,7 @@ func (r *CarriesSql) CreateCarrie(c models.Carries) (models.Carries, error) {
 	args := []any{c.Cid, c.CompanyName, c.Address, c.Telephone, c.LocalityId}
 	newId, err := sql_utils.Insert(r.db, queryCreateCarrie, args)
 	if err != nil {
-		return c, err
+		return c, sql_utils.HandleSqlError(err)
 	}
 	c.Id = int(newId)
 	return c, nil

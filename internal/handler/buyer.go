@@ -115,7 +115,7 @@ func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) {
 
 	// response
 	data := b
-	response.JSON(w, http.StatusCreated, map[string]any{
+	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
 }

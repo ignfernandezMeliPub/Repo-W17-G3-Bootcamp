@@ -25,6 +25,7 @@ func (r *PurchaseOrderRepositorySQL) CreatePurchaseOrder(purchaseOrder models.Pu
 		"INSERT INTO purchase_orders (order_number, order_date, tracking_code, buyer_id) VALUES (?, ?, ?, ?)",
 		[]any{purchaseOrder.OrderNumber, purchaseOrder.OrderDate, purchaseOrder.TrackingCode, purchaseOrder.BuyerId})
 	if err != nil {
+		err = sql_utils.HandleSqlError(err)
 		tx.Rollback()
 		return
 	}
@@ -34,6 +35,7 @@ func (r *PurchaseOrderRepositorySQL) CreatePurchaseOrder(purchaseOrder models.Pu
 			"INSERT INTO purchase_order_details (order_id, product_record_id, quantity) VALUES (?, ?, ?)",
 			[]any{orderId, detail.ProductRecordId, detail.Quantity})
 		if err != nil {
+			err = sql_utils.HandleSqlError(err)
 			tx.Rollback()
 			return p, err
 		}
@@ -42,6 +44,7 @@ func (r *PurchaseOrderRepositorySQL) CreatePurchaseOrder(purchaseOrder models.Pu
 
 	err = tx.Commit()
 	if err != nil {
+		err = sql_utils.HandleSqlError(err)
 		tx.Rollback()
 		return
 	}
