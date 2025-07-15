@@ -3,9 +3,11 @@ package handler
 import (
 	"app/internal/handler/utils"
 	"app/internal/service"
+	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/bootcamp-go/web/response"
 )
@@ -61,7 +63,11 @@ func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Reques
 		utils.ResponseHttpError(w, err)
 		return
 	}
-
+	err = validateWarehouseAttributes(wh)
+	if err != nil {
+		utils.ResponseHttpError(w, err)
+		return
+	}
 	// process
 	data, err := h.sv.CreateWarehouse(wh)
 	if err != nil {
@@ -116,4 +122,23 @@ func (h *WarehouseDefault) DeleteWarehouse(w http.ResponseWriter, r *http.Reques
 	}
 	response.JSON(w, http.StatusNoContent, map[string]any{})
 	return
+}
+
+func validateWarehouseAttributes(wh models.Warehouse) error {
+	if strings.TrimSpace(wh.WarehouseCode) == "" {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "warehouse_code"}
+	}
+	if strings.TrimSpace(wh.Address) == "" {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "address"}
+	}
+	if strings.TrimSpace(wh.Telephone) == "" {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "telephone"}
+	}
+	if wh.MinimumCapacity < 0 {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "minimun_capacity"}
+	}
+	if wh.MinimumTemperature == nil {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "minimun_temperature"}
+	}
+	return nil
 }
