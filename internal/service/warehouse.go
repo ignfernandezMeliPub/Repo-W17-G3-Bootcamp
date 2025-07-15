@@ -1,7 +1,7 @@
 package service
 
 import (
-	warehouserepository "app/internal/repository/warehouse_repository"
+	warehouserepository "app/internal/repository/repositories/warehouse_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 )

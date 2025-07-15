@@ -1,7 +1,7 @@
 package service
 
 import (
-	"app/internal/repository/carries_repository"
+	"app/internal/repository/repositories/carries_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 

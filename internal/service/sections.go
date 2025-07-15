@@ -1,7 +1,7 @@
 package service
 
 import (
-	"app/internal/repository/sections_repository"
+	"app/internal/repository/repositories/sections_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"reflect"

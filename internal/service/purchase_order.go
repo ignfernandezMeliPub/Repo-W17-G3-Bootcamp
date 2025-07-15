@@ -1,7 +1,7 @@
 package service
 
 import (
-	"app/internal/repository/purchase_order_repository"
+	"app/internal/repository/repositories/purchase_order_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"strings"

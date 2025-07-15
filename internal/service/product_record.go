@@ -1,7 +1,7 @@
 package service
 
 import (
-	"app/internal/repository/product_record_repository"
+	"app/internal/repository/repositories/product_record_repository"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"time"
@@ -41,7 +41,7 @@ func (s *ProductRecordServiceImpl) CreateProductRecord(productRecord models.Prod
 	}
 
 	productRecordModel := models.ProductRecord{
-		LastUpdateDate: *productRecord.LastUpdateDate, //poner time.now()?
+		LastUpdateDate: *productRecord.LastUpdateDate, // poner time.now()?
 		PurchasePrice:  *productRecord.PurchasePrice,
 		SalePrice:      *productRecord.SalePrice,
 		ProductID:      *productRecord.ProductID,

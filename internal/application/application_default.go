@@ -2,19 +2,19 @@ package application
 
 import (
 	"app/internal/handler"
-	"app/internal/repository/buyer_repository"
-	"app/internal/repository/carries_repository"
-	"app/internal/repository/employee_repository"
-	"app/internal/repository/inbound_order_repository"
-	"app/internal/repository/locality_repository"
-	"app/internal/repository/product_batch_repository"
-	"app/internal/repository/product_record_repository"
-	"app/internal/repository/product_repository"
-	"app/internal/repository/product_type_repository"
-	"app/internal/repository/purchase_order_repository"
-	"app/internal/repository/sections_repository"
-	"app/internal/repository/seller_repository"
-	"app/internal/repository/warehouse_repository"
+	"app/internal/repository/repositories/buyer_repository"
+	"app/internal/repository/repositories/carries_repository"
+	"app/internal/repository/repositories/employee_repository"
+	"app/internal/repository/repositories/inbound_order_repository"
+	"app/internal/repository/repositories/locality_repository"
+	"app/internal/repository/repositories/product_batch_repository"
+	"app/internal/repository/repositories/product_record_repository"
+	"app/internal/repository/repositories/product_repository"
+	"app/internal/repository/repositories/product_type_repository"
+	"app/internal/repository/repositories/purchase_order_repository"
+	"app/internal/repository/repositories/sections_repository"
+	"app/internal/repository/repositories/seller_repository"
+	"app/internal/repository/repositories/warehouse_repository"
 	"app/internal/service"
 	"database/sql"
 	"net/http"
@@ -238,7 +238,7 @@ func (a *ServerChi) Run() (err error) {
 		rt.Route("/localities", func(rt chi.Router) {
 			rt.Post("/", localityHandler.CreateLocality)
 
-			//requerimiento 2
+			// requerimiento 2
 			rt.Get("/reportCarries", localityHandler.GetCarriesReport)
 		})
 		// 8. Carries
@@ -252,7 +252,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/", productRecordHd.GetAllProductRecords)
 			rt.Post("/", productRecordHd.CreateProductRecord)
 		})
-		//11. InbounOrders
+		// 11. InbounOrders
 		rt.Route("/inboundOrders", func(rt chi.Router) {
 			rt.Post("/", hdInbounOrders.CreateInboundOrder)
 		})
