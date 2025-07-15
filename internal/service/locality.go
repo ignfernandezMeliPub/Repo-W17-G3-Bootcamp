@@ -7,6 +7,8 @@ import (
 
 type LocalityService interface {
 	CreateLocality(id string, localityName string, provinceName string, countryName string) (models.Locality, error)
+	GetLocalitySellerCount(localityId string) (models.LocalitySellerCount, error)
+	GetLocalitiesSellerCount() ([]models.LocalitySellerCount, error)
 }
 
 type LocalityServiceImpl struct {
