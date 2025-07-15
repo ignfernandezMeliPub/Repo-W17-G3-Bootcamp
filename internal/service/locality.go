@@ -7,6 +7,7 @@ import (
 
 type LocalityService interface {
 	CreateLocality(id string, localityName string, provinceName string, countryName string) (models.Locality, error)
+	GetCarriesReport(localityId string) ([]models.CarriesReport, error)
 }
 
 type LocalityServiceImpl struct {
@@ -20,4 +21,8 @@ func NewLocalityServiceImpl(repository locality_repository.LocalityRepository) L
 // CreateLocality Creates a new locality
 func (s *LocalityServiceImpl) CreateLocality(id string, localityName string, provinceName string, countryName string) (models.Locality, error) {
 	return s.repository.CreateLocality(models.Locality{Id: id, LocalityName: localityName, ProvinceName: provinceName, CountryName: countryName})
+}
+
+func (s *LocalityServiceImpl) GetCarriesReport(localityId string) ([]models.CarriesReport, error) {
+	return s.repository.GetCarriesReport(localityId)
 }

@@ -5,8 +5,9 @@ import (
 	"app/internal/handler/utils"
 	"app/internal/service"
 	"app/pkg/models"
-	"github.com/bootcamp-go/web/response"
 	"net/http"
+
+	"github.com/bootcamp-go/web/response"
 )
 
 type LocalityHandler struct {
@@ -34,5 +35,22 @@ func (h *LocalityHandler) CreateLocality(w http.ResponseWriter, r *http.Request)
 
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": []models.Locality{newLocality},
+	})
+}
+
+func (h *LocalityHandler) GetCarriesReport(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	var idPtr string
+	if id != "" {
+		idPtr = id
+	}
+	report, err := h.service.GetCarriesReport(idPtr)
+	if err != nil {
+		utils.ResponseHttpError(w, err)
+		return
+	}
+
+	response.JSON(w, http.StatusOK, map[string]any{
+		"data": report,
 	})
 }

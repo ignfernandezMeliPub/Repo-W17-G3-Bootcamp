@@ -216,7 +216,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", localityHandler.CreateLocality)
 
 			//requerimiento 2
-			rt.Get("/reportCarries", carriesHandler.GetCarriesReport)
+			rt.Get("/reportCarries", localityHandler.GetCarriesReport)
 		})
 		// 8. Carries
 		rt.Route("/carries", func(rt chi.Router) {
