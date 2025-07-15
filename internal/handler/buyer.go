@@ -142,3 +142,35 @@ func (h *BuyerDefault) DeleteBuyer(w http.ResponseWriter, r *http.Request) {
 		"data": nil,
 	})
 }
+
+func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *http.Request) {
+	id, err := utils.GetQueryParamAs(r, "id", strconv.Atoi)
+
+	if err != nil {
+		utils.ResponseHttpError(w, err)
+		return
+	}
+
+	if id != nil {
+		// Purchase orders by buyer id
+		data, err := h.sv.GetBuyerPurchaseOrdersCount(*id)
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
+		return
+	}
+
+	// Purchase orders qty by buyer
+	data, err := h.sv.GetBuyersPurchaseOrdersCount()
+	if err != nil {
+		utils.ResponseHttpError(w, err)
+		return
+	}
+	response.JSON(w, http.StatusOK, map[string]any{
+		"data": data,
+	})
+}

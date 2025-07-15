@@ -7,6 +7,7 @@ import (
 	"app/internal/repository/locality_repository"
 	"app/internal/repository/product_repository"
 	"app/internal/repository/product_type_repository"
+	"app/internal/repository/purchase_order_repository"
 	"app/internal/repository/sections_repository"
 	"app/internal/repository/seller_repository"
 	"app/internal/repository/warehouse_repository"
@@ -119,6 +120,10 @@ func (a *ServerChi) Run() (err error) {
 	buyerSv := service.NewBuyerDefault(buyerRp)
 	buyerHd := handler.NewBuyerDefault(buyerSv)
 
+	purchaseOrderRp := purchase_order_repository.NewPurchaseOrderRepositorySQL(db)
+	purchaseOrderSv := service.NewPurchaseOrderDefault(purchaseOrderRp)
+	purchaseOrderHd := handler.NewPurchaseOrderDefault(purchaseOrderSv)
+
 	// Product - repository
 	productRpSQL := product_repository.NewProductRepositoryMySQL(db)
 	productTypeRpSQL := product_type_repository.NewProductTypeRepositoryMySQL(db)
@@ -204,11 +209,16 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", buyerHd.CreateBuyer)
 			rt.Patch("/{id}", buyerHd.PatchBuyer)
 			rt.Delete("/{id}", buyerHd.DeleteBuyer)
+			rt.Get("/reportPurchaseOrders", buyerHd.GetBuyersPurchaseOrdersCount)
 		})
 		// 7. Localities
 		rt.Route("/localities", func(rt chi.Router) {
 			rt.Post("/", localityHandler.CreateLocality)
 			rt.Get("/reportSellers", localityHandler.GetLocalitySellerCount)
+		})
+		// 12. Purchase Orders
+		rt.Route("/purchaseOrders", func(rt chi.Router) {
+			rt.Post("/", purchaseOrderHd.CreatePurchaseOrder)
 		})
 	})
 

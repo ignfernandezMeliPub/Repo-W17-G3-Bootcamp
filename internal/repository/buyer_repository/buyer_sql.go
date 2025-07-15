@@ -63,3 +63,11 @@ func (r *BuyerRepositorySQL) DeleteBuyerById(id int) (err error) {
 
 	return
 }
+
+func (r *BuyerRepositorySQL) GetBuyerPurchaseOrdersCount(buyerId int) (p []models.BuyerPurchaseOrdersCount, err error) {
+	return sql_utils.Query[models.BuyerPurchaseOrdersCount](r.db, "SELECT id as buyer_id, card_number_id, first_name, last_name, COUNT(*) as purchase_orders_count FROM buyers LEFT JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id WHERE buyers.id = ? GROUP BY buyers.id", []any{buyerId})
+}
+
+func (r *BuyerRepositorySQL) GetBuyersPurchaseOrdersCount() (p []models.BuyerPurchaseOrdersCount, err error) {
+	return sql_utils.Query[models.BuyerPurchaseOrdersCount](r.db, "SELECT id as buyer_id, card_number_id, first_name, last_name, COUNT(*) as purchase_orders_count FROM buyers LEFT JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id GROUP BY buyers.id", []any{})
+}

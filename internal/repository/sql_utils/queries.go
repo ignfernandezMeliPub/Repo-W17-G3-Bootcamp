@@ -4,6 +4,13 @@ import (
 	"database/sql"
 )
 
+// DBExecutor is an interface that both *sql.DB and *sql.Tx implement
+// This allows functions to work with either a database connection or a transaction
+type DBExecutor interface {
+	Query(query string, args ...any) (*sql.Rows, error)
+	Exec(query string, args ...any) (sql.Result, error)
+}
+
 // QueryRow executes a query that is expected to return a single row and
 // automatically maps the result to a struct instance of type T.
 //
@@ -15,7 +22,7 @@ import (
 //   - T: The struct type to which the result will be mapped.
 //
 // Parameters:
-//   - db: A pointer to the active sql.DB database connection.
+//   - executor: A DBExecutor (either *sql.DB or *sql.Tx) for database operations.
 //   - query: The SQL query to execute, which may contain placeholders (?).
 //   - args: A slice of arguments to replace the placeholders in the query.
 //
@@ -34,11 +41,11 @@ import (
 //	    internal    string  `db:"internal"`     // Won't be mapped (not exported)
 //	    Cache       string                      // Won't be mapped (no dbTagName tag)
 //	}
-func QueryRow[T any](db *sql.DB, query string, args []any) (T, error) {
+func QueryRow[T any](executor DBExecutor, query string, args []any) (T, error) {
 	var instance T
 
-	// ? Se usa db.Query() para obtener un *sql.Rows, que nos da acceso a los nombres de las columnas.
-	rows, err := db.Query(query, args...)
+	// ? Se usa executor.Query() para obtener un *sql.Rows, que nos da acceso a los nombres de las columnas.
+	rows, err := executor.Query(query, args...)
 	if err != nil {
 		return instance, err
 	}
@@ -78,7 +85,7 @@ func QueryRow[T any](db *sql.DB, query string, args []any) (T, error) {
 //   - T: The struct type to which each row will be mapped.
 //
 // Parameters:
-//   - db: A pointer to the active sql.DB database connection.
+//   - executor: A DBExecutor (either *sql.DB or *sql.Tx) for database operations.
 //   - query: The SQL query to execute, which may contain placeholders (?).
 //   - args: A slice of arguments to replace the placeholders in the query.
 //
@@ -97,8 +104,8 @@ func QueryRow[T any](db *sql.DB, query string, args []any) (T, error) {
 //	    internal    string  `db:"internal"`     // Won't be mapped (not exported)
 //	    Cache       string                      // Won't be mapped (no dbTagName tag)
 //	}
-func Query[T any](db *sql.DB, query string, args []any) ([]T, error) {
-	rows, err := db.Query(query, args...)
+func Query[T any](executor DBExecutor, query string, args []any) ([]T, error) {
+	rows, err := executor.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +137,7 @@ func Query[T any](db *sql.DB, query string, args []any) ([]T, error) {
 // It uses sql.Result.LastInsertId() to retrieve the generated primary key value.
 //
 // Parameters:
-//   - db: Pointer to the sql.DB database connection
+//   - executor: A DBExecutor (either *sql.DB or *sql.Tx) for database operations.
 //   - query: INSERT SQL statement to execute. Can contain placeholders (?)
 //   - args: Slice of arguments to replace placeholders in the query, in order
 //
@@ -145,8 +152,8 @@ func Query[T any](db *sql.DB, query string, args []any) ([]T, error) {
 //   - PostgreSQL: May not be supported, use RETURNING clause instead
 //   - If the table doesn't have an auto-increment primary key, behavior may vary
 //   - For bulk inserts, only returns the ID of the last inserted row
-func Insert(db *sql.DB, query string, args []any) (int64, error) {
-	result, err := db.Exec(query, args...)
+func Insert(executor DBExecutor, query string, args []any) (int64, error) {
+	result, err := executor.Exec(query, args...)
 	if err != nil {
 		return 0, err
 	}
@@ -160,15 +167,15 @@ func Insert(db *sql.DB, query string, args []any) (int64, error) {
 // It uses sql.Result.RowsAffected() to determine how many rows were actually updated.
 //
 // Parameters:
-//   - db: Pointer to the sql.DB database connection
+//   - executor: A DBExecutor (either *sql.DB or *sql.Tx) for database operations.
 //   - query: UPDATE SQL statement to execute. Can contain placeholders (?)
 //   - args: Slice of arguments to replace placeholders in the query, in order
 //
 // Returns:
 //   - int64: Number of rows that were actually modified by the UPDATE statement
 //   - error: Error if any problem occurs during execution
-func Update(db *sql.DB, query string, args []any) (int64, error) {
-	result, err := db.Exec(query, args...)
+func Update(executor DBExecutor, query string, args []any) (int64, error) {
+	result, err := executor.Exec(query, args...)
 	if err != nil {
 		return 0, err
 	}
@@ -182,15 +189,15 @@ func Update(db *sql.DB, query string, args []any) (int64, error) {
 // It uses sql.Result.RowsAffected() to determine how many rows were actually deleted.
 //
 // Parameters:
-//   - db: Pointer to the sql.DB database connection
+//   - executor: A DBExecutor (either *sql.DB or *sql.Tx) for database operations.
 //   - query: DELETE SQL statement to execute. Can contain placeholders (?)
 //   - args: Slice of arguments to replace placeholders in the query, in order
 //
 // Returns:
 //   - int64: Number of rows that were actually deleted by the DELETE statement
 //   - error: Error if any problem occurs during execution
-func Delete(db *sql.DB, query string, args []any) (int64, error) {
-	result, err := db.Exec(query, args...)
+func Delete(executor DBExecutor, query string, args []any) (int64, error) {
+	result, err := executor.Exec(query, args...)
 	if err != nil {
 		return 0, err
 	}
