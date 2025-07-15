@@ -10,5 +10,5 @@ type Locality struct {
 type LocalitySellerCount struct {
 	Id           string `json:"id"            db:"id"`
 	LocalityName string `json:"locality_name" db:"locality_name"`
-	SellersCount string `json:"province_name" db:"sellers_count"`
+	SellersCount int    `json:"province_name" db:"sellers_count"`
 }
