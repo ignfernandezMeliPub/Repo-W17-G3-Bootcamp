@@ -62,25 +62,32 @@ func (r *WarehouseSql) CreateWarehouse(wh models.Warehouse) (models.Warehouse, e
 	args := []any{wh.WarehouseCode, wh.Address, wh.Telephone, wh.MinimumCapacity, wh.MinimumTemperature}
 	id, err := sql_utils.Insert(r.db, queryCreateWarehouse, args)
 	if err != nil {
-		return models.Warehouse{}, err
+		return models.Warehouse{}, sql_utils.HandleSqlError(err)
 	}
 	wh.Id = int(id)
 	return wh, nil
 }
 
 func (r *WarehouseSql) GetAllWarehouses() ([]models.Warehouse, error) {
-
-	return sql_utils.Query[models.Warehouse](r.db, queryGetAllWarehouses, nil)
+	whs, err := sql_utils.Query[models.Warehouse](r.db, queryGetAllWarehouses, nil)
+	if err != nil {
+		return nil, sql_utils.HandleSqlError(err)
+	}
+	return whs, nil
 }
 
 func (r *WarehouseSql) GetWarehouseById(id int) (models.Warehouse, error) {
-	return sql_utils.QueryRow[models.Warehouse](r.db, queryGetWarehouseById, []any{id})
+	wh, err := sql_utils.QueryRow[models.Warehouse](r.db, queryGetWarehouseById, []any{id})
+	if err != nil {
+		return models.Warehouse{}, sql_utils.HandleSqlError(err)
+	}
+	return wh, nil
 }
 
 func (r *WarehouseSql) DeleteWarehouseById(id int) error {
 	row, err := sql_utils.Delete(r.db, queryDeleteWarehouseById, []any{id})
 	if err != nil {
-		return err
+		return sql_utils.HandleSqlError(err)
 	}
 	if row == 0 {
 		return custom_errors.ErrNotFound
@@ -117,7 +124,7 @@ func (r *WarehouseSql) UpdateWarehouseById(id int, wh models.Warehouse) (models.
 	args = append(args, id)
 	_, err := sql_utils.Update(r.db, queryUpdateWarehouseById, args)
 	if err != nil {
-		return models.Warehouse{}, err
+		return models.Warehouse{}, sql_utils.HandleSqlError(err)
 	}
 	return r.GetWarehouseById(id)
 }

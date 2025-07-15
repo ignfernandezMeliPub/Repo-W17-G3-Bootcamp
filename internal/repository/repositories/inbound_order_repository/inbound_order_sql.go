@@ -24,7 +24,7 @@ func (r *InboundOrderDb) CreateInboundOrder(details models.InboundOrderDetails) 
 
 	if err != nil {
 
-		return models.InboundOrder{}, err
+		return models.InboundOrder{}, sql_utils.HandleSqlError(err)
 
 	}
 
@@ -34,6 +34,6 @@ func (r *InboundOrderDb) CreateInboundOrder(details models.InboundOrderDetails) 
 		InboundOrderDetails: details,
 	}
 
-	return
+	return inboundOrder, nil
 
 }

@@ -27,7 +27,7 @@ func NewSellerRepositorySql(db *sql.DB) SellerRepositorySql {
 func (r *SellerRepositorySql) CreateSeller(seller models.Seller) (models.Seller, error) {
 	newId, err := sql_utils.Insert(r.db, "INSERT INTO sellers (cid, company_name, address, telephone, locality_id) VALUES (?, ?, ?, ?, ?)", []any{seller.CompanyId, seller.CompanyName, seller.Address, seller.Telephone, seller.LocalityId})
 	if err != nil {
-		return seller, err
+		return seller, sql_utils.HandleSqlError(err)
 	}
 
 	seller.Id = int(newId)
@@ -36,19 +36,27 @@ func (r *SellerRepositorySql) CreateSeller(seller models.Seller) (models.Seller,
 
 // GetSellerById returns the Seller by id or an error if it does not exist
 func (r *SellerRepositorySql) GetSellerById(id int) (models.Seller, error) {
-	return sql_utils.QueryRow[models.Seller](r.db, "SELECT id, cid, company_name, address, telephone, locality_id FROM sellers WHERE id = ?", []any{id})
+	s, err := sql_utils.QueryRow[models.Seller](r.db, "SELECT id, cid, company_name, address, telephone, locality_id FROM sellers WHERE id = ?", []any{id})
+	if err != nil {
+		return models.Seller{}, sql_utils.HandleSqlError(err)
+	}
+	return s, nil
 }
 
 // GetAllSellers GetAllSeller returns all the Sellers currently stored
 func (r *SellerRepositorySql) GetAllSellers() ([]models.Seller, error) {
-	return sql_utils.Query[models.Seller](r.db, "SELECT id, cid, company_name, address, telephone, locality_id FROM sellers", []any{})
+	s, err := sql_utils.Query[models.Seller](r.db, "SELECT id, cid, company_name, address, telephone, locality_id FROM sellers", []any{})
+	if err != nil {
+		return nil, sql_utils.HandleSqlError(err)
+	}
+	return s, nil
 }
 
 // DeleteSellerById DeleteSeller removes a Seller by id
 func (r *SellerRepositorySql) DeleteSellerById(id int) error {
 	affectedRows, err := sql_utils.Delete(r.db, "DELETE FROM sellers WHERE id = ?", []any{id})
 	if err != nil {
-		return err
+		return sql_utils.HandleSqlError(err)
 	}
 	if affectedRows == 0 {
 		return custom_errors.ErrNotFound
@@ -110,7 +118,7 @@ func (r *SellerRepositorySql) UpdateSellerById(id int, companyId *int, companyNa
 
 	_, err := sql_utils.Update(r.db, query, args)
 	if err != nil {
-		return models.Seller{}, err
+		return models.Seller{}, sql_utils.HandleSqlError(err)
 	}
 
 	return r.GetSellerById(id) // Si bien es ineficiente porque hacemos 2 llamadas a la base de datos, devolvemos GetSellerById para cumplir con el requisito del sprint 1 de la respuesta del patch con la data del objeto patcheado.

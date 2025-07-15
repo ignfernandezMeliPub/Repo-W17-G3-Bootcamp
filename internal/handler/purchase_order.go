@@ -18,28 +18,24 @@ type PurchaseOrderDefault struct {
 }
 
 func (h *PurchaseOrderDefault) CreatePurchaseOrder(w http.ResponseWriter, r *http.Request) {
-	// request
-	var _PurchaseOrderRequest models.PurchaseOrderCreateRequest
+	var purchaseOrderRequest models.PurchaseOrderCreateRequest
 
-	PurchaseOrderRequest, err := utils.InstantiateVarFromBody(&r.Body, _PurchaseOrderRequest)
+	purchaseOrderRequest, err := utils.InstantiateVarFromBody(&r.Body, purchaseOrderRequest)
 
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	// process
-	_p := PurchaseOrderRequest.ToPurchaseOrder()
+	purchaseOrderFromRequest := purchaseOrderRequest.ToPurchaseOrder()
 
-	p, err := h.sv.CreatePurchaseOrder(_p)
+	newPurchaseOrder, err := h.sv.CreatePurchaseOrder(purchaseOrderFromRequest)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
 	}
 
-	// response
-	data := p
 	response.JSON(w, http.StatusCreated, map[string]any{
-		"data": data,
+		"data": newPurchaseOrder,
 	})
 }

@@ -50,9 +50,5 @@ func (s *WarehouseDefault) UpdateWarehouseById(id int, w models.Warehouse) (mode
 }
 
 func (s *WarehouseDefault) DeleteWarehouse(id int) error {
-	_, err := s.rp.GetWarehouseById(id)
-	if err != nil {
-		return &custom_errors.ResourceNotFoundError{}
-	}
 	return s.rp.DeleteWarehouseById(id)
 }

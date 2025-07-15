@@ -20,7 +20,7 @@ func NewSectionsRepositorySQL(db *sql.DB) *SectionsRepositorySQL {
 func (s *SectionsRepositorySQL) GetAllSections() ([]models.Section, error) {
 	secs, err := sql_utils.Query[models.Section](s.db, "SELECT `id`,`section_number`,`current_temperature`,`minimum_temperature`,`current_capacity`,`minimum_capacity`,`maximum_capacity`,`warehouse_id`,`product_type_id` FROM sections", nil)
 	if err != nil {
-		return nil, err
+		return nil, sql_utils.HandleSqlError(err)
 	}
 	return secs, nil
 }
@@ -32,7 +32,7 @@ func (s *SectionsRepositorySQL) GetSectionById(id int) (models.Section, error) {
 		"FROM sections WHERE id = ?", args)
 
 	if err != nil {
-		return models.Section{}, err
+		return models.Section{}, sql_utils.HandleSqlError(err)
 	}
 	return sec, nil
 }
@@ -44,7 +44,7 @@ func (s *SectionsRepositorySQL) CreateSection(sc models.Section) (models.Section
 			"VALUES (?,?,?,?,?,?,?,?)", args,
 	)
 	if err != nil {
-		return models.Section{}, err
+		return models.Section{}, sql_utils.HandleSqlError(err)
 	}
 	sc.ID = int(lastId)
 	return sc, nil
@@ -67,14 +67,13 @@ func (s *SectionsRepositorySQL) UpdateSectionById(section models.Section) (model
 		args,
 	)
 	if err != nil {
-
-		return models.Section{}, err
+		return models.Section{}, sql_utils.HandleSqlError(err)
 
 	}
 
 	if rowsAffc == 0 {
 
-		return models.Section{}, &custom_errors.ResourceNotFoundError{}
+		return models.Section{}, custom_errors.ErrNotFound
 
 	}
 
@@ -85,10 +84,13 @@ func (s *SectionsRepositorySQL) DeleteSectionById(id int) error {
 	args := make([]any, 1)
 	args[0] = id
 	rowsAffc, err := sql_utils.Delete(s.db, "DELETE FROM sections WHERE id = ?", args)
-	if rowsAffc == 0 {
-		return &custom_errors.ResourceNotFoundError{}
+	if err != nil {
+		return sql_utils.HandleSqlError(err)
 	}
-	return err
+	if rowsAffc == 0 {
+		return custom_errors.ErrNotFound
+	}
+	return nil
 }
 
 func (s *SectionsRepositorySQL) GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error) {
