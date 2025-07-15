@@ -21,3 +21,13 @@ func NewLocalityServiceImpl(repository locality_repository.LocalityRepository) L
 func (s *LocalityServiceImpl) CreateLocality(id string, localityName string, provinceName string, countryName string) (models.Locality, error) {
 	return s.repository.CreateLocality(models.Locality{Id: id, LocalityName: localityName, ProvinceName: provinceName, CountryName: countryName})
 }
+
+// GetLocalitySellerCount Returns LocalitySellerCount for a specific locality
+func (s *LocalityServiceImpl) GetLocalitySellerCount(localityId string) (models.LocalitySellerCount, error) {
+	return s.repository.GetLocalitySellerCount(localityId)
+}
+
+// GetLocalitiesSellerCount Returns LocalitySellerCount for all localities
+func (s *LocalityServiceImpl) GetLocalitiesSellerCount() ([]models.LocalitySellerCount, error) {
+	return s.repository.GetLocalitiesSellerCount()
+}
