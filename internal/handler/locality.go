@@ -40,11 +40,8 @@ func (h *LocalityHandler) CreateLocality(w http.ResponseWriter, r *http.Request)
 
 func (h *LocalityHandler) GetCarriesReport(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
-	var idPtr string
-	if id != "" {
-		idPtr = id
-	}
-	report, err := h.service.GetCarriesReport(idPtr)
+
+	report, err := h.service.GetCarriesReport(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return

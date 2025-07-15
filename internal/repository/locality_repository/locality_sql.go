@@ -41,6 +41,7 @@ func (r *LocalityRepositorySql) CreateLocality(locality models.Locality) (models
 	return locality, nil
 }
 
+// GetCarriesReport Returns the carries report for a locality
 func (r *LocalityRepositorySql) GetCarriesReport(localityId string) ([]models.CarriesReport, error) {
 	var query string
 	var args []any

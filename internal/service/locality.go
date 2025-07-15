@@ -27,6 +27,7 @@ func (s *LocalityServiceImpl) CreateLocality(id string, localityName string, pro
 	return s.repository.CreateLocality(models.Locality{Id: id, LocalityName: localityName, ProvinceName: provinceName, CountryName: countryName})
 }
 
+// GetCarriesReport Returns the carries report for a locality
 func (s *LocalityServiceImpl) GetCarriesReport(localityId string) ([]models.CarriesReport, error) {
 	return s.repository.GetCarriesReport(localityId)
 }
