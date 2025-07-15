@@ -12,10 +12,10 @@ import (
 )
 
 type CarriesHandler struct {
-	sv service.ICarriesService
+	sv service.CarriesService
 }
 
-func NewCarriesHandler(sv service.ICarriesService) *CarriesHandler {
+func NewCarriesHandler(sv service.CarriesService) *CarriesHandler {
 	return &CarriesHandler{sv: sv}
 }
 
