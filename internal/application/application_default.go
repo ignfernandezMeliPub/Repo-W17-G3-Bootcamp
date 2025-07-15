@@ -105,9 +105,9 @@ func (a *ServerChi) Run() (err error) {
 		return err
 	}
 
-	//ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
+	// ldEmployee := loader.NewEmployeeJSONFile(a.employeesFilePath)
 
-	//dbEmployee, err := ldEmployee.Load()
+	// dbEmployee, err := ldEmployee.Load()
 
 	if err != nil {
 		return
@@ -230,6 +230,7 @@ func (a *ServerChi) Run() (err error) {
 		// 7. Localities
 		rt.Route("/localities", func(rt chi.Router) {
 			rt.Post("/", localityHandler.CreateLocality)
+			rt.Get("/reportSellers", localityHandler.GetLocalitySellerCount)
 		})
 	})
 
