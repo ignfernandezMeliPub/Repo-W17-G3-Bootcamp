@@ -13,3 +13,11 @@ Content-Type: application/json
     "country_name": "Country A"
   }
 }
+
+### 2. GetAll LocalitySellerCount
+GET {{baseUrl}}/localities/reportSellers
+Content-Type: application/json
+
+### 3. Get LocalitySellerCount
+GET {{baseUrl}}/localities/reportSellers?id=random
+Content-Type: application/json
