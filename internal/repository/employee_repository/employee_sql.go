@@ -104,14 +104,40 @@ func (m *EmployeeDb) UpdateEmployeeById(id int, attributes models.EmployeePatchR
 
 }
 
-func (m *EmployeeDb) DeleteEmployee(id int) (err error) {
+func (r *EmployeeDb) DeleteEmployee(id int) (err error) {
 
 	args := make([]any, 1)
 	args[0] = id
 
-	_, err = sql_utils.Delete(m.db, "DELETE FROM `employees` where `id` = ?", args)
+	rowsAffected, err := sql_utils.Delete(r.db, "DELETE FROM `employees` where `id` = ?", args)
 
+	if err != nil {
+		err = sql_utils.HandleSqlError(err)
+		return
+	}
+
+	if rowsAffected == 0 {
+		err = custom_errors.ErrNotFound
+	}
+
+	return
+
+}
+
+func (r *EmployeeDb) GetReportInboundOrderByEmployee(id int) (inboundOrder models.InboundOrderEmployee, err error) {
+
+	args := make([]any, 1)
+	args[0] = id
+
+	inboundOrder, err = sql_utils.QueryRow[models.InboundOrderEmployee](r.db, "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id WHERE e.id = ? GROUP BY e.id, e.card_number_id, e.first_name, e.last_name, e.warehouse_id;", args)
 	err = sql_utils.HandleSqlError(err)
 	return
 
+}
+
+func (r *EmployeeDb) GetReportInboundOrders() (inboundOrders []models.InboundOrderEmployee, err error) {
+
+	inboundOrders, err = sql_utils.Query[models.InboundOrderEmployee](r.db, "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id GROUP BY e.id;", nil)
+	err = sql_utils.HandleSqlError(err)
+	return
 }

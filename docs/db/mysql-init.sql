@@ -80,7 +80,7 @@ CREATE TABLE warehouses (
 DROP TABLE IF EXISTS employees;
 CREATE TABLE employees (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    card_number_id VARCHAR(255) NOT NULL unique,
+    card_number_id VARCHAR(10) NOT NULL UNIQUE,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     warehouse_id INT,
@@ -90,19 +90,19 @@ CREATE TABLE employees (
 DROP TABLE IF EXISTS sections;
 CREATE TABLE `sections`
 (
-    `id`                  int          NOT NULL AUTO_INCREMENT,
-    `section_number`      varchar(255) NOT NULL UNIQUE,
-    `current_temperature` float        NOT NULL,
-    `minimum_temperature` float        NOT NULL,
-    `current_capacity`    int          NOT NULL,
-    `minimum_capacity`    int          NOT NULL,
-    `maximum_capacity`    int          NOT NULL,
-    `warehouse_id`        int          NOT NULL,
-    `product_type_id`     int          NOT NULL,
+    `id`                  INT          NOT NULL AUTO_INCREMENT,
+    `section_number`      VARCHAR(255) NOT NULL UNIQUE,
+    `current_temperature` FLOAT        NOT NULL,
+    `minimum_temperature` FLOAT        NOT NULL,
+    `current_capacity`    INT          NOT NULL,
+    `minimum_capacity`    INT          NOT NULL,
+    `maximum_capacity`    INT          NOT NULL,
+    `warehouse_id`        INT          NOT NULL,
+    `product_type_id`     INT          NOT NULL,
 
     PRIMARY KEY (`id`),
-    KEY                   `idx_sections_warehouse_id` (`warehouse_id`),
-    KEY                   `idx_sections_product_type_id` (`product_type_id`),
+    KEY `idx_sections_warehouse_id` (`warehouse_id`),
+    KEY `idx_sections_product_type_id` (`product_type_id`),
     CONSTRAINT `fk_sections_warehouse_id` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `fk_sections_product_type_id` FOREIGN KEY (`product_type_id`) REFERENCES `product_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -110,21 +110,21 @@ CREATE TABLE `sections`
 DROP TABLE IF EXISTS product_batches;
 CREATE TABLE `product_batches`
 (
-    `id`                  int          NOT NULL AUTO_INCREMENT,
-    `batch_number`        int          NOT NULL UNIQUE,
-    `current_quantity`    int          NOT NULL,
-    `current_temperature` int          NOT NULL,
-    `due_date`            varchar(255) NOT NULL,
-    `initial_quantity`    int          NOT NULL,
-    `manufacturing_date`  varchar(255) NOT NULL,
-    `manufacturing_hour`  int          NOT NULL,
-    `minumum_temperature` int          NOT NULL,
-    `product_id`          int          NOT NULL,
-    `section_id`          int          NOT NULL,
+    `id`                  INT  NOT NULL AUTO_INCREMENT,
+    `batch_number`        INT  NOT NULL UNIQUE,
+    `current_quantity`    INT  NOT NULL,
+    `current_temperature` INT  NOT NULL,
+    `due_date`            DATE NOT NULL,
+    `initial_quantity`    INT  NOT NULL,
+    `manufacturing_date`  DATE NOT NULL,
+    `manufacturing_hour`  INT  NOT NULL,
+    `minimum_temperature` INT  NOT NULL,
+    `product_id`          INT  NOT NULL,
+    `section_id`          INT  NOT NULL,
 
     PRIMARY KEY (`id`),
-    KEY                   `idx_product_batches_product_id` (`product_id`),
-    KEY                   `idx_product_batches_section_id` (`section_id`),
+    KEY `idx_product_batches_product_id` (`product_id`),
+    KEY `idx_product_batches_section_id` (`section_id`),
     CONSTRAINT `fk_product_batches_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `fk_product_batches_section_id` FOREIGN KEY (`section_id`) REFERENCES `sections` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );

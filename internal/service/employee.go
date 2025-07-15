@@ -11,15 +11,17 @@ type EmployeeServiceInterface interface {
 	CreateEmployee(attributes models.EmployeePostRequestBody) (newEmployee models.Employee, err error)
 	UpdateEmployeeById(id int, attributes models.EmployeePatchRequestBody) (employee models.Employee, err error)
 	DeleteEmployee(id int) (err error)
+
+	GetReportInboundOrderByEmployee(id int) (inboundOrder models.InboundOrderEmployee, err error)
+	GetReportInboundOrders() (inboundOrders []models.InboundOrderEmployee, err error)
 }
 
-func NewEmployeeService(repository employee_repository.EmployeeRepository, svWahrehouse WarehouseDefault) *EmployeeService {
-	return &EmployeeService{repository: repository, svWahrehouse: svWahrehouse}
+func NewEmployeeService(repository employee_repository.EmployeeRepository) *EmployeeService {
+	return &EmployeeService{repository: repository}
 }
 
 type EmployeeService struct {
-	repository   employee_repository.EmployeeRepository
-	svWahrehouse WarehouseDefault
+	repository employee_repository.EmployeeRepository
 }
 
 func (s *EmployeeService) GetAllEmployees() (employees []models.Employee, err error) {
@@ -62,4 +64,18 @@ func (s *EmployeeService) DeleteEmployee(id int) (err error) {
 	err = s.repository.DeleteEmployee(id)
 
 	return
+}
+
+func (s *EmployeeService) GetReportInboundOrders() (inboundOrders []models.InboundOrderEmployee, err error) {
+
+	inboundOrders, err = s.repository.GetReportInboundOrders()
+	return
+
+}
+
+func (s *EmployeeService) GetReportInboundOrderByEmployee(id int) (inboundOrder models.InboundOrderEmployee, err error) {
+
+	inboundOrder, err = s.repository.GetReportInboundOrderByEmployee(id)
+	return
+
 }

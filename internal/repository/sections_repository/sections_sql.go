@@ -22,11 +22,6 @@ func (s *SectionsRepositorySQL) GetAllSections() ([]models.Section, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(secs) == 0 {
-		err = &custom_errors.ResourceNotFoundError{}
-		return nil, err
-	}
-
 	return secs, nil
 }
 
@@ -94,4 +89,18 @@ func (s *SectionsRepositorySQL) DeleteSectionById(id int) error {
 		return &custom_errors.ResourceNotFoundError{}
 	}
 	return err
+}
+
+func (s *SectionsRepositorySQL) GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error) {
+	prods, err = sql_utils.Query[models.ProductBatchResponse](s.db, "SELECT `section_id`,`section_number`,SUM(`current_quantity`) `products_count` FROM `product_batches` INNER JOIN `sections` ON product_batches.section_id = sections.id GROUP BY section_id", nil)
+	if err != nil {
+		return
+	}
+	return
+}
+func (s *SectionsRepositorySQL) GetProductBatchBySectionId(sectionId int) (prod models.ProductBatchResponse, err error) {
+	args := make([]any, 1)
+	args[0] = sectionId
+	prod, err = sql_utils.QueryRow[models.ProductBatchResponse](s.db, "SELECT `section_id`,`section_number`,SUM(`current_quantity`) `products_count` FROM `product_batches` INNER JOIN `sections` ON product_batches.section_id = sections.id WHERE section_id = ? GROUP BY `section_id`", args)
+	return
 }
