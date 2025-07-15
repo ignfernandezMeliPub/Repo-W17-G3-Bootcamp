@@ -46,9 +46,8 @@ func GetQueryParamAs[T any](request *http.Request, queryParamKey string, parser 
 // instantiated from a request body. The VerifyMandatoryFieldsPresence method is used
 // to enforce presence/validation of required fields after decoding from JSON.
 type BodyInstantiableStruct interface {
-	// VerifyMandatoryFieldsPresence checks that all required fields in the struct
-	// are present and returns an error if not, or nil if validation passes.
-	VerifyMandatoryFieldsPresence() error
+	// Verify checks that all fields in the struct pass validations.
+	Verify() error
 }
 
 // InstantiateVarFromBody attempts to decode the request body as JSON into the given variable of type T,
@@ -57,7 +56,7 @@ type BodyInstantiableStruct interface {
 // If there is an error decoding the JSON, and it is due to a type mismatch,
 // a DecodeError is returned indicating the specific field and expected type.
 //
-// After successful decoding, VerifyMandatoryFieldsPresence is called and its error (if any) is returned.
+// After successful decoding, Verify is called and its error (if any) is returned.
 func InstantiateVarFromBody[T BodyInstantiableStruct](body *io.ReadCloser, variable T) (T, error) {
 	err := json.NewDecoder(*body).Decode(&variable)
 	if err != nil {
@@ -75,12 +74,5 @@ func InstantiateVarFromBody[T BodyInstantiableStruct](body *io.ReadCloser, varia
 		return variable, &custom_errors.InvalidBodyError{}
 	}
 
-	return variable, variable.VerifyMandatoryFieldsPresence()
-}
-
-// GetHeader returns the value of the specified HTTP header key.
-// The Header.Get method retrieves the first value associated with the given key.
-// The lookup is case-insensitive and will return an empty string if the key is not present.
-func GetHeader(headers *http.Header, key string) string {
-	return headers.Get(key)
+	return variable, variable.Verify()
 }

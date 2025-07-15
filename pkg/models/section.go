@@ -28,7 +28,7 @@ type SectionRequest struct {
 	ProductTypeId      *int     `json:"product_type_id"`
 }
 
-func (s SectionRequest) VerifyMandatoryFieldsPresence() error {
+func (s SectionRequest) Verify() error {
 	mandatoryFields := map[string]any{
 		"section_number":      s.SectionNumber,
 		"current_temperature": s.CurrentTemperature,

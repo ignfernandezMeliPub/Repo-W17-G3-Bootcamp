@@ -19,7 +19,7 @@ type CarriesReport struct {
 	CarriesCount int    `json:"carries_count" db:"carries_count"`
 }
 
-func (c Carries) VerifyMandatoryFieldsPresence() error {
+func (c Carries) Verify() error {
 	if c.Cid == "" {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "cid"}
 	}

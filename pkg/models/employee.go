@@ -33,7 +33,7 @@ type InboundOrderEmployee struct {
 	InboundOrdersCount int `json:"inbound_orders_count" db:"inbound_orders_count"`
 }
 
-func (c EmployeePatchRequestBody) VerifyMandatoryFieldsPresence() error {
+func (c EmployeePatchRequestBody) Verify() error {
 	if c.CardNumberId == nil && c.FirstName == nil && c.LastName == nil && c.WarehouseId == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "card_number_id or first_name or last_name or warehouse_id"}
 	}
@@ -41,7 +41,7 @@ func (c EmployeePatchRequestBody) VerifyMandatoryFieldsPresence() error {
 	return nil
 }
 
-func (c EmployeePostRequestBody) VerifyMandatoryFieldsPresence() error {
+func (c EmployeePostRequestBody) Verify() error {
 	if c.CardNumberId == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "card_number_id"}
 	}

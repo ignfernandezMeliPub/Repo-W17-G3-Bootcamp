@@ -25,7 +25,7 @@ type ProductRecordReport struct {
 	RecordsCount int    `json:"records_count" db:"records_count"`
 }
 
-func (p ProductRecordRequest) VerifyMandatoryFieldsPresence() error {
+func (p ProductRecordRequest) Verify() error {
 	if p.LastUpdateDate == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "last_update_date"}
 	}

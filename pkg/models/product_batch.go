@@ -33,7 +33,7 @@ type ProductBatchRequest struct {
 	SectionId          *int    `json:"section_id"`
 }
 
-func (p ProductBatchRequest) VerifyMandatoryFieldsPresence() error {
+func (p ProductBatchRequest) Verify() error {
 	mandatoryFields := map[string]any{
 		"batch_number":        p.BatchNumber,
 		"current_quantity":    p.CurrentQuantity,
