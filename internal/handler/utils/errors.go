@@ -23,7 +23,7 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 	case errors.As(err, &custom_errors.ErrNotFound) || errors.Is(err, sql.ErrNoRows):
 		status = http.StatusNotFound
 		message = "Not found"
-	case errors.As(err, &custom_errors.ErrInvalidBodyError) || errors.As(err, &custom_errors.ErrDecodeError) || errors.As(err, &custom_errors.UrlParamDecodeErrorI):
+	case errors.As(err, &custom_errors.ErrInvalidBodyError) || errors.As(err, &custom_errors.ErrDecodeError) || errors.As(err, &custom_errors.UrlParamDecodeErrorI) || errors.As(err, &custom_errors.QueryParamDecodeErrorI):
 		status = http.StatusBadRequest
 		message = "Bad request"
 	case errors.As(err, &custom_errors.ErrUniqueAttributeViolationError) || strings.Contains(err.Error(), sqlUniqueAttributeViolationErrString):

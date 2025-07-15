@@ -3,6 +3,7 @@ package buyer_repository
 import (
 	"app/pkg/custom_errors"
 	"app/pkg/models"
+	"errors"
 )
 
 type BuyerRepositoryMap struct {
@@ -84,4 +85,14 @@ func (r *BuyerRepositoryMap) UpdateBuyer(_b models.Buyer) (b models.Buyer, err e
 func (r *BuyerRepositoryMap) DeleteBuyerById(id int) (err error) {
 	delete(r.db, id)
 	return
+}
+
+// Until deprecated must respect the interface
+func (r *BuyerRepositoryMap) GetBuyerPurchaseOrdersCount(buyerId int) (p []models.BuyerPurchaseOrdersCount, err error) {
+	return nil, errors.New("not implemented")
+}
+
+// Until deprecated must respect the interface
+func (r *BuyerRepositoryMap) GetBuyersPurchaseOrdersCount() (p []models.BuyerPurchaseOrdersCount, err error) {
+	return nil, errors.New("not implemented")
 }

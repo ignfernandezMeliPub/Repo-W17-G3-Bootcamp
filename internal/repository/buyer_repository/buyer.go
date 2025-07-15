@@ -9,4 +9,6 @@ type BuyerRepository interface {
 	CreateBuyer(_b models.Buyer) (b models.Buyer, err error)
 	UpdateBuyer(_b models.Buyer) (b models.Buyer, err error)
 	DeleteBuyerById(id int) (e error)
+	GetBuyerPurchaseOrdersCount(buyerId int) (p []models.BuyerPurchaseOrdersCount, err error)
+	GetBuyersPurchaseOrdersCount() (p []models.BuyerPurchaseOrdersCount, err error)
 }
