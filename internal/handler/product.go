@@ -109,3 +109,32 @@ func (h *ProductController) DeleteProduct(w http.ResponseWriter, r *http.Request
 
 	response.JSON(w, http.StatusNoContent, map[string]any{})
 }
+
+func (h *ProductController) GetReportRecords(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+
+	var reportRecords []models.ProductRecordReport
+	var err error
+
+	if idStr == "" {
+		// Si no se envía id, obtener reporte de todos los productos
+		reportRecords, err = h.sv.GetAllReportRecords()
+	} else {
+		// Si se envía id, obtener reporte del producto específico
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			utils.ResponseHttpError(w, err)
+			return
+		}
+		reportRecords, err = h.sv.GetReportRecords(id)
+	}
+
+	if err != nil {
+		utils.ResponseHttpError(w, err)
+		return
+	}
+
+	response.JSON(w, http.StatusOK, map[string]any{
+		"data": reportRecords,
+	})
+}

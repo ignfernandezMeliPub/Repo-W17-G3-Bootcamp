@@ -6,6 +6,7 @@ import (
 	"app/internal/repository/carries_repository"
 	"app/internal/repository/employee_repository"
 	"app/internal/repository/locality_repository"
+	"app/internal/repository/product_record_repository"
 	"app/internal/repository/product_repository"
 	"app/internal/repository/product_type_repository"
 	"app/internal/repository/purchase_order_repository"
@@ -158,6 +159,13 @@ func (a *ServerChi) Run() (err error) {
 	// Employee - handler
 	hdEmployee := handler.NewEmployeeController(svEmployee)
 
+	// Product Record - repository
+	productRecordRp := product_record_repository.NewProductRecordRepositorySQL(db)
+	// Product Record - service
+	productRecordSv := service.NewProductRecordService(productRecordRp)
+	// Product Record - handler
+	productRecordHd := handler.NewProductRecordHandler(productRecordSv)
+
 	// - router
 	rt := chi.NewRouter()
 
@@ -199,6 +207,7 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", productHd.CreateProduct)
 			rt.Patch("/{id}", productHd.PatchProduct)
 			rt.Delete("/{id}", productHd.DeleteProduct)
+			rt.Get("/reportRecords", productHd.GetReportRecords)
 		})
 		// 5. Employees
 		rt.Route("/employees", func(rt chi.Router) {
@@ -233,6 +242,11 @@ func (a *ServerChi) Run() (err error) {
 		// 12. Purchase Orders
 		rt.Route("/purchaseOrders", func(rt chi.Router) {
 			rt.Post("/", purchaseOrderHd.CreatePurchaseOrder)
+		})
+		// 12. Product Records
+		rt.Route("/product-records", func(rt chi.Router) {
+			rt.Get("/", productRecordHd.GetAllProductRecords)
+			rt.Post("/", productRecordHd.CreateProductRecord)
 		})
 	})
 
