@@ -13,6 +13,10 @@ type ProductRecord struct {
 }
 
 type ProductRecordRequest struct {
+	Data *ProductRecordData `json:"data"`
+}
+
+type ProductRecordData struct {
 	LastUpdateDate *string  `json:"last_update_date"`
 	PurchasePrice  *float64 `json:"purchase_price"`
 	SalePrice      *float64 `json:"sale_price"`
@@ -26,19 +30,22 @@ type ProductRecordReport struct {
 }
 
 func (p ProductRecordRequest) Verify() error {
-	if p.LastUpdateDate == nil {
+	if p.Data == nil {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "data"}
+	}
+	if p.Data.LastUpdateDate == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "last_update_date"}
 	}
 
-	if p.PurchasePrice == nil {
+	if p.Data.PurchasePrice == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "purchase_price"}
 	}
 
-	if p.SalePrice == nil {
+	if p.Data.SalePrice == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "sale_price"}
 	}
 
-	if p.ProductID == nil {
+	if p.Data.ProductID == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "product_id"}
 	}
 	return nil

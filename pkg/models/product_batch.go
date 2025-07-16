@@ -21,6 +21,10 @@ type ProductBatch struct {
 }
 
 type ProductBatchRequest struct {
+	Data *ProductBatchData `json:"data"`
+}
+
+type ProductBatchData struct {
 	BatchNumber        *int    `json:"batch_number"`
 	CurrentQuantity    *int    `json:"current_quantity"`
 	CurrentTemperature *int    `json:"current_temperature"`
@@ -34,24 +38,18 @@ type ProductBatchRequest struct {
 }
 
 func (p ProductBatchRequest) Verify() error {
+
 	mandatoryFields := map[string]any{
-		"batch_number":        p.BatchNumber,
-		"current_quantity":    p.CurrentQuantity,
-		"current_temperature": p.CurrentTemperature,
-		"due_date":            p.DueDate,
-		"initial_quantity":    p.InitialQuantity,
-		"manufacturing_date":  p.ManufacturingDate,
-		"manufacturing_hour":  p.ManufacturingHour,
-		"minimum_temperature": p.MinimumTemperature,
-		"product_id":          p.ProductId,
-		"section_id":          p.SectionId,
-	}
-	dateLayout := "2006-01-02"
-	if _, err := time.Parse(dateLayout, *p.DueDate); err != nil {
-		return &custom_errors.InvalidArgValueErr{Argument: "due_date", Value: *p.DueDate, ExtraInfo: "Invalid date format."}
-	}
-	if _, err := time.Parse(dateLayout, *p.ManufacturingDate); err != nil {
-		return &custom_errors.InvalidArgValueErr{Argument: "manufacturing_date", Value: *p.ManufacturingDate, ExtraInfo: "Invalid date format."}
+		"batch_number":        p.Data.BatchNumber,
+		"current_quantity":    p.Data.CurrentQuantity,
+		"current_temperature": p.Data.CurrentTemperature,
+		"due_date":            p.Data.DueDate,
+		"initial_quantity":    p.Data.InitialQuantity,
+		"manufacturing_date":  p.Data.ManufacturingDate,
+		"manufacturing_hour":  p.Data.ManufacturingHour,
+		"minimum_temperature": p.Data.MinimumTemperature,
+		"product_id":          p.Data.ProductId,
+		"section_id":          p.Data.SectionId,
 	}
 
 	for field, value := range mandatoryFields {
@@ -60,6 +58,15 @@ func (p ProductBatchRequest) Verify() error {
 			return &custom_errors.MandatoryArgMissingErr{Argument: field}
 		}
 	}
+
+	dateLayout := "2006-01-02"
+	if _, err := time.Parse(dateLayout, *p.Data.DueDate); err != nil {
+		return &custom_errors.InvalidArgValueErr{Argument: "due_date", Value: *p.Data.DueDate, ExtraInfo: "Invalid date format."}
+	}
+	if _, err := time.Parse(dateLayout, *p.Data.ManufacturingDate); err != nil {
+		return &custom_errors.InvalidArgValueErr{Argument: "manufacturing_date", Value: *p.Data.ManufacturingDate, ExtraInfo: "Invalid date format."}
+	}
+
 	return nil
 }
 

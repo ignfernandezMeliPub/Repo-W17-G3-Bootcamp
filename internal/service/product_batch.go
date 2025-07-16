@@ -19,16 +19,16 @@ func NewProductBatchService(rp product_batch_repository.ProductBatchRepository) 
 
 func (p ProductBatchServiceImpl) CreateProductBatch(pb models.ProductBatchRequest) (prod models.ProductBatch, err error) {
 	newProdBatch := models.ProductBatch{
-		BatchNumber:        *pb.BatchNumber,
-		CurrentQuantity:    *pb.CurrentQuantity,
-		CurrentTemperature: *pb.CurrentTemperature,
-		DueDate:            *pb.DueDate,
-		InitialQuantity:    *pb.InitialQuantity,
-		ManufacturingDate:  *pb.ManufacturingDate,
-		ManufacturingHour:  *pb.ManufacturingHour,
-		MinimumTemperature: *pb.MinimumTemperature,
-		ProductId:          *pb.ProductId,
-		SectionId:          *pb.SectionId,
+		BatchNumber:        *pb.Data.BatchNumber,
+		CurrentQuantity:    *pb.Data.CurrentQuantity,
+		CurrentTemperature: *pb.Data.CurrentTemperature,
+		DueDate:            *pb.Data.DueDate,
+		InitialQuantity:    *pb.Data.InitialQuantity,
+		ManufacturingDate:  *pb.Data.ManufacturingDate,
+		ManufacturingHour:  *pb.Data.ManufacturingHour,
+		MinimumTemperature: *pb.Data.MinimumTemperature,
+		ProductId:          *pb.Data.ProductId,
+		SectionId:          *pb.Data.SectionId,
 	}
 	return p.rp.CreateProductBatch(newProdBatch)
 }

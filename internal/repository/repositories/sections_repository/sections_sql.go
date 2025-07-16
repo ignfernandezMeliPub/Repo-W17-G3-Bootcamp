@@ -90,7 +90,7 @@ func (s *SectionsRepositorySQL) DeleteSectionById(id int) error {
 func (s *SectionsRepositorySQL) GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error) {
 	prods, err = sql_utils.Query[models.ProductBatchResponse](s.db, "SELECT `section_id`,`section_number`,SUM(`current_quantity`) `products_count` FROM `product_batches` INNER JOIN `sections` ON product_batches.section_id = sections.id GROUP BY section_id", nil)
 	if err != nil {
-		return
+		return nil, sql_utils.HandleSqlError(err)
 	}
 	return
 }
@@ -98,5 +98,8 @@ func (s *SectionsRepositorySQL) GetProductBatchBySectionId(sectionId int) (prod 
 	args := make([]any, 1)
 	args[0] = sectionId
 	prod, err = sql_utils.QueryRow[models.ProductBatchResponse](s.db, "SELECT `section_id`,`section_number`,SUM(`current_quantity`) `products_count` FROM `product_batches` INNER JOIN `sections` ON product_batches.section_id = sections.id WHERE section_id = ? GROUP BY `section_id`", args)
+	if err != nil {
+		return models.ProductBatchResponse{}, sql_utils.HandleSqlError(err)
+	}
 	return
 }

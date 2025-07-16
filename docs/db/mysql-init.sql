@@ -91,7 +91,7 @@ DROP TABLE IF EXISTS sections;
 CREATE TABLE `sections`
 (
     `id`                  INT          NOT NULL AUTO_INCREMENT,
-    `section_number`      VARCHAR(255) NOT NULL UNIQUE,
+    `section_number`      INT          NOT NULL UNIQUE,
     `current_temperature` FLOAT        NOT NULL,
     `minimum_temperature` FLOAT        NOT NULL,
     `current_capacity`    INT          NOT NULL,
@@ -238,11 +238,11 @@ VALUES
 -- Inserciones para la tabla sections
 INSERT INTO sections (section_number, current_temperature, minimum_temperature, current_capacity, minimum_capacity, maximum_capacity, warehouse_id, product_type_id)
 VALUES
-    ('SEC001', -10.0, -20.0, 300, 100, 500, 1, 4),
-    ('SEC002', -5.0, -15.0, 500, 200, 750, 2, 3),
-    ('SEC003', 0.0, -2.0, 400, 100, 600, 3, 2),
-    ('SEC004', 5.0, 2.0, 200, 50, 400, 4, 5),
-    ('SEC005', 4.0, 1.0, 250, 75, 450, 5, 1);
+    (1, -10.0, -20.0, 300, 100, 500, 1, 4),
+    (2, -5.0, -15.0, 500, 200, 750, 2, 3),
+    (3, 0.0, -2.0, 400, 100, 600, 3, 2),
+    (4, 5.0, 2.0, 200, 50, 400, 4, 5),
+    (5, 4.0, 1.0, 250, 75, 450, 5, 1);
 -- Inserciones para la tabla product_batches
 INSERT INTO product_batches (batch_number, current_quantity, current_temperature, due_date, initial_quantity, manufacturing_date, manufacturing_hour, minimum_temperature, product_id, section_id)
 VALUES
