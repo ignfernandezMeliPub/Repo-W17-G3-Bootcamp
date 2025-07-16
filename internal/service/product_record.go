@@ -27,24 +27,24 @@ func (s *ProductRecordServiceImpl) GetAllProductRecords() ([]models.ProductRecor
 func (s *ProductRecordServiceImpl) CreateProductRecord(productRecord models.ProductRecordRequest) (models.ProductRecord, error) {
 
 	// Validar formato de fecha
-	_, err := time.Parse("2006-01-02", *productRecord.LastUpdateDate)
+	_, err := time.Parse("2006-01-02", *productRecord.Data.LastUpdateDate)
 	if err != nil {
-		return models.ProductRecord{}, &custom_errors.InvalidArgValueErr{Argument: "last_update_date", Value: *productRecord.LastUpdateDate, ExtraInfo: "Date format must be YYYY-MM-DD"}
+		return models.ProductRecord{}, &custom_errors.InvalidArgValueErr{Argument: "last_update_date", Value: *productRecord.Data.LastUpdateDate, ExtraInfo: "Date format must be YYYY-MM-DD"}
 	}
 
-	if *productRecord.PurchasePrice <= 0.0 {
-		return models.ProductRecord{}, &custom_errors.InvalidArgValueErr{Argument: "purchase_price", Value: *productRecord.PurchasePrice, ExtraInfo: "Purchase price must be greater than 0"}
+	if *productRecord.Data.PurchasePrice <= 0.0 {
+		return models.ProductRecord{}, &custom_errors.InvalidArgValueErr{Argument: "purchase_price", Value: *productRecord.Data.PurchasePrice, ExtraInfo: "Purchase price must be greater than 0"}
 	}
 
-	if *productRecord.SalePrice <= 0.0 {
-		return models.ProductRecord{}, &custom_errors.InvalidArgValueErr{Argument: "sale_price", Value: *productRecord.SalePrice, ExtraInfo: "Sale price must be greater than 0"}
+	if *productRecord.Data.SalePrice <= 0.0 {
+		return models.ProductRecord{}, &custom_errors.InvalidArgValueErr{Argument: "sale_price", Value: *productRecord.Data.SalePrice, ExtraInfo: "Sale price must be greater than 0"}
 	}
 
 	productRecordModel := models.ProductRecord{
-		LastUpdateDate: *productRecord.LastUpdateDate,
-		PurchasePrice:  *productRecord.PurchasePrice,
-		SalePrice:      *productRecord.SalePrice,
-		ProductID:      *productRecord.ProductID,
+		LastUpdateDate: *productRecord.Data.LastUpdateDate,
+		PurchasePrice:  *productRecord.Data.PurchasePrice,
+		SalePrice:      *productRecord.Data.SalePrice,
+		ProductID:      *productRecord.Data.ProductID,
 	}
 	return s.productRecordRepository.CreateProductRecord(productRecordModel)
 }

@@ -199,14 +199,14 @@ func (a *ServerChi) Run() (err error) {
 		rt.Route("/localities", func(rt chi.Router) {
 			rt.Post("/", localityHandler.CreateLocality)
 			rt.Get("/reportCarries", localityHandler.GetCarriesReport)
+			rt.Get("/reportSellers", localityHandler.GetLocalitySellerCount)
 		})
 		// 8. Carries
 		rt.Route("/carries", func(rt chi.Router) {
 			rt.Post("/", carriesHandler.CreateCarrie)
-			rt.Get("/reportSellers", localityHandler.GetLocalitySellerCount)
 		})
 		// 9. Product Records
-		rt.Route("/product-records", func(rt chi.Router) {
+		rt.Route("/productRecords", func(rt chi.Router) {
 			rt.Get("/", productRecordHd.GetAllProductRecords)
 			rt.Post("/", productRecordHd.CreateProductRecord)
 		})
