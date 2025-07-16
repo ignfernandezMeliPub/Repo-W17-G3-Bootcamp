@@ -21,12 +21,7 @@ type PurchaseOrder struct {
 	PurchaseOrderDetails []PurchaseOrderDetail `json:"purchase_order_details" db:"purchase_order_details"`
 }
 
-type PurchaseOrderDetailRequest struct {
-	ProductRecordId *int `json:"product_record_id"`
-	Quantity        *int `json:"quantity"`
-}
-
-type PurchaseOrderCreateRequest struct {
+type PurchaseOrderData struct {
 	OrderNumber          *string                      `json:"order_number"`
 	OrderDate            *string                      `json:"order_date"`
 	TrackingCode         *string                      `json:"tracking_code"`
@@ -34,7 +29,22 @@ type PurchaseOrderCreateRequest struct {
 	PurchaseOrderDetails []PurchaseOrderDetailRequest `json:"purchase_order_details"`
 }
 
-func (p PurchaseOrderCreateRequest) Verify() error {
+type PurchaseOrderDetailRequest struct {
+	ProductRecordId *int `json:"product_record_id"`
+	Quantity        *int `json:"quantity"`
+}
+
+type PurchaseOrderCreateRequest struct {
+	Data *PurchaseOrderData `json:"data"`
+}
+
+func (pr PurchaseOrderCreateRequest) Verify() error {
+	if pr.Data == nil {
+		return &custom_errors.MandatoryArgMissingErr{Argument: "data"}
+	}
+
+	p := pr.Data
+
 	if p.OrderNumber == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "order_number"}
 	}
@@ -76,14 +86,6 @@ func (p PurchaseOrderCreateRequest) Verify() error {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "buyer_id"}
 	}
 
-	if *p.BuyerId <= 0 {
-		return &custom_errors.InvalidArgValueErr{
-			Argument:  "buyer_id",
-			Value:     "",
-			ExtraInfo: "Value must be non-empty",
-		}
-	}
-
 	if len(p.PurchaseOrderDetails) == 0 {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "purchase_order_details"}
 	}
@@ -115,7 +117,8 @@ func (p PurchaseOrderCreateRequest) Verify() error {
 	return nil
 }
 
-func (p PurchaseOrderCreateRequest) ToPurchaseOrder() PurchaseOrder {
+func (pr PurchaseOrderCreateRequest) ToPurchaseOrder() PurchaseOrder {
+	p := pr.Data
 	orderDate, _ := time.Parse("2006-01-02", *p.OrderDate)
 
 	details := make([]PurchaseOrderDetail, len(p.PurchaseOrderDetails))
