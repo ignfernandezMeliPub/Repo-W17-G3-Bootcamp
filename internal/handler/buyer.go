@@ -125,21 +125,7 @@ func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *ht
 		return
 	}
 
-	if id != nil {
-		// Purchase orders qty by buyer id
-		b, err := h.sv.GetBuyerPurchaseOrdersCount(*id)
-		if err != nil {
-			utils.ResponseHttpError(w, err)
-			return
-		}
-		response.JSON(w, http.StatusOK, map[string]any{
-			"data": b,
-		})
-		return
-	}
-
-	// Purchase orders qty by every buyer
-	b, err := h.sv.GetBuyersPurchaseOrdersCount()
+	b, err := h.sv.GetBuyersPurchaseOrdersCount(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return
