@@ -120,11 +120,7 @@ func (h *ProductController) GetReportRecords(w http.ResponseWriter, r *http.Requ
 
 	var reportRecords []models.ProductRecordReport
 
-	if id == nil {
-		reportRecords, err = h.sv.GetAllReportRecords()
-	} else {
-		reportRecords, err = h.sv.GetReportRecords(*id)
-	}
+	reportRecords, err = h.sv.GetReportRecords(id)
 
 	if err != nil {
 		utils.ResponseHttpError(w, err)
