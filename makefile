@@ -4,15 +4,15 @@ lint:
 	
 
 .PHONY: test
-TEST_PKGS := "./..."
+PKGS := $(shell go list ./... | grep -vE "/test")
 
 .PHONY: test
 test:
-	go test $(TEST_PKGS)
+	go test $(PKGS)
 
 .PHONY: coverage
 coverage:
-	go test $(TEST_PKGS) -coverprofile=coverage.out
+	go test $(PKGS) -coverprofile=coverage.out
 
 .PHONY: coverage-html
 coverage-html: coverage
