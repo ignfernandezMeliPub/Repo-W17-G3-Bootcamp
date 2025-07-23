@@ -120,20 +120,22 @@ func (r *EmployeeDb) DeleteEmployee(id int) (err error) {
 
 }
 
-func (r *EmployeeDb) GetReportInboundOrderByEmployee(id int) (inboundOrder models.InboundOrderEmployee, err error) {
+func (r *EmployeeDb) GetReportInboundOrders(id *int) (inboundOrders []models.InboundOrderEmployee, err error) {
 
-	args := make([]any, 1)
-	args[0] = id
+	query := "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id"
 
-	inboundOrder, err = sql_utils.QueryRow[models.InboundOrderEmployee](r.db, "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id WHERE e.id = ? GROUP BY e.id, e.card_number_id, e.first_name, e.last_name, e.warehouse_id;", args)
-	err = sql_utils.HandleSqlError(err)
-	return
+	if id != nil {
 
-}
+		query += " WHERE e.id = ? GROUP BY e.id;"
+		inboundOrders, err = sql_utils.Query[models.InboundOrderEmployee](r.db, query, []any{*id})
 
-func (r *EmployeeDb) GetReportInboundOrders() (inboundOrders []models.InboundOrderEmployee, err error) {
+	} else {
 
-	inboundOrders, err = sql_utils.Query[models.InboundOrderEmployee](r.db, "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id GROUP BY e.id;", nil)
-	err = sql_utils.HandleSqlError(err)
-	return
+		query += " GROUP BY e.id;"
+		inboundOrders, err = sql_utils.Query[models.InboundOrderEmployee](r.db, query, nil)
+
+	}
+
+	return inboundOrders, sql_utils.HandleSqlError(err)
+
 }

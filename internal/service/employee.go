@@ -12,8 +12,7 @@ type EmployeeServiceInterface interface {
 	UpdateEmployeeById(id int, attributes models.EmployeePatchRequestBody) (employee models.Employee, err error)
 	DeleteEmployee(id int) (err error)
 
-	GetReportInboundOrderByEmployee(id int) (inboundOrder models.InboundOrderEmployee, err error)
-	GetReportInboundOrders() (inboundOrders []models.InboundOrderEmployee, err error)
+	GetReportInboundOrders(id *int) (inboundOrders []models.InboundOrderEmployee, err error)
 }
 
 func NewEmployeeService(repository employee_repository.EmployeeRepository) *EmployeeService {
@@ -66,16 +65,9 @@ func (s *EmployeeService) DeleteEmployee(id int) (err error) {
 	return
 }
 
-func (s *EmployeeService) GetReportInboundOrders() (inboundOrders []models.InboundOrderEmployee, err error) {
+func (s *EmployeeService) GetReportInboundOrders(id *int) (inboundOrders []models.InboundOrderEmployee, err error) {
 
-	inboundOrders, err = s.repository.GetReportInboundOrders()
-	return
-
-}
-
-func (s *EmployeeService) GetReportInboundOrderByEmployee(id int) (inboundOrder models.InboundOrderEmployee, err error) {
-
-	inboundOrder, err = s.repository.GetReportInboundOrderByEmployee(id)
+	inboundOrders, err = s.repository.GetReportInboundOrders(id)
 	return
 
 }
