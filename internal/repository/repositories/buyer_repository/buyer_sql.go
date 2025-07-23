@@ -68,12 +68,16 @@ func (r *BuyerRepositorySQL) DeleteBuyerById(id int) (err error) {
 	return
 }
 
-func (r *BuyerRepositorySQL) GetBuyerPurchaseOrdersCount(buyerId int) (b []models.BuyerPurchaseOrdersCount, err error) {
-	b, err = sql_utils.Query[models.BuyerPurchaseOrdersCount](r.db, "SELECT buyers.id as id, buyers.card_number_id, buyers.first_name, buyers.last_name, COUNT(purchase_orders.buyer_id) as purchase_orders_count FROM buyers LEFT JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id WHERE buyers.id = ? GROUP BY buyers.id", []any{buyerId})
-	return b, sql_utils.HandleSqlError(err)
-}
+func (r *BuyerRepositorySQL) GetBuyersPurchaseOrdersCount(buyerId *int) (b []models.BuyerPurchaseOrdersCount, err error) {
+	query := "SELECT buyers.id as id, buyers.card_number_id, buyers.first_name, buyers.last_name, COUNT(purchase_orders.buyer_id) as purchase_orders_count FROM buyers LEFT JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id"
 
-func (r *BuyerRepositorySQL) GetBuyersPurchaseOrdersCount() (b []models.BuyerPurchaseOrdersCount, err error) {
-	b, err = sql_utils.Query[models.BuyerPurchaseOrdersCount](r.db, "SELECT buyers.id as id, buyers.card_number_id, buyers.first_name, buyers.last_name, COUNT(purchase_orders.buyer_id) as purchase_orders_count FROM buyers LEFT JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id GROUP BY buyers.id", []any{})
+	if buyerId != nil {
+		query += " WHERE buyers.id = ? GROUP BY buyers.id"
+		b, err = sql_utils.Query[models.BuyerPurchaseOrdersCount](r.db, query, []any{*buyerId})
+	} else {
+		query += " GROUP BY buyers.id"
+		b, err = sql_utils.Query[models.BuyerPurchaseOrdersCount](r.db, query, []any{})
+	}
+
 	return b, sql_utils.HandleSqlError(err)
 }
