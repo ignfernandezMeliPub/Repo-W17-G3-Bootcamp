@@ -59,7 +59,6 @@ func (b *Buyer) Patch(patch BuyerPatch) {
 	if patch.LastName != nil {
 		b.LastName = *patch.LastName
 	}
-	return
 }
 
 type BuyerCreateRequest struct {

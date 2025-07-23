@@ -26,7 +26,6 @@ func (c *SectionsController) GetSections(w http.ResponseWriter, _ *http.Request)
 		return
 	}
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
-	return
 }
 
 func (c *SectionsController) GetSectionById(w http.ResponseWriter, r *http.Request) {
@@ -41,8 +40,6 @@ func (c *SectionsController) GetSectionById(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	response.JSON(w, http.StatusOK, map[string]any{"data": sec})
-	return
-
 }
 
 func (c *SectionsController) CreateSection(w http.ResponseWriter, r *http.Request) {
@@ -58,8 +55,6 @@ func (c *SectionsController) CreateSection(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	response.JSON(w, http.StatusCreated, map[string]any{"data": res})
-	return
-
 }
 
 func (c *SectionsController) PatchSection(w http.ResponseWriter, r *http.Request) {
@@ -79,8 +74,6 @@ func (c *SectionsController) PatchSection(w http.ResponseWriter, r *http.Request
 		return
 	}
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
-	return
-
 }
 
 func (c *SectionsController) DeleteSection(w http.ResponseWriter, r *http.Request) {
@@ -124,5 +117,4 @@ func (c *SectionsController) GetAllProductBatchesBySection(w http.ResponseWriter
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
-	return
 }

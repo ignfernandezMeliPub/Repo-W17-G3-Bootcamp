@@ -33,7 +33,6 @@ func (h *WarehouseDefault) GetWarehouse(w http.ResponseWriter, r *http.Request) 
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
-	return
 }
 
 func (h *WarehouseDefault) GetWarehouseById(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +51,6 @@ func (h *WarehouseDefault) GetWarehouseById(w http.ResponseWriter, r *http.Reque
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
-	return
 }
 
 func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +77,6 @@ func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Reques
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": data,
 	})
-	return
 }
 
 func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request) {
@@ -105,7 +102,6 @@ func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
-	return
 }
 
 func (h *WarehouseDefault) DeleteWarehouse(w http.ResponseWriter, r *http.Request) {
@@ -121,7 +117,6 @@ func (h *WarehouseDefault) DeleteWarehouse(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	response.JSON(w, http.StatusNoContent, map[string]any{})
-	return
 }
 
 func validateWarehouseAttributes(wh models.Warehouse) error {
