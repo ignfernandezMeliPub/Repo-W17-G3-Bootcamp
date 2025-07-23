@@ -59,20 +59,19 @@ func (r *ProductRepositoryMySQL) DeleteProductById(id int) error {
 	return sql_utils.HandleSqlError(err)
 }
 
-func (r *ProductRepositoryMySQL) GetReportRecords(id int) ([]models.ProductRecordReport, error) {
-	ProductRecordReport, err := sql_utils.Query[models.ProductRecordReport](r.db,
-		`SELECT p.id product_id, p.description, COUNT(r.id) as records_count 
+func (r *ProductRepositoryMySQL) GetReportRecords(id *int) ([]models.ProductRecordReport, error) {
+	query := `SELECT p.id product_id, p.description, COUNT(r.id) as records_count 
 		FROM products p 
-		LEFT JOIN product_records r ON r.product_id = p.id
-		WHERE p.id = ? GROUP BY p.id, p.description`, []any{id})
-	return ProductRecordReport, sql_utils.HandleSqlError(err)
-}
+		LEFT JOIN product_records r ON r.product_id = p.id`
+	var args []any
 
-func (r *ProductRepositoryMySQL) GetAllReportRecords() ([]models.ProductRecordReport, error) {
-	ProductRecordReport, err := sql_utils.Query[models.ProductRecordReport](r.db,
-		`SELECT p.id product_id, p.description, COUNT(r.id) as records_count 
-		FROM products p 
-		LEFT JOIN product_records r ON r.product_id = p.id
-		GROUP BY p.id, p.description`, []any{})
+	if id != nil {
+		query += " WHERE p.id = ?"
+		args = append(args, *id)
+	}
+
+	query += " GROUP BY p.id, p.description"
+
+	ProductRecordReport, err := sql_utils.Query[models.ProductRecordReport](r.db, query, args)
 	return ProductRecordReport, sql_utils.HandleSqlError(err)
 }

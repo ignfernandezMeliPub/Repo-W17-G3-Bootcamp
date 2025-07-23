@@ -12,8 +12,7 @@ type ProductServiceI interface {
 	CreateProduct(models.ProductRequest) (models.Product, error)
 	UpdateProductById(models.ProductPatchRequest) (models.Product, error)
 	DeleteProductById(int) error
-	GetReportRecords(id int) ([]models.ProductRecordReport, error)
-	GetAllReportRecords() ([]models.ProductRecordReport, error)
+	GetReportRecords(id *int) ([]models.ProductRecordReport, error)
 }
 
 type ProductService struct {
@@ -169,10 +168,6 @@ func (p *ProductService) patchProduct(product models.Product, updateProduct mode
 
 }
 
-func (p *ProductService) GetReportRecords(id int) ([]models.ProductRecordReport, error) {
+func (p *ProductService) GetReportRecords(id *int) ([]models.ProductRecordReport, error) {
 	return p.ProductRepo.GetReportRecords(id)
-}
-
-func (p *ProductService) GetAllReportRecords() ([]models.ProductRecordReport, error) {
-	return p.ProductRepo.GetAllReportRecords()
 }
