@@ -29,11 +29,6 @@ func (r *BuyerRepositorySQL) GetBuyerById(id int) (b models.Buyer, err error) {
 	return b, sql_utils.HandleSqlError(err)
 }
 
-func (r *BuyerRepositorySQL) GetBuyerByCardNumberId(cardNumberId string) (b models.Buyer, err error) {
-	b, err = sql_utils.QueryRow[models.Buyer](r.db, "SELECT id, card_number_id, first_name, last_name FROM buyers WHERE card_number_id = ?", []any{cardNumberId})
-	return b, sql_utils.HandleSqlError(err)
-}
-
 func (r *BuyerRepositorySQL) CreateBuyer(buyer models.Buyer) (newBuyer models.Buyer, err error) {
 	newId, err := sql_utils.Insert(r.db, "INSERT INTO buyers (card_number_id, first_name, last_name) VALUES (?, ?, ?)", []any{buyer.CardNumberId, buyer.FirstName, buyer.LastName})
 	if err != nil {
