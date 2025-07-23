@@ -23,12 +23,3 @@ func (r *ProductTypeRepositoryMySQL) GetProductTypeById(id int) (models.ProductT
 	}
 	return productType, nil
 }
-
-func (r *ProductTypeRepositoryMySQL) IsValidProductType(id int) bool {
-	_, err := sql_utils.QueryRow[models.ProductType](r.db,
-		`SELECT id FROM product_types WHERE id = ?`, []any{id})
-	if err != nil {
-		return false
-	}
-	return true
-}

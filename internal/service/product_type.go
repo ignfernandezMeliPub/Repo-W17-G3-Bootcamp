@@ -7,7 +7,6 @@ import (
 
 type ProductTypeServices interface {
 	GetProductTypeById(int) (models.ProductType, error)
-	IsValidProductType(int) bool
 }
 
 type ProductTypeServiceImpl struct {
@@ -20,8 +19,4 @@ func NewProductTypeService(rp product_type_repository.ProductTypeRepository) *Pr
 
 func (s *ProductTypeServiceImpl) GetProductTypeById(id int) (models.ProductType, error) {
 	return s.ProductTypeRepository.GetProductTypeById(id)
-}
-
-func (s *ProductTypeServiceImpl) IsValidProductType(id int) bool {
-	return s.ProductTypeRepository.IsValidProductType(id)
 }

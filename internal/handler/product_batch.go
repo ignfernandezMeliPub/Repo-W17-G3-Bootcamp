@@ -4,8 +4,9 @@ import (
 	"app/internal/handler/utils"
 	"app/internal/service"
 	"app/pkg/models"
-	"github.com/bootcamp-go/web/response"
 	"net/http"
+
+	"github.com/bootcamp-go/web/response"
 )
 
 type ProductBatchController struct {
@@ -29,5 +30,4 @@ func (p *ProductBatchController) CreateProductBatch(w http.ResponseWriter, r *ht
 		return
 	}
 	response.JSON(w, http.StatusCreated, map[string]any{"data": res})
-	return
 }

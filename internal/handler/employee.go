@@ -26,8 +26,6 @@ func (c *EmployeesController) GetAllEmployees(w http.ResponseWriter, _ *http.Req
 		return
 	}
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
-	return
-
 }
 
 func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
