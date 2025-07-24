@@ -62,7 +62,7 @@ func TestSectionsController_Create(t *testing.T) {
 
 		hdSect.CreateSection(w, req)
 		require.Equal(t, http.StatusCreated, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 
 	t.Run("create_fail", func(t *testing.T) {
@@ -86,7 +86,7 @@ func TestSectionsController_Create(t *testing.T) {
 
 		hdSect.CreateSection(w, req)
 		require.Equal(t, http.StatusUnprocessableEntity, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 
 	t.Run("create_conflict", func(t *testing.T) {
@@ -111,7 +111,7 @@ func TestSectionsController_Create(t *testing.T) {
 
 		hdSect.CreateSection(w, req)
 		require.Equal(t, http.StatusConflict, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 }
 
@@ -167,7 +167,7 @@ func TestSectionsController_Read(t *testing.T) {
 
 		hdSect.GetSections(w, req)
 		require.Equal(t, http.StatusOK, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 
 	t.Run("find_by_id_non_existent", func(t *testing.T) {
@@ -185,7 +185,7 @@ func TestSectionsController_Read(t *testing.T) {
 
 		hdSect.GetSectionById(w, req)
 		require.Equal(t, http.StatusNotFound, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 
 	t.Run("find_by_id_existent", func(t *testing.T) {
@@ -212,7 +212,7 @@ func TestSectionsController_Read(t *testing.T) {
 
 		hdSect.GetSectionById(w, req)
 		require.Equal(t, http.StatusOK, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 }
 
@@ -260,7 +260,7 @@ func TestSectionsController_Update(t *testing.T) {
 
 		hdSect.PatchSection(w, req)
 		require.Equal(t, http.StatusOK, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 
 	t.Run("update_non_existent", func(t *testing.T) {
@@ -278,7 +278,7 @@ func TestSectionsController_Update(t *testing.T) {
 
 		hdSect.PatchSection(w, req)
 		require.Equal(t, http.StatusNotFound, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 }
 
@@ -299,7 +299,7 @@ func TestSectionsController_Delete(t *testing.T) {
 
 		hdSect.DeleteSection(w, req)
 		require.Equal(t, http.StatusNoContent, w.Code)
-		require.Equal(t, "", string(w.Body.Bytes()))
+		require.Equal(t, "", w.Body.String())
 	})
 
 	t.Run("delete_non_existent", func(t *testing.T) {
@@ -314,7 +314,7 @@ func TestSectionsController_Delete(t *testing.T) {
 
 		hdSect.DeleteSection(w, req)
 		require.Equal(t, http.StatusNotFound, w.Code)
-		require.Equal(t, expected, string(w.Body.Bytes()))
+		require.Equal(t, expected, w.Body.String())
 	})
 }
 
@@ -360,7 +360,7 @@ func TestSectionsController_ReadProductBatch(t *testing.T) {
 
 		hdSect.GetAllProductBatchesBySection(w, req)
 		require.Equal(t, http.StatusOK, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 
 	t.Run("find_by_id", func(t *testing.T) {
@@ -379,7 +379,7 @@ func TestSectionsController_ReadProductBatch(t *testing.T) {
 
 		hdSect.GetAllProductBatchesBySection(w, req)
 		require.Equal(t, http.StatusOK, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 
 	t.Run("find_by_id_existent", func(t *testing.T) {
@@ -394,6 +394,6 @@ func TestSectionsController_ReadProductBatch(t *testing.T) {
 
 		hdSect.GetAllProductBatchesBySection(w, req)
 		require.Equal(t, http.StatusNotFound, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 }

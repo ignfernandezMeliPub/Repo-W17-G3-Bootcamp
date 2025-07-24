@@ -66,7 +66,7 @@ func TestProductBatchController_CreateProductBatch(t *testing.T) {
 
 		hdPb.CreateProductBatch(w, req)
 		require.Equal(t, http.StatusCreated, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 
 	t.Run("create_fail", func(t *testing.T) {
@@ -91,7 +91,7 @@ func TestProductBatchController_CreateProductBatch(t *testing.T) {
 
 		hdPb.CreateProductBatch(w, req)
 		require.Equal(t, http.StatusUnprocessableEntity, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 
 	t.Run("create_conflict", func(t *testing.T) {
@@ -117,6 +117,6 @@ func TestProductBatchController_CreateProductBatch(t *testing.T) {
 
 		hdPb.CreateProductBatch(w, req)
 		require.Equal(t, http.StatusConflict, w.Code)
-		require.JSONEq(t, expected, string(w.Body.Bytes()))
+		require.JSONEq(t, expected, w.Body.String())
 	})
 }

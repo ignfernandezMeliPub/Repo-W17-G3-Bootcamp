@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-txdb"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 func init() {
