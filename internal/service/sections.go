@@ -2,9 +2,7 @@ package service
 
 import (
 	"app/internal/repository/repositories/sections_repository"
-	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"reflect"
 )
 
 type SectionsService interface {
@@ -35,23 +33,7 @@ func (s *SectionsServiceImpl) GetSectionById(id int) (models.Section, error) {
 }
 
 func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (models.Section, error) {
-	mandatoryFields := map[string]any{
-		"section_number":      section.SectionNumber,
-		"current_temperature": section.CurrentTemperature,
-		"minimum_temperature": section.MinimumTemperature,
-		"current_capacity":    section.CurrentCapacity,
-		"minimum_capacity":    section.MinimumCapacity,
-		"maximum_capacity":    section.MaximumCapacity,
-		"warehouse_id":        section.WarehouseId,
-		"product_type_id":     section.ProductTypeId,
-	}
 
-	for field, value := range mandatoryFields {
-		v := reflect.ValueOf(value)
-		if v.Kind() == reflect.Ptr && v.IsNil() {
-			return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: field}
-		}
-	}
 	newSection := models.Section{
 		SectionNumber:      *section.SectionNumber,
 		CurrentTemperature: *section.CurrentTemperature,
