@@ -436,6 +436,38 @@ func TestCreateProduct(t *testing.T) {
 		mockService.AssertExpectations(t)
 	})
 
+	t.Run("should return bad request when seller id is not a number", func(t *testing.T) {
+		// Arrange
+		body := `{
+			"product_code": "1234567890",
+			"description": "Product 1",
+			"product_type_id": 1,
+			"width": 10,
+			"height": 20,
+			"length": 30,
+			"net_weight": 100,
+			"expiration_rate": 1,
+			"recommended_freezing_temperature": 10,
+			"freezing_rate": 1,
+			"seller_id": "a"
+		}`
+		mockService := new(service.MockProductService)
+
+		handler := NewProductController(mockService)
+
+		req := httptest.NewRequest(http.MethodPost, "/products", bytes.NewBufferString(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		// Act
+		handler.CreateProduct(w, req)
+
+		// Assert
+		require.Equal(t, http.StatusBadRequest, w.Code)
+		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
+		mockService.AssertNotCalled(t, "CreateProduct", 0)
+	})
+
 }
 
 func TestPatchProduct(t *testing.T) {
@@ -594,6 +626,40 @@ func TestPatchProduct(t *testing.T) {
 		require.Equal(t, http.StatusUnprocessableEntity, w.Code)
 		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
 
+	})
+
+	t.Run("should return bad request when seller id is not a number", func(t *testing.T) {
+		// Arrange
+		body := `{
+			"product_code": "1234567890",
+			"description": "Product 1",
+			"product_type_id": 1,
+			"width": 10,
+			"height": 20,
+			"length": 30,
+			"net_weight": 100,
+			"expiration_rate": 1,
+			"recommended_freezing_temperature": 10,
+			"freezing_rate": 1,
+			"seller_id": "a"
+		}`
+		mockService := new(service.MockProductService)
+
+		handler := NewProductController(mockService)
+
+		req := httptest.NewRequest(http.MethodPatch, "/products/1", bytes.NewBufferString(body))
+		routeCtx := chi.NewRouteContext()
+		routeCtx.URLParams.Add("id", "1")
+		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
+		w := httptest.NewRecorder()
+
+		// Act
+		handler.PatchProduct(w, req)
+
+		// Assert
+		require.Equal(t, http.StatusBadRequest, w.Code)
+		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
+		mockService.AssertNotCalled(t, "UpdateProductById", 0)
 	})
 }
 
