@@ -453,6 +453,13 @@ func TestPatchProduct(t *testing.T) {
 		"freezing_rate": 1
 	}`
 
+	bodyInvalidFields := `{
+		"product_code": "1234567890",
+		"description": "Product 1",
+		"product_type_id": 1,
+		"width": -10
+	}`
+
 	productCode := "1234567890"
 	description := "Product 1"
 	productTypeId := 1
@@ -557,6 +564,37 @@ func TestPatchProduct(t *testing.T) {
 		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
 		mockService.AssertNotCalled(t, "UpdateProductById", 0)
 	})
+
+	t.Run("should handle unprocessable content error for invalid fields values", func(t *testing.T) {
+		width := -10.0
+		inputPatchProduct := models.ProductPatchRequest{
+			Id:            1,
+			ProductCode:   &productCode,
+			Description:   &description,
+			ProductTypeId: &productTypeId,
+			Width:         &width,
+		}
+		// Arrange
+		mockService := new(service.MockProductService)
+		mockService.On("UpdateProductById", inputPatchProduct).Return(models.Product{}, &custom_errors.InvalidArgValueErr{Argument: "width", Value: -10, ExtraInfo: "Width must be greater than 0"})
+
+		handler := NewProductController(mockService)
+
+		req := httptest.NewRequest(http.MethodPatch, "/products/1", bytes.NewBufferString(bodyInvalidFields))
+		routeCtx := chi.NewRouteContext()
+		routeCtx.URLParams.Add("id", "1")
+		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		// Act
+		handler.PatchProduct(w, req)
+
+		// Assert
+		require.Equal(t, http.StatusUnprocessableEntity, w.Code)
+		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
+
+	})
 }
 
 func TestDeleteProduct(t *testing.T) {
@@ -623,4 +661,121 @@ func TestDeleteProduct(t *testing.T) {
 		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
 		mockService.AssertNotCalled(t, "DeleteProductById", 0)
 	})
+}
+
+func TestGetReportRecords(t *testing.T) {
+
+	t.Run("should return the report records successfully", func(t *testing.T) {
+		// Arrange
+
+		expectedReportRecords := []models.ProductRecordReport{
+			{
+				ProductID:    1,
+				Description:  "Product 1",
+				RecordsCount: 10,
+			},
+			{
+				ProductID:    2,
+				Description:  "Product 2",
+				RecordsCount: 20,
+			},
+		}
+		mockService := new(service.MockProductService)
+		mockService.On("GetReportRecords", (*int)(nil)).Return(expectedReportRecords, nil)
+
+		handler := NewProductController(mockService)
+
+		req := httptest.NewRequest(http.MethodGet, "/products/reportRecords", nil)
+		w := httptest.NewRecorder()
+
+		// Act
+		handler.GetReportRecords(w, req)
+
+		// Assert
+		require.Equal(t, http.StatusOK, w.Code)
+		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
+
+		var res struct {
+			Data []models.ProductRecordReport `json:"data"`
+		}
+
+		err := json.Unmarshal(w.Body.Bytes(), &res)
+		require.NoError(t, err)
+		require.Equal(t, expectedReportRecords, res.Data)
+
+		mockService.AssertExpectations(t)
+	})
+
+	t.Run("should return bad request when id is not a number", func(t *testing.T) {
+		// Arrange
+		mockService := new(service.MockProductService)
+
+		handler := NewProductController(mockService)
+
+		req := httptest.NewRequest(http.MethodGet, "/products/reportRecords?id=a", nil)
+		w := httptest.NewRecorder()
+
+		// Act
+		handler.GetReportRecords(w, req)
+
+		// Assert
+		require.Equal(t, http.StatusBadRequest, w.Code)
+		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
+		mockService.AssertNotCalled(t, "GetReportRecords", 0)
+	})
+
+	t.Run("should return the report by product id successfully", func(t *testing.T) {
+		// Arrange
+		expectedReportRecords := []models.ProductRecordReport{
+			{
+				ProductID:    1,
+				Description:  "Product 1",
+				RecordsCount: 10,
+			},
+		}
+		productId := 1
+		mockService := new(service.MockProductService)
+		mockService.On("GetReportRecords", &productId).Return(expectedReportRecords, nil)
+
+		handler := NewProductController(mockService)
+
+		req := httptest.NewRequest(http.MethodGet, "/products/reportRecords?id=1", nil)
+		w := httptest.NewRecorder()
+
+		// Act
+		handler.GetReportRecords(w, req)
+
+		// Assert
+		require.Equal(t, http.StatusOK, w.Code)
+		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
+
+		var res struct {
+			Data []models.ProductRecordReport `json:"data"`
+		}
+
+		err := json.Unmarshal(w.Body.Bytes(), &res)
+		require.NoError(t, err)
+		require.Equal(t, expectedReportRecords, res.Data)
+		mockService.AssertExpectations(t)
+	})
+
+	t.Run("should return not found when product is not found", func(t *testing.T) {
+		// Arrange
+		productId := 1
+		mockService := new(service.MockProductService)
+		mockService.On("GetReportRecords", &productId).Return([]models.ProductRecordReport{}, custom_errors.ErrNotFound)
+
+		handler := NewProductController(mockService)
+
+		req := httptest.NewRequest(http.MethodGet, "/products/reportRecords?id=1", nil)
+		w := httptest.NewRecorder()
+
+		// Act
+		handler.GetReportRecords(w, req)
+
+		// Assert
+		require.Equal(t, http.StatusNotFound, w.Code)
+		require.Equal(t, "application/json", w.Header().Get("Content-Type"))
+	})
+
 }
