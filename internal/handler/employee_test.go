@@ -204,6 +204,8 @@ func TestGetEmployeeById(t *testing.T) {
 		require.Equal(t, expectedCode, w.Code)
 		require.JSONEq(t, expectedBody, w.Body.String())
 
+		mockService.AssertNotCalled(t, "GetEmployeeById")
+
 	})
 
 }
@@ -288,11 +290,11 @@ func TestCreateEmployee(t *testing.T) {
 		require.Equal(t, expectedCode, w.Code)
 		require.JSONEq(t, expectedBody, w.Body.String())
 
-		mockService.AssertExpectations(t)
+		mockService.AssertNotCalled(t, "CreateEmployee")
 
 	})
 
-	t.Run("Case 2. error unique card id duplicated - 409 Conflict", func(t *testing.T) {
+	t.Run("Case 3. error unique card id duplicated - 409 Conflict", func(t *testing.T) {
 
 		// Arrange
 		body := `{
@@ -344,7 +346,7 @@ func TestCreateEmployee(t *testing.T) {
 
 	})
 
-	t.Run("Case 3. error warehouse id not found - 409 Conflict", func(t *testing.T) {
+	t.Run("Case 4. error warehouse id not found - 409 Conflict", func(t *testing.T) {
 
 		// Arrange
 		body := `{
@@ -395,7 +397,7 @@ func TestCreateEmployee(t *testing.T) {
 
 	})
 
-	t.Run("Case 3. error empty body - 422 UnprocessableEntity", func(t *testing.T) {
+	t.Run("Case 5. error empty body - 422 UnprocessableEntity", func(t *testing.T) {
 
 		// Arrange
 		body := `{}`
@@ -422,7 +424,7 @@ func TestCreateEmployee(t *testing.T) {
 
 	})
 
-	t.Run("Case 4. missing field - 422 UnprocessableEntity", func(t *testing.T) {
+	t.Run("Case 6. missing field - 422 UnprocessableEntity", func(t *testing.T) {
 
 		// Arrange
 		body := `{"card_number_id": "55555",
@@ -542,7 +544,7 @@ func TestPatchEmployee(t *testing.T) {
 		require.Equal(t, expectedCode, w.Code)
 		require.JSONEq(t, expectedBody, w.Body.String())
 
-		mockService.AssertExpectations(t)
+		mockService.AssertNotCalled(t, "UpdateEmployeeById")
 
 	})
 
@@ -574,7 +576,7 @@ func TestPatchEmployee(t *testing.T) {
 		require.Equal(t, expectedCode, w.Code)
 		require.JSONEq(t, expectedBody, w.Body.String())
 
-		mockService.AssertExpectations(t)
+		mockService.AssertNotCalled(t, "UpdateEmployeeById")
 
 	})
 
@@ -601,7 +603,7 @@ func TestPatchEmployee(t *testing.T) {
 		require.Equal(t, expectedCode, w.Code)
 		require.JSONEq(t, expectedBody, w.Body.String())
 
-		mockService.AssertExpectations(t)
+		mockService.AssertNotCalled(t, "UpdateEmployeeById")
 
 	})
 
@@ -882,7 +884,7 @@ func TestDeleteEmployee(t *testing.T) {
 		require.Equal(t, expectedCode, w.Code)
 		require.JSONEq(t, expectedBody, w.Body.String())
 
-		mockService.AssertExpectations(t)
+		mockService.AssertNotCalled(t, "DeleteEmployee")
 
 	})
 
@@ -1007,7 +1009,7 @@ func TestGetReportInboundOrders(t *testing.T) {
 		require.Equal(t, expectedCode, w.Code)
 		require.JSONEq(t, expectedBody, w.Body.String())
 
-		mockService.AssertExpectations(t)
+		mockService.AssertNotCalled(t, "GetReportInboundOrders")
 	})
 
 	t.Run("Case 4. error employees table empty - no query - 404 Not Found", func(t *testing.T) {
