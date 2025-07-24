@@ -38,12 +38,7 @@ func (m *SectionsMock) DeleteSectionById(id int) error {
 	return args.Error(0)
 }
 
-func (m *SectionsMock) GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error) {
-	args := m.Called()
-	return args.Get(0).([]models.ProductBatchResponse), args.Error(1)
-}
-
-func (m *SectionsMock) GetProductBatchBySectionId(sectionId int) (prod models.ProductBatchResponse, err error) {
+func (m *SectionsMock) GetProductBatchBySection(sectionId *int) (prod []models.ProductBatchResponse, err error) {
 	args := m.Called(sectionId)
-	return args.Get(0).(models.ProductBatchResponse), args.Error(1)
+	return args.Get(0).([]models.ProductBatchResponse), args.Error(1)
 }

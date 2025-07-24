@@ -12,8 +12,7 @@ type SectionsService interface {
 	UpdateSectionById(id int, section models.SectionRequest) (models.Section, error)
 	DeleteSectionById(id int) error
 
-	GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error)
-	GetProductBatchBySectionId(sectionId int) (prod models.ProductBatchResponse, err error)
+	GetProductBatchBySection(sectionId *int) (prod []models.ProductBatchResponse, err error)
 }
 
 type SectionsServiceImpl struct {
@@ -84,10 +83,6 @@ func (s *SectionsServiceImpl) DeleteSectionById(id int) error {
 	return s.rp.DeleteSectionById(id)
 }
 
-func (s *SectionsServiceImpl) GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error) {
-	return s.rp.GetAllProductBatchesBySection()
-}
-
-func (s *SectionsServiceImpl) GetProductBatchBySectionId(sectionId int) (prod models.ProductBatchResponse, err error) {
-	return s.rp.GetProductBatchBySectionId(sectionId)
+func (s *SectionsServiceImpl) GetProductBatchBySection(sectionId *int) (prod []models.ProductBatchResponse, err error) {
+	return s.rp.GetProductBatchBySection(sectionId)
 }
