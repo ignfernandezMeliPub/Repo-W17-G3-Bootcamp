@@ -2,9 +2,7 @@ package service
 
 import (
 	"app/internal/repository/repositories/sections_repository"
-	"app/pkg/custom_errors"
 	"app/pkg/models"
-	"reflect"
 )
 
 type SectionsService interface {
@@ -14,8 +12,7 @@ type SectionsService interface {
 	UpdateSectionById(id int, section models.SectionRequest) (models.Section, error)
 	DeleteSectionById(id int) error
 
-	GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error)
-	GetProductBatchBySectionId(sectionId int) (prod models.ProductBatchResponse, err error)
+	GetProductBatchBySection(sectionId *int) (prod []models.ProductBatchResponse, err error)
 }
 
 type SectionsServiceImpl struct {
@@ -35,23 +32,7 @@ func (s *SectionsServiceImpl) GetSectionById(id int) (models.Section, error) {
 }
 
 func (s *SectionsServiceImpl) CreateSection(section models.SectionRequest) (models.Section, error) {
-	mandatoryFields := map[string]any{
-		"section_number":      section.SectionNumber,
-		"current_temperature": section.CurrentTemperature,
-		"minimum_temperature": section.MinimumTemperature,
-		"current_capacity":    section.CurrentCapacity,
-		"minimum_capacity":    section.MinimumCapacity,
-		"maximum_capacity":    section.MaximumCapacity,
-		"warehouse_id":        section.WarehouseId,
-		"product_type_id":     section.ProductTypeId,
-	}
 
-	for field, value := range mandatoryFields {
-		v := reflect.ValueOf(value)
-		if v.Kind() == reflect.Ptr && v.IsNil() {
-			return models.Section{}, &custom_errors.MandatoryArgMissingErr{Argument: field}
-		}
-	}
 	newSection := models.Section{
 		SectionNumber:      *section.SectionNumber,
 		CurrentTemperature: *section.CurrentTemperature,
@@ -102,10 +83,6 @@ func (s *SectionsServiceImpl) DeleteSectionById(id int) error {
 	return s.rp.DeleteSectionById(id)
 }
 
-func (s *SectionsServiceImpl) GetAllProductBatchesBySection() (prods []models.ProductBatchResponse, err error) {
-	return s.rp.GetAllProductBatchesBySection()
-}
-
-func (s *SectionsServiceImpl) GetProductBatchBySectionId(sectionId int) (prod models.ProductBatchResponse, err error) {
-	return s.rp.GetProductBatchBySectionId(sectionId)
+func (s *SectionsServiceImpl) GetProductBatchBySection(sectionId *int) (prod []models.ProductBatchResponse, err error) {
+	return s.rp.GetProductBatchBySection(sectionId)
 }
