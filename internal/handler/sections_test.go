@@ -317,3 +317,83 @@ func TestSectionsController_Delete(t *testing.T) {
 		require.Equal(t, expected, string(w.Body.Bytes()))
 	})
 }
+
+func TestSectionsController_ReadProductBatch(t *testing.T) {
+	dbMock := repository.NewSectionsMock()
+	svSect := service.NewSectionsService(dbMock)
+	hdSect := NewSectionsController(svSect)
+	dbMock.On("GetProductBatchBySection", (*int)(nil)).Return([]models.ProductBatchResponse{
+		{
+			SectionID: 1, SectionNumber: 1, ProductsCount: 100,
+		},
+		{
+			SectionID: 2, SectionNumber: 2, ProductsCount: 200,
+		},
+	}, nil)
+	id1 := 1
+	dbMock.On("GetProductBatchBySection", &id1).Return([]models.ProductBatchResponse{
+		{
+			SectionID: 1, SectionNumber: 1, ProductsCount: 100,
+		},
+	}, nil)
+	id2 := 2
+	dbMock.On("GetProductBatchBySection", &id2).Return([]models.ProductBatchResponse{}, custom_errors.ErrNotFound)
+
+	t.Run("find_all", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/sections/reportProducts", nil)
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		expected := `{
+			"data":[{
+				"section_id": 1,
+				"section_number": 1,
+				"products_count": 100
+			},
+			{
+				"section_id": 2,
+				"section_number": 2,
+				"products_count": 200
+			}
+			]
+		}`
+
+		hdSect.GetAllProductBatchesBySection(w, req)
+		require.Equal(t, http.StatusOK, w.Code)
+		require.JSONEq(t, expected, string(w.Body.Bytes()))
+	})
+
+	t.Run("find_by_id", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/sections/reportProducts?id=1", nil)
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		expected := `{
+			"data":[{
+				"section_id": 1,
+				"section_number": 1,
+				"products_count": 100
+			}
+			]
+		}`
+
+		hdSect.GetAllProductBatchesBySection(w, req)
+		require.Equal(t, http.StatusOK, w.Code)
+		require.JSONEq(t, expected, string(w.Body.Bytes()))
+	})
+
+	t.Run("find_by_id_existent", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/sections/reportProducts?id=2", nil)
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		expected := `{
+			"error":"Resource not found.", 
+			"message":"Not found"
+		}`
+
+		hdSect.GetAllProductBatchesBySection(w, req)
+		require.Equal(t, http.StatusNotFound, w.Code)
+		require.JSONEq(t, expected, string(w.Body.Bytes()))
+	})
+}

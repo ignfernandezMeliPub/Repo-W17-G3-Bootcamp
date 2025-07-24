@@ -98,18 +98,7 @@ func (c *SectionsController) GetAllProductBatchesBySection(w http.ResponseWriter
 		return
 	}
 
-	if id != nil {
-		data, err := c.sv.GetProductBatchBySectionId(*id)
-		if err != nil {
-			utils.ResponseHttpError(w, err)
-			return
-		}
-		response.JSON(w, http.StatusOK, map[string]any{
-			"data": data,
-		})
-		return
-	}
-	data, err := c.sv.GetAllProductBatchesBySection()
+	data, err := c.sv.GetProductBatchBySection(id)
 	if err != nil {
 		utils.ResponseHttpError(w, err)
 		return

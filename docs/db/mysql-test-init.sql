@@ -185,3 +185,59 @@ CREATE TABLE purchase_order_details
     FOREIGN KEY (order_id) REFERENCES purchase_orders (id),
     FOREIGN KEY (product_record_id) REFERENCES product_records (id)
 );
+
+INSERT INTO buyers (card_number_id, first_name, last_name)
+VALUES
+    ('1234567890', 'Juan', 'Pérez');
+-- Inserciones para la tabla product_types
+INSERT INTO product_types (name, description)
+VALUES
+    ('Frutas', 'Productos frescos de origen frutal');
+-- Inserciones para la tabla localities
+INSERT INTO localities (id, locality_name, province_name, country_name)
+VALUES
+    ('LOC001', 'Buenos Aires', 'Buenos Aires', 'Argentina');
+-- Inserciones para la tabla sellers
+INSERT INTO sellers (cid, company_name, address, telephone, locality_id)
+VALUES
+    (1001, 'Frutas del Sur', 'Calle Falsa 123', '123456789', 'LOC001');
+-- Inserciones para la tabla products
+INSERT INTO products (product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id)
+VALUES
+    ('FRU001', 'Manzanas Red Delicious', 10.5, 10.0, 15.0, 1.2, 7, -1.0, 0, 1, 1);
+-- Inserciones para la tabla carries
+INSERT INTO carries (cid, company_name, address, telephone, locality_id)
+VALUES
+    ('CARR001', 'Logística Rápida', 'Camino al Aeropuerto 1234', '123123123', 'LOC001');
+-- Inserciones para la tabla warehouses
+INSERT INTO warehouses (warehouse_code, address, telephone, minimum_capacity, minimum_temperature)
+VALUES
+    ('WH001', 'Parque Industrial 1', '555-5551', 1000, -10.0);
+-- Inserciones para la tabla employees
+INSERT INTO employees (card_number_id, first_name, last_name, warehouse_id)
+VALUES
+    ('EMP001', 'Raul', 'García', 1);
+-- Inserciones para la tabla sections
+INSERT INTO sections (section_number, current_temperature, minimum_temperature, current_capacity, minimum_capacity, maximum_capacity, warehouse_id, product_type_id)
+VALUES
+    (1, -10.0, -20.0, 300, 100, 500, 1, 1);
+-- Inserciones para la tabla product_batches
+INSERT INTO product_batches (batch_number, current_quantity, current_temperature, due_date, initial_quantity, manufacturing_date, manufacturing_hour, minimum_temperature, product_id, section_id)
+VALUES
+    (1001, 500, -18, '2023-12-31', 1000, '2023-10-10', 10, -20, 1, 1);
+-- Inserciones para la tabla inbound_orders
+INSERT INTO inbound_orders (order_date, order_number, employee_id, product_batch_id, warehouse_id)
+VALUES
+    ('2023-10-15', 'ORD001', 1, 1, 1);
+-- Inserciones para la tabla purchase_orders
+INSERT INTO purchase_orders (order_number, order_date, tracking_code, buyer_id)
+VALUES
+    ('PO001', '2023-10-14 10:00:00', 'TRK001', 1);
+-- Inserciones para la tabla product_records
+INSERT INTO product_records (last_update_date, purchase_price, sale_price, product_id)
+VALUES
+    ('2023-10-01', 10.0, 15.0, 1);
+-- Inserciones para la tabla purchase_order_details
+INSERT INTO purchase_order_details (order_id, product_record_id, quantity)
+VALUES
+    (1, 1, 100);
