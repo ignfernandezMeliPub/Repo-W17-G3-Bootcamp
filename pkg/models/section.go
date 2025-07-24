@@ -7,7 +7,7 @@ import (
 
 type Section struct {
 	ID                 int     `json:"id" db:"id"`
-	SectionNumber      string  `json:"section_number" db:"section_number"`
+	SectionNumber      int     `json:"section_number" db:"section_number"`
 	CurrentTemperature float32 `json:"current_temperature" db:"current_temperature"`
 	MinimumTemperature float32 `json:"minimum_temperature" db:"minimum_temperature"`
 	CurrentCapacity    int     `json:"current_capacity" db:"current_capacity"`
@@ -18,7 +18,7 @@ type Section struct {
 }
 
 type SectionRequest struct {
-	SectionNumber      *string  `json:"section_number"`
+	SectionNumber      *int     `json:"section_number"`
 	CurrentTemperature *float32 `json:"current_temperature"`
 	MinimumTemperature *float32 `json:"minimum_temperature"`
 	CurrentCapacity    *int     `json:"current_capacity"`
