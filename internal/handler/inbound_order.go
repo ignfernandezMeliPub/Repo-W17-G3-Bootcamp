@@ -37,7 +37,7 @@ func (c *InboundOrderController) CreateInboundOrder(w http.ResponseWriter, r *ht
 
 	}
 
-	response.JSON(w, http.StatusContinue, map[string]any{
+	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": inboundOrder,
 	})
 
