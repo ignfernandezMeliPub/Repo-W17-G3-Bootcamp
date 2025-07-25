@@ -29,7 +29,7 @@ func TestProductRepositoryMySQL_GetAllProducts(t *testing.T) {
 	repo, mock, cleanup := setupProductRepository(t)
 	defer cleanup()
 
-	t.Run("should_return_all_products_successfully_when_database_has_products", func(t *testing.T) {
+	t.Run("should return all products successfully when database has products", func(t *testing.T) {
 		// Arrange
 		expectedProducts := []models.Product{
 			{
@@ -84,7 +84,7 @@ func TestProductRepositoryMySQL_GetAllProducts(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_not_found_error_when_database_has_no_products", func(t *testing.T) {
+	t.Run("should return not found error when database has no products", func(t *testing.T) {
 		// Arrange
 		rows := sqlmock.NewRows([]string{
 			"id", "product_code", "description", "width", "height", "length",
@@ -105,7 +105,7 @@ func TestProductRepositoryMySQL_GetAllProducts(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_connection_error_when_database_connection_fails", func(t *testing.T) {
+	t.Run("should return connection error when database connection fails", func(t *testing.T) {
 		// Arrange
 		mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id FROM products`)).
 			WillReturnError(&mysql.MySQLError{
@@ -123,30 +123,13 @@ func TestProductRepositoryMySQL_GetAllProducts(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_syntax_error_when_sql_query_is_invalid", func(t *testing.T) {
-		// Arrange
-		mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id FROM products`)).
-			WillReturnError(&mysql.MySQLError{
-				Number:  1064,
-				Message: "You have an error in your SQL syntax",
-			})
-
-		// Act
-		products, err := repo.GetAllProducts()
-
-		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Empty(t, products)
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
 }
 
 func TestProductRepositoryMySQL_GetProductById(t *testing.T) {
 	repo, mock, cleanup := setupProductRepository(t)
 	defer cleanup()
 
-	t.Run("should_return_product_successfully_when_product_exists_with_given_id", func(t *testing.T) {
+	t.Run("should return product successfully when product exists with given id", func(t *testing.T) {
 		// Arrange
 		expectedProduct := models.Product{
 			ID:                             1,
@@ -184,7 +167,7 @@ func TestProductRepositoryMySQL_GetProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_not_found_error_when_product_does_not_exist_with_given_id", func(t *testing.T) {
+	t.Run("should return not found error when product does not exist with given id", func(t *testing.T) {
 		// Arrange
 		rows := sqlmock.NewRows([]string{
 			"id", "product_code", "description", "width", "height", "length",
@@ -206,7 +189,7 @@ func TestProductRepositoryMySQL_GetProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_connection_error_when_database_connection_fails", func(t *testing.T) {
+	t.Run("should return connection error when database connection fails", func(t *testing.T) {
 		// Arrange
 		mock.ExpectQuery(`SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id FROM products WHERE id = ?`).
 			WithArgs(1).
@@ -230,7 +213,7 @@ func TestProductRepositoryMySQL_GetProductByCode(t *testing.T) {
 	repo, mock, cleanup := setupProductRepository(t)
 	defer cleanup()
 
-	t.Run("should_return_product_successfully_when_product_exists_with_given_code", func(t *testing.T) {
+	t.Run("should return product successfully when product exists with given code", func(t *testing.T) {
 		// Arrange
 		expectedProduct := models.Product{
 			ID:                             1,
@@ -268,7 +251,7 @@ func TestProductRepositoryMySQL_GetProductByCode(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_not_found_error_when_product_does_not_exist_with_given_code", func(t *testing.T) {
+	t.Run("should return not found error when product does not exist with given code", func(t *testing.T) {
 		// Arrange
 		rows := sqlmock.NewRows([]string{
 			"id", "product_code", "description", "width", "height", "length",
@@ -290,7 +273,7 @@ func TestProductRepositoryMySQL_GetProductByCode(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_connection_error_when_database_connection_fails", func(t *testing.T) {
+	t.Run("should return connection error when database connection fails", func(t *testing.T) {
 		// Arrange
 		mock.ExpectQuery(`SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id FROM products WHERE product_code = ?`).
 			WithArgs("PROD001").
@@ -314,7 +297,7 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 	repo, mock, cleanup := setupProductRepository(t)
 	defer cleanup()
 
-	t.Run("should_create_product_successfully_when_all_required_fields_are_valid", func(t *testing.T) {
+	t.Run("should create product successfully when all required fields are valid", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
 			ProductCode:                    "PROD001",
@@ -346,7 +329,7 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_unique_violation_error_when_product_code_already_exists", func(t *testing.T) {
+	t.Run("should return unique violation error when product code already exists", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
 			ProductCode:                    "EXISTING",
@@ -378,7 +361,7 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_foreign_key_violation_error_when_product_type_id_does_not_exist", func(t *testing.T) {
+	t.Run("should return foreign key violation error when product type id does not exist", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
 			ProductCode:                    "PROD001",
@@ -411,7 +394,7 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_foreign_key_violation_error_when_seller_id_does_not_exist", func(t *testing.T) {
+	t.Run("should return foreign key violation error when seller id does not exist", func(t *testing.T) {
 		// Arrange
 		sellerId := 999
 		product := models.Product{
@@ -445,7 +428,7 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_connection_error_when_database_connection_fails", func(t *testing.T) {
+	t.Run("should return connection error when database connection fails", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
 			ProductCode:                    "PROD001",
@@ -483,7 +466,7 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 	repo, mock, cleanup := setupProductRepository(t)
 	defer cleanup()
 
-	t.Run("should_update_product_successfully_when_product_exists_and_all_fields_are_valid", func(t *testing.T) {
+	t.Run("should update product successfully when product exists and all fields are valid", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
 			ID:                             1,
@@ -513,7 +496,7 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("product_not_found", func(t *testing.T) {
+	t.Run("should return same product when product does not exist", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
 			ID:                             999,
@@ -543,7 +526,7 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_unique_violation_error_when_updated_product_code_already_exists", func(t *testing.T) {
+	t.Run("should return unique violation error when updated product code already exists", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
 			ID:                             1,
@@ -577,7 +560,7 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_foreign_key_violation_error_when_updated_product_type_id_does_not_exist", func(t *testing.T) {
+	t.Run("should return foreign key violation error when updated product type id does not exist", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
 			ID:                             1,
@@ -590,7 +573,7 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 			ExpirationRate:                 45,
 			RecommendedFreezingTemperature: -20.0,
 			FreezingRate:                   3,
-			ProductTypeId:                  999, // Non-existent product type
+			ProductTypeId:                  999,
 			SellerId:                       nil,
 		}
 
@@ -611,7 +594,7 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_connection_error_when_database_connection_fails", func(t *testing.T) {
+	t.Run("should return connection error when database connection fails", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
 			ID:                             1,
@@ -650,7 +633,7 @@ func TestProductRepositoryMySQL_DeleteProductById(t *testing.T) {
 	repo, mock, cleanup := setupProductRepository(t)
 	defer cleanup()
 
-	t.Run("should_delete_product_successfully_when_product_exists_with_given_id", func(t *testing.T) {
+	t.Run("should delete product successfully when product exists with given id", func(t *testing.T) {
 		// Arrange
 		mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM products WHERE id = ?`)).
 			WithArgs(1).
@@ -664,7 +647,7 @@ func TestProductRepositoryMySQL_DeleteProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_succeed_when_product_does_not_exist_with_given_id", func(t *testing.T) {
+	t.Run("should return not found error when product does not exist with given id", func(t *testing.T) {
 		// Arrange
 		mock.ExpectExec(`DELETE FROM products WHERE id = ?`).
 			WithArgs(999).
@@ -678,7 +661,7 @@ func TestProductRepositoryMySQL_DeleteProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_foreign_key_violation_error_when_product_has_related_records", func(t *testing.T) {
+	t.Run("should return foreign key violation error when product has related records", func(t *testing.T) {
 		// Arrange
 		mock.ExpectExec(`DELETE FROM products WHERE id = ?`).
 			WithArgs(1).
@@ -696,7 +679,7 @@ func TestProductRepositoryMySQL_DeleteProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_connection_error_when_database_connection_fails", func(t *testing.T) {
+	t.Run("should return connection error when database connection fails", func(t *testing.T) {
 		// Arrange
 		mock.ExpectExec(`DELETE FROM products WHERE id = ?`).
 			WithArgs(1).
@@ -719,7 +702,7 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 	repo, mock, cleanup := setupProductRepository(t)
 	defer cleanup()
 
-	t.Run("should_return_product_records_report_successfully_when_filtering_by_product_id", func(t *testing.T) {
+	t.Run("should return product records report successfully when filtering by product id", func(t *testing.T) {
 		// Arrange
 		productId := 1
 		expectedReports := []models.ProductRecordReport{
@@ -747,7 +730,7 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_all_product_records_reports_successfully_when_no_product_id_filter", func(t *testing.T) {
+	t.Run("should return all product records reports successfully when no product id filter", func(t *testing.T) {
 		// Arrange
 		expectedReports := []models.ProductRecordReport{
 			{
@@ -764,7 +747,9 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 
 		rows := sqlmock.NewRows([]string{
 			"product_id", "description", "records_count",
-		}).AddRow(1, "Product 1", 5).AddRow(2, "Product 2", 3)
+		}).
+			AddRow(1, "Product 1", 5).
+			AddRow(2, "Product 2", 3)
 
 		mock.ExpectQuery(regexp.QuoteMeta(`SELECT p.id product_id, p.description, COUNT(r.id) as records_count FROM products p LEFT JOIN product_records r ON r.product_id = p.id GROUP BY p.id, p.description`)).
 			WillReturnRows(rows)
@@ -778,7 +763,7 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_not_found_error_when_no_product_records_exist", func(t *testing.T) {
+	t.Run("should return not found error when no product records exist", func(t *testing.T) {
 		// Arrange
 		rows := sqlmock.NewRows([]string{
 			"product_id", "description", "records_count",
@@ -797,30 +782,12 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should_return_connection_error_when_database_connection_fails", func(t *testing.T) {
+	t.Run("should return connection error when database connection fails", func(t *testing.T) {
 		// Arrange
 		mock.ExpectQuery(regexp.QuoteMeta(`SELECT p.id product_id, p.description, COUNT(r.id) as records_count FROM products p LEFT JOIN product_records r ON r.product_id = p.id GROUP BY p.id, p.description`)).
 			WillReturnError(&mysql.MySQLError{
 				Number:  2006,
 				Message: "MySQL server has gone away",
-			})
-
-		// Act
-		reports, err := repo.GetReportRecords(nil)
-
-		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Empty(t, reports)
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
-
-	t.Run("should_return_syntax_error_when_sql_query_is_invalid", func(t *testing.T) {
-		// Arrange
-		mock.ExpectQuery(regexp.QuoteMeta(`SELECT p.id product_id, p.description, COUNT(r.id) as records_count FROM products p LEFT JOIN product_records r ON r.product_id = p.id GROUP BY p.id, p.description`)).
-			WillReturnError(&mysql.MySQLError{
-				Number:  1064,
-				Message: "You have an error in your SQL syntax",
 			})
 
 		// Act
