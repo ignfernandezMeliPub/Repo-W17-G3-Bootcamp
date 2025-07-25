@@ -25,7 +25,7 @@ const queryCreateWarehouse = `
 		telephone, 
 		minimum_capacity, 
 		minimum_temperature
-		)VALUES (?, ?, ?, ?, ?)`
+		) VALUES (?, ?, ?, ?, ?)`
 
 const queryUpdateWarehouseById = `
 	UPDATE warehouses 
