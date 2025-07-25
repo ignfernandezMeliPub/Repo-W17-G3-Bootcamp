@@ -119,14 +119,6 @@ func TestSectionsController_Read(t *testing.T) {
 	dbMock := repository.NewSectionsMock()
 	svSect := service.NewSectionsService(dbMock)
 	hdSect := NewSectionsController(svSect)
-	dbMock.On("GetAllSections").Return([]models.Section{
-		{
-			ID: 1, SectionNumber: 1, CurrentTemperature: 1, MinimumTemperature: 1, CurrentCapacity: 1, MinimumCapacity: 1, MaximumCapacity: 1, WarehouseId: 1, ProductTypeId: 1,
-		},
-		{
-			ID: 2, SectionNumber: 2, CurrentTemperature: 2, MinimumTemperature: 2, CurrentCapacity: 2, MinimumCapacity: 2, MaximumCapacity: 2, WarehouseId: 2, ProductTypeId: 2,
-		},
-	}, nil)
 
 	dbMock.On("GetSectionById", 1).Return(models.Section{
 		ID: 1, SectionNumber: 1, CurrentTemperature: 1, MinimumTemperature: 1, CurrentCapacity: 1, MinimumCapacity: 1, MaximumCapacity: 1, WarehouseId: 1, ProductTypeId: 1,
@@ -134,7 +126,82 @@ func TestSectionsController_Read(t *testing.T) {
 
 	dbMock.On("GetSectionById", 3).Return(models.Section{}, custom_errors.ErrNotFound)
 
+	t.Run("find_by_id_non_existent", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/sections/3", nil)
+		req.Header.Set("Content-Type", "application/json")
+		routeCtx := chi.NewRouteContext()
+		routeCtx.URLParams.Add("id", "3")
+		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
+		w := httptest.NewRecorder()
+
+		expected := `{
+			"error":"Resource not found.", 
+			"message":"Not found"
+		}`
+
+		hdSect.GetSectionById(w, req)
+		require.Equal(t, http.StatusNotFound, w.Code)
+		require.JSONEq(t, expected, w.Body.String())
+	})
+
+	t.Run("find_by_id_bad_request", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/sections/a", nil)
+		req.Header.Set("Content-Type", "application/json")
+		routeCtx := chi.NewRouteContext()
+		routeCtx.URLParams.Add("id", "a")
+		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
+		w := httptest.NewRecorder()
+
+		expected := `{"error":"Failed to decode url param {id}. Please verify format.", "message":"Bad request"}`
+
+		hdSect.GetSectionById(w, req)
+		require.Equal(t, http.StatusBadRequest, w.Code)
+		require.JSONEq(t, expected, w.Body.String())
+	})
+
+	t.Run("find_by_id_existent", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/sections/1", nil)
+		req.Header.Set("Content-Type", "application/json")
+		routeCtx := chi.NewRouteContext()
+		routeCtx.URLParams.Add("id", "1")
+		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
+		w := httptest.NewRecorder()
+
+		expected := `{
+			"data":{
+				"id": 1,
+				"section_number": 1,
+				"current_temperature": 1,
+				"minimum_temperature": 1,
+				"current_capacity": 1,
+				"minimum_capacity": 1,
+				"maximum_capacity": 1,
+				"warehouse_id": 1,
+				"product_type_id": 1
+			}
+		}`
+
+		hdSect.GetSectionById(w, req)
+		require.Equal(t, http.StatusOK, w.Code)
+		require.JSONEq(t, expected, w.Body.String())
+	})
+}
+
+func TestSectionsController_ReadAll(t *testing.T) {
+
 	t.Run("find_all", func(t *testing.T) {
+		dbMock := repository.NewSectionsMock()
+		svSect := service.NewSectionsService(dbMock)
+		hdSect := NewSectionsController(svSect)
+		dbMock.On("GetAllSections").Return([]models.Section{
+			{
+				ID: 1, SectionNumber: 1, CurrentTemperature: 1, MinimumTemperature: 1, CurrentCapacity: 1, MinimumCapacity: 1, MaximumCapacity: 1, WarehouseId: 1, ProductTypeId: 1,
+			},
+			{
+				ID: 2, SectionNumber: 2, CurrentTemperature: 2, MinimumTemperature: 2, CurrentCapacity: 2, MinimumCapacity: 2, MaximumCapacity: 2, WarehouseId: 2, ProductTypeId: 2,
+			},
+		}, nil)
+
 		req := httptest.NewRequest(http.MethodGet, "/sections", nil)
 		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
@@ -170,48 +237,20 @@ func TestSectionsController_Read(t *testing.T) {
 		require.JSONEq(t, expected, w.Body.String())
 	})
 
-	t.Run("find_by_id_non_existent", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/sections/3", nil)
+	t.Run("find_all_fail", func(t *testing.T) {
+		dbMock := repository.NewSectionsMock()
+		svSect := service.NewSectionsService(dbMock)
+		hdSect := NewSectionsController(svSect)
+		dbMock.On("GetAllSections").Return([]models.Section{}, &custom_errors.ResourceNotFoundError{})
+
+		req := httptest.NewRequest(http.MethodGet, "/sections", nil)
 		req.Header.Set("Content-Type", "application/json")
-		routeCtx := chi.NewRouteContext()
-		routeCtx.URLParams.Add("id", "3")
-		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
 		w := httptest.NewRecorder()
 
-		expected := `{
-			"error":"Resource not found.", 
-			"message":"Not found"
-		}`
+		expected := `{"error":"Resource not found.", "message":"Not found"}`
 
-		hdSect.GetSectionById(w, req)
+		hdSect.GetSections(w, req)
 		require.Equal(t, http.StatusNotFound, w.Code)
-		require.JSONEq(t, expected, w.Body.String())
-	})
-
-	t.Run("find_by_id_existent", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/sections/1", nil)
-		req.Header.Set("Content-Type", "application/json")
-		routeCtx := chi.NewRouteContext()
-		routeCtx.URLParams.Add("id", "1")
-		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
-		w := httptest.NewRecorder()
-
-		expected := `{
-			"data":{
-				"id": 1,
-				"section_number": 1,
-				"current_temperature": 1,
-				"minimum_temperature": 1,
-				"current_capacity": 1,
-				"minimum_capacity": 1,
-				"maximum_capacity": 1,
-				"warehouse_id": 1,
-				"product_type_id": 1
-			}
-		}`
-
-		hdSect.GetSectionById(w, req)
-		require.Equal(t, http.StatusOK, w.Code)
 		require.JSONEq(t, expected, w.Body.String())
 	})
 }
@@ -280,6 +319,39 @@ func TestSectionsController_Update(t *testing.T) {
 		require.Equal(t, http.StatusNotFound, w.Code)
 		require.JSONEq(t, expected, w.Body.String())
 	})
+
+	t.Run("update_bad_request", func(t *testing.T) {
+		body := strings.NewReader(`{
+			"current_temperature": 1
+		}`)
+		req := httptest.NewRequest(http.MethodPatch, "/sections/a", body)
+		routeCtx := chi.NewRouteContext()
+		routeCtx.URLParams.Add("id", "a")
+		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		expected := `{"error":"Failed to decode url param {id}. Please verify format.", "message":"Bad request"}`
+
+		hdSect.PatchSection(w, req)
+		require.Equal(t, http.StatusBadRequest, w.Code)
+		require.JSONEq(t, expected, w.Body.String())
+	})
+
+	t.Run("update_bad_body", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPatch, "/sections/2", nil)
+		routeCtx := chi.NewRouteContext()
+		routeCtx.URLParams.Add("id", "2")
+		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		expected := `{"error":"Internal server error", "message":"Internal server error"}`
+
+		hdSect.PatchSection(w, req)
+		require.Equal(t, http.StatusInternalServerError, w.Code)
+		require.JSONEq(t, expected, w.Body.String())
+	})
 }
 
 func TestSectionsController_Delete(t *testing.T) {
@@ -314,6 +386,21 @@ func TestSectionsController_Delete(t *testing.T) {
 
 		hdSect.DeleteSection(w, req)
 		require.Equal(t, http.StatusNotFound, w.Code)
+		require.Equal(t, expected, w.Body.String())
+	})
+
+	t.Run("delete_bad_request", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodDelete, "/sections/a", nil)
+		req.Header.Set("Content-Type", "application/json")
+		routeCtx := chi.NewRouteContext()
+		routeCtx.URLParams.Add("id", "a")
+		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, routeCtx))
+		w := httptest.NewRecorder()
+
+		expected := `{"error":"Failed to decode url param {id}. Please verify format.","message":"Bad request"}`
+
+		hdSect.DeleteSection(w, req)
+		require.Equal(t, http.StatusBadRequest, w.Code)
 		require.Equal(t, expected, w.Body.String())
 	})
 }
@@ -382,7 +469,7 @@ func TestSectionsController_ReadProductBatch(t *testing.T) {
 		require.JSONEq(t, expected, w.Body.String())
 	})
 
-	t.Run("find_by_id_existent", func(t *testing.T) {
+	t.Run("find_by_id_not_found", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/sections/reportProducts?id=2", nil)
 		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
@@ -396,4 +483,17 @@ func TestSectionsController_ReadProductBatch(t *testing.T) {
 		require.Equal(t, http.StatusNotFound, w.Code)
 		require.JSONEq(t, expected, w.Body.String())
 	})
+
+	t.Run("find_by_id_bad_request", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/sections/reportProducts?id=a", nil)
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		expected := `{"error":"Failed to decode query param {id}. Please verify format.", "message":"Bad request"}`
+
+		hdSect.GetAllProductBatchesBySection(w, req)
+		require.Equal(t, http.StatusBadRequest, w.Code)
+		require.JSONEq(t, expected, w.Body.String())
+	})
+
 }

@@ -204,7 +204,7 @@ func TestGetBuyerById(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "GetBuyerById", 0)
+		mockService.AssertNumberOfCalls(t, "GetBuyerById", 0)
 	})
 
 }
@@ -289,7 +289,7 @@ func TestCreateBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "CreateBuyer", 0)
+		mockService.AssertNumberOfCalls(t, "CreateBuyer", 0)
 	})
 
 	t.Run("should handle bad request error for body typo", func(t *testing.T) {
@@ -323,7 +323,7 @@ func TestCreateBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "CreateBuyer", 0)
+		mockService.AssertNumberOfCalls(t, "CreateBuyer", 0)
 	})
 
 	t.Run("should handle conflict error for unique constraint violation", func(t *testing.T) {
@@ -397,7 +397,7 @@ func TestCreateBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "CreateBuyer", 0)
+		mockService.AssertNumberOfCalls(t, "CreateBuyer", 0)
 	})
 
 	t.Run("should handle unprocessable content error for invalid fields values", func(t *testing.T) {
@@ -429,7 +429,7 @@ func TestCreateBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "CreateBuyer", 0)
+		mockService.AssertNumberOfCalls(t, "CreateBuyer", 0)
 	})
 
 }
@@ -521,7 +521,7 @@ func TestPatchBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "UpdateBuyerById", 0)
+		mockService.AssertNumberOfCalls(t, "UpdateBuyerById", 0)
 	})
 
 	t.Run("should handle bad request error for empty body", func(t *testing.T) {
@@ -553,7 +553,7 @@ func TestPatchBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "UpdateBuyerById", 0)
+		mockService.AssertNumberOfCalls(t, "UpdateBuyerById", 0)
 	})
 
 	t.Run("should handle not found error", func(t *testing.T) {
@@ -637,7 +637,7 @@ func TestPatchBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "UpdateBuyerById", 0)
+		mockService.AssertNumberOfCalls(t, "UpdateBuyerById", 0)
 	})
 
 	t.Run("should handle conflict error for unique constraint violation", func(t *testing.T) {
@@ -713,7 +713,7 @@ func TestPatchBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "UpdateBuyerById", 0)
+		mockService.AssertNumberOfCalls(t, "UpdateBuyerById", 0)
 	})
 
 	t.Run("should handle unprocessable content error for invalid fields values", func(t *testing.T) {
@@ -747,7 +747,7 @@ func TestPatchBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "UpdateBuyerById", 0)
+		mockService.AssertNumberOfCalls(t, "UpdateBuyerById", 0)
 	})
 
 }
@@ -834,7 +834,7 @@ func TestDeleteBuyer(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "DeleteBuyerById", 0)
+		mockService.AssertNumberOfCalls(t, "DeleteBuyerById", 0)
 	})
 
 }
@@ -1019,6 +1019,6 @@ func TestGetBuyersPurchaseOrdersCount(t *testing.T) {
 		require.Contains(t, response, "message")
 		require.Contains(t, response, "error")
 
-		mockService.AssertNotCalled(t, "GetBuyersPurchaseOrdersCount", 0)
+		mockService.AssertNumberOfCalls(t, "GetBuyersPurchaseOrdersCount", 0)
 	})
 }
