@@ -14,7 +14,6 @@ import (
 )
 
 // CREATE LOCALITY TESTS
-
 func TestCreateLocality(t *testing.T) {
 	t.Run("should create locality successfully", func(t *testing.T) {
 		// Arrange
@@ -203,7 +202,6 @@ func TestCreateLocality(t *testing.T) {
 }
 
 // GET LOCALITY SELLER COUNT TESTS
-
 func TestGetLocalitySellerCount(t *testing.T) {
 	t.Run("should return seller count for specific locality", func(t *testing.T) {
 		// Arrange
