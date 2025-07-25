@@ -11,6 +11,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
 	github.com/DATA-DOG/go-txdb v0.2.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 )
