@@ -211,8 +211,19 @@ func TestWarehouseSQL_GetWarehouseById(t *testing.T) {
 func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 	repo, mock, cleanup := setupWarehouseRepository(t)
 	defer cleanup()
-	const query = `
+	const updateQuery = `
 		UPDATE warehouses SET warehouse_code = ?, address = ?, telephone = ?, minimum_capacity = ?, minimum_temperature = ? WHERE id = ?`
+
+	const selectQuery = `
+		SELECT 
+			id,
+			warehouse_code,
+			address,
+			telephone,
+			minimum_capacity,
+			minimum_temperature 
+		FROM warehouses 
+		WHERE id = ?`
 
 	t.Run("should update warehouse by id successfully", func(t *testing.T) {
 		warehouse := models.Warehouse{
@@ -224,7 +235,7 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 			MinimumTemperature: &temp,
 		}
 
-		mock.ExpectExec(regexp.QuoteMeta(query)).
+		mock.ExpectExec(regexp.QuoteMeta(updateQuery)).
 			WithArgs(warehouse.WarehouseCode, warehouse.Address, warehouse.Telephone, warehouse.MinimumCapacity, warehouse.MinimumTemperature, warehouse.Id).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 
@@ -260,21 +271,9 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 			MinimumCapacity:    100,
 			MinimumTemperature: &temp,
 		}
-		mock.ExpectExec(regexp.QuoteMeta(query)).
+		mock.ExpectExec(regexp.QuoteMeta(updateQuery)).
 			WithArgs(warehouse.WarehouseCode, warehouse.Address, warehouse.Telephone, warehouse.MinimumCapacity, warehouse.MinimumTemperature, warehouse.Id).
 			WillReturnResult(sqlmock.NewResult(0, 0))
-
-		// Mock the GetWarehouseById call that happens at the end of UpdateWarehouseById
-		selectQuery := `
-		SELECT 
-		id,
-		warehouse_code,
-		address,
-		telephone,
-		minimum_capacity,
-		minimum_temperature 
-		FROM warehouses 
-		WHERE id = ?`
 
 		rows := sqlmock.NewRows([]string{"id", "warehouse_code", "address", "telephone", "minimum_capacity", "minimum_temperature"})
 
@@ -297,7 +296,7 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 			MinimumCapacity:    100,
 			MinimumTemperature: &temp,
 		}
-		mock.ExpectExec(regexp.QuoteMeta(query)).
+		mock.ExpectExec(regexp.QuoteMeta(updateQuery)).
 			WithArgs(warehouse.WarehouseCode, warehouse.Address, warehouse.Telephone, warehouse.MinimumCapacity, warehouse.MinimumTemperature, warehouse.Id).
 			WillReturnError(sql.ErrConnDone)
 
