@@ -306,6 +306,19 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 		assert.Equal(t, models.Warehouse{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
+	t.Run("should return error when no fields are provided to update", func(t *testing.T) {
+		emptyWarehouse := models.Warehouse{
+			Id: 1,
+		}
+
+		result, err := repo.UpdateWarehouseById(emptyWarehouse.Id, emptyWarehouse)
+
+		require.Error(t, err)
+		assert.IsType(t, &custom_errors.MandatoryArgMissingErr{}, err)
+		assert.Equal(t, models.Warehouse{}, result)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+
 }
 
 func TestWarehouseSQL_DeleteWarehouseById(t *testing.T) {
