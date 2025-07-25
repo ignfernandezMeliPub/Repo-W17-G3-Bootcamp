@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var emptyStringWithSpaces = "  "
+var buyerEmptyStringWithSpaces = "  "
 
 var buyer = Buyer{
 	Id:           1,
@@ -24,7 +24,7 @@ func TestBuyerPatch_Verify(t *testing.T) {
 		{
 			name: "card_number_id",
 			patch: BuyerPatch{
-				CardNumberId: &emptyStringWithSpaces,
+				CardNumberId: &buyerEmptyStringWithSpaces,
 				FirstName:    &buyer.FirstName,
 				LastName:     &buyer.LastName,
 			},
@@ -33,7 +33,7 @@ func TestBuyerPatch_Verify(t *testing.T) {
 			name: "first_name",
 			patch: BuyerPatch{
 				CardNumberId: &buyer.CardNumberId,
-				FirstName:    &emptyStringWithSpaces,
+				FirstName:    &buyerEmptyStringWithSpaces,
 				LastName:     &buyer.LastName,
 			},
 		},
@@ -42,7 +42,7 @@ func TestBuyerPatch_Verify(t *testing.T) {
 			patch: BuyerPatch{
 				CardNumberId: &buyer.CardNumberId,
 				FirstName:    &buyer.FirstName,
-				LastName:     &emptyStringWithSpaces,
+				LastName:     &buyerEmptyStringWithSpaces,
 			},
 		},
 	}
@@ -172,7 +172,7 @@ func TestBuyerCreateRequest_Verify(t *testing.T) {
 		{
 			name: "card_number_id",
 			patch: BuyerCreateRequest{
-				CardNumberId: &emptyStringWithSpaces,
+				CardNumberId: &buyerEmptyStringWithSpaces,
 				FirstName:    &buyer.FirstName,
 				LastName:     &buyer.LastName,
 			},
@@ -181,7 +181,7 @@ func TestBuyerCreateRequest_Verify(t *testing.T) {
 			name: "first_name",
 			patch: BuyerCreateRequest{
 				CardNumberId: &buyer.CardNumberId,
-				FirstName:    &emptyStringWithSpaces,
+				FirstName:    &buyerEmptyStringWithSpaces,
 				LastName:     &buyer.LastName,
 			},
 		},
@@ -190,7 +190,7 @@ func TestBuyerCreateRequest_Verify(t *testing.T) {
 			patch: BuyerCreateRequest{
 				CardNumberId: &buyer.CardNumberId,
 				FirstName:    &buyer.FirstName,
-				LastName:     &emptyStringWithSpaces,
+				LastName:     &buyerEmptyStringWithSpaces,
 			},
 		},
 	}
