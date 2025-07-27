@@ -76,7 +76,7 @@ func createValidProductRequest() ProductRequest {
 	}
 }
 
-// Helper function to set field value using reflection
+// Helper function to set field value
 func setFieldValue(request *ProductRequest, fieldName string, value interface{}) {
 	switch fieldName {
 	case "ProductCode":
