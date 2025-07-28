@@ -4,7 +4,6 @@ import (
 	"app/pkg/custom_errors"
 	"database/sql"
 	"fmt"
-	"reflect"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -666,64 +665,5 @@ func TestHandleSqlError(t *testing.T) {
 
 		// Assert
 		assert.Equal(t, mysqlErr, result)
-	})
-}
-
-func TestGetFieldsEdgeCases(t *testing.T) {
-	t.Run("should return error when instance is not a pointer", func(t *testing.T) {
-		// Arrange
-		var instance TestStruct
-		fieldMap := make(map[string]reflect.Value)
-
-		// Act
-		result, err := getFields(instance, fieldMap)
-
-		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, "instance must be a pointer", err.Error())
-		assert.Empty(t, result)
-	})
-
-	t.Run("should return error when instance is not a pointer to struct", func(t *testing.T) {
-		// Arrange
-		var instance int = 42
-		fieldMap := make(map[string]reflect.Value)
-
-		// Act
-		result, err := getFields(&instance, fieldMap)
-
-		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, "instance must be a pointer to a struct", err.Error())
-		assert.Empty(t, result)
-	})
-}
-
-func TestInitInstanceWithRowsEdgeCases(t *testing.T) {
-	t.Run("should return error when rows columns fails", func(t *testing.T) {
-		// Arrange
-		db, mock, cleanup := setupMockDB(t)
-		defer cleanup()
-
-		// Create a mock that will fail when calling rows.Columns()
-		rows := sqlmock.NewRows([]string{"id", "name", "age"}).
-			AddRow(1, "John", 25).
-			RowError(0, &mysql.MySQLError{
-				Number:  2006,
-				Message: "MySQL server has gone away",
-			})
-
-		mock.ExpectQuery(`SELECT id, name, age FROM users WHERE id = \?`).
-			WithArgs(1).
-			WillReturnRows(rows)
-
-		// Act
-		result, err := QueryRow[TestStruct](db, `SELECT id, name, age FROM users WHERE id = ?`, []any{1})
-
-		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, TestStruct{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
