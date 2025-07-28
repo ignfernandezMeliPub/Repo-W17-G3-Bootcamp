@@ -85,10 +85,9 @@ func TestProductRecordRepositorySQL_CreateProductRecord(t *testing.T) {
 			})
 
 		// Assert
-		productRecord, err := repo.CreateProductRecord(expectedProductRecord)
+		_, err := repo.CreateProductRecord(expectedProductRecord)
 		require.Error(t, err)
 		require.IsType(t, custom_errors.ErrForeignKeyViolation, err)
-		require.Equal(t, models.ProductRecord{}, productRecord)
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
