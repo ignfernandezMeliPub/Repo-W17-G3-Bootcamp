@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"app/internal/repository/sql_utils"
+	"app/pkg/custom_errors"
 	"app/pkg/models"
 )
 
@@ -54,9 +55,15 @@ func (r *ProductRepositoryMySQL) UpdateProductById(p models.Product) (models.Pro
 }
 
 func (r *ProductRepositoryMySQL) DeleteProductById(id int) error {
-	_, err := sql_utils.Delete(r.db,
+	rowsAffected, err := sql_utils.Delete(r.db,
 		`DELETE FROM products WHERE id = ?`, []any{id})
-	return sql_utils.HandleSqlError(err)
+	if err != nil {
+		return sql_utils.HandleSqlError(err)
+	}
+	if rowsAffected == 0 {
+		return custom_errors.ErrNotFound
+	}
+	return err
 }
 
 func (r *ProductRepositoryMySQL) GetReportRecords(id *int) ([]models.ProductRecordReport, error) {

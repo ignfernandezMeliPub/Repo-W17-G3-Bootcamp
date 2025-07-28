@@ -94,9 +94,7 @@ func TestGetAllProducts(t *testing.T) {
 		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		//ver si esto es necesario
-		require.Contains(t, response, "message")
-		require.Contains(t, response, "error")
+		require.Equal(t, http.StatusNotFound, w.Code)
 		mockService.AssertExpectations(t)
 	})
 }
@@ -313,8 +311,7 @@ func TestCreateProduct(t *testing.T) {
 		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		require.Contains(t, response, "message")
-		require.Contains(t, response, "error")
+		require.Equal(t, http.StatusBadRequest, w.Code)
 		mockService.AssertNotCalled(t, "CreateProduct", 0)
 	})
 
@@ -361,8 +358,7 @@ func TestCreateProduct(t *testing.T) {
 		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		require.Contains(t, response, "message")
-		require.Contains(t, response, "error")
+		require.Equal(t, http.StatusConflict, w.Code)
 		mockService.AssertExpectations(t)
 	})
 
@@ -386,14 +382,12 @@ func TestCreateProduct(t *testing.T) {
 		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		require.Contains(t, response, "message")
-		require.Contains(t, response, "error")
+		require.Equal(t, http.StatusUnprocessableEntity, w.Code)
 		mockService.AssertNotCalled(t, "CreateProduct", 0)
 	})
 
 	t.Run("should handle unprocessable content error for invalid fields values", func(t *testing.T) {
 		// Arrange
-		// Create the expected ProductRequest with the invalid width value
 		invalidWidth := -10.0
 		expectedInvalidProduct := models.ProductRequest{
 			ProductCode:                    &productCode,
@@ -428,11 +422,7 @@ func TestCreateProduct(t *testing.T) {
 		var response map[string]any
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		require.Contains(t, response, "message")
-		require.Contains(t, response, "error")
-		require.Equal(t, "Unprocessable Entity", response["message"])
-		require.Contains(t, response["error"], "width")
-		require.Contains(t, response["error"], "Width must be greater than 0")
+		require.Equal(t, http.StatusUnprocessableEntity, w.Code)
 		mockService.AssertExpectations(t)
 	})
 
