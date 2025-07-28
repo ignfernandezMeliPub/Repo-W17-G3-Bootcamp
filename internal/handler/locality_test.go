@@ -11,7 +11,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -358,12 +357,22 @@ func TestLocalityHandler_GetCarriesReport(t *testing.T) {
 	t.Run("should return report by locality id successfully", func(t *testing.T) {
 		mockService := new(service.MockLocalityService)
 
-		expected := []models.CarriesReport{
-			{LocalityId: "L001", LocalityName: "Localidad 1", CarriesCount: 3},
+		mockReport := []models.CarriesReport{
+			{LocalityId: "L001", LocalityName: "Locality 1", CarriesCount: 3},
 		}
 		mockService.
 			On("GetCarriesReport", "L001").
-			Return(expected, nil)
+			Return(mockReport, nil)
+
+		expected := `{
+			"data": [
+				{
+					"locality_id": "L001",
+					"locality_name": "Locality 1",
+					"carries_count": 3
+				}
+			]
+		}`
 
 		hd := NewLocalityHandler(mockService)
 
@@ -372,29 +381,38 @@ func TestLocalityHandler_GetCarriesReport(t *testing.T) {
 
 		hd.GetCarriesReport(response, request)
 
-		res := response.Result()
-		defer res.Body.Close()
+		require.Equal(t, http.StatusOK, response.Code)
+		require.Equal(t, "application/json", response.Header().Get("Content-Type"))
 
-		assert.Equal(t, http.StatusOK, response.Code)
-		assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
-
-		body := response.Body.String()
-		assert.Contains(t, body, "L001")
-		assert.Contains(t, body, "Localidad 1")
-		assert.Contains(t, body, "3")
+		require.JSONEq(t, expected, response.Body.String())
 
 		mockService.AssertExpectations(t)
 	})
 	t.Run("should return all reports with empty id", func(t *testing.T) {
 		mockService := new(service.MockLocalityService)
 
-		expected := []models.CarriesReport{
+		mockReports := []models.CarriesReport{
 			{LocalityId: "L001", LocalityName: "Locality 1", CarriesCount: 3},
 			{LocalityId: "L002", LocalityName: "Locality 2", CarriesCount: 5},
 		}
 		mockService.
 			On("GetCarriesReport", "").
-			Return(expected, nil)
+			Return(mockReports, nil)
+
+		expected := `{
+			"data": [
+				{
+					"locality_id": "L001",
+					"locality_name": "Locality 1",
+					"carries_count": 3
+				},
+				{
+					"locality_id": "L002",
+					"locality_name": "Locality 2",
+					"carries_count": 5
+				}
+			]
+		}`
 
 		hd := NewLocalityHandler(mockService)
 
@@ -403,24 +421,15 @@ func TestLocalityHandler_GetCarriesReport(t *testing.T) {
 
 		hd.GetCarriesReport(response, request)
 
-		res := response.Result()
-		defer res.Body.Close()
+		require.Equal(t, http.StatusOK, response.Code)
+		require.Equal(t, "application/json", response.Header().Get("Content-Type"))
 
-		assert.Equal(t, http.StatusOK, response.Code)
-		assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
-
-		body := response.Body.String()
-		assert.Contains(t, body, "L001")
-		assert.Contains(t, body, "Locality 1")
-		assert.Contains(t, body, "3")
-		assert.Contains(t, body, "L002")
-		assert.Contains(t, body, "Locality 2")
-		assert.Contains(t, body, "5")
+		require.JSONEq(t, expected, response.Body.String())
 
 		mockService.AssertExpectations(t)
 	})
 
-	t.Run("should return 404 when locality not found", func(t *testing.T) {
+	t.Run("should return error not found when locality does not exist", func(t *testing.T) {
 		mockService := new(service.MockLocalityService)
 
 		mockService.
@@ -434,19 +443,20 @@ func TestLocalityHandler_GetCarriesReport(t *testing.T) {
 
 		hd.GetCarriesReport(response, request)
 
-		res := response.Result()
-		defer res.Body.Close()
+		require.Equal(t, http.StatusNotFound, response.Code)
+		require.Equal(t, "application/json", response.Header().Get("Content-Type"))
 
-		assert.Equal(t, http.StatusNotFound, response.Code)
-		assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
+		var body map[string]any
+		err := json.Unmarshal(response.Body.Bytes(), &body)
+		require.NoError(t, err)
 
-		body := response.Body.String()
-		assert.Contains(t, body, "Not found")
+		require.Contains(t, body, "message")
+		require.Contains(t, body, "error")
 
 		mockService.AssertExpectations(t)
 	})
 
-	t.Run("should return 500 when database error occurs", func(t *testing.T) {
+	t.Run("should return internal server error when database error occurs", func(t *testing.T) {
 		mockService := new(service.MockLocalityService)
 
 		mockService.
@@ -460,14 +470,15 @@ func TestLocalityHandler_GetCarriesReport(t *testing.T) {
 
 		hd.GetCarriesReport(response, request)
 
-		res := response.Result()
-		defer res.Body.Close()
+		require.Equal(t, http.StatusInternalServerError, response.Code)
+		require.Equal(t, "application/json", response.Header().Get("Content-Type"))
 
-		assert.Equal(t, http.StatusInternalServerError, response.Code)
-		assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
+		var body map[string]any
+		err := json.Unmarshal(response.Body.Bytes(), &body)
+		require.NoError(t, err)
 
-		body := response.Body.String()
-		assert.Contains(t, body, "Internal server error")
+		require.Contains(t, body, "message")
+		require.Contains(t, body, "error")
 
 		mockService.AssertExpectations(t)
 	})
