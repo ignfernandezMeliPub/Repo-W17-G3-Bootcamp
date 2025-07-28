@@ -106,5 +106,24 @@ func TestProductRecordService_CreateProductRecord(t *testing.T) {
 		require.Equal(t, "sale_price", err.(*custom_errors.InvalidArgValueErr).Argument)
 		mockRepository.AssertNumberOfCalls(t, "CreateProductRecord", 0)
 	})
+	t.Run("should return error when lastUpdateDate is in the future", func(t *testing.T) {
+		mockRepository := new(repository.MockProductRecordRepository)
+		service := NewProductRecordService(mockRepository)
 
+		lastUpdateDate := "2029-01-02"
+		productRecordRequest := models.ProductRecordRequest{
+			Data: &models.ProductRecordData{
+				LastUpdateDate: &lastUpdateDate,
+				PurchasePrice:  &productRecord.PurchasePrice,
+				SalePrice:      &productRecord.SalePrice,
+				ProductID:      &productRecord.ProductID,
+			},
+		}
+		_, err := service.CreateProductRecord(productRecordRequest)
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.InvalidArgValueErr{}, err)
+		require.Equal(t, "last_update_date", err.(*custom_errors.InvalidArgValueErr).Argument)
+		require.Equal(t, "Date cannot be in the future", err.(*custom_errors.InvalidArgValueErr).ExtraInfo)
+		mockRepository.AssertNumberOfCalls(t, "CreateProductRecord", 0)
+	})
 }

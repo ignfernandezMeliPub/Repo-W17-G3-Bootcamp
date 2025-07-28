@@ -164,4 +164,24 @@ func TestCreateProductRecord(t *testing.T) {
 		require.Equal(t, http.StatusUnprocessableEntity, response.Code)
 		mockService.AssertExpectations(t)
 	})
+
+	t.Run("should return an error if the date is in the future", func(t *testing.T) {
+		mockService := new(service.MockProductRecordService)
+		handler := NewProductRecordHandler(mockService)
+
+		mockService.On("CreateProductRecord", inputProductRecord).Return(models.ProductRecord{}, &custom_errors.InvalidArgValueErr{
+			Argument:  "last_update_date",
+			Value:     "2021-01-01",
+			ExtraInfo: "Date cannot be in the future",
+		})
+
+		request := httptest.NewRequest(http.MethodPost, "/productRecords", bytes.NewBufferString(body))
+		request.Header.Set("Content-Type", "application/json")
+		response := httptest.NewRecorder()
+		handler.CreateProductRecord(response, request)
+
+		require.Equal(t, http.StatusUnprocessableEntity, response.Code)
+		require.Contains(t, response.Body.String(), "Date cannot be in the future")
+		mockService.AssertExpectations(t)
+	})
 }
