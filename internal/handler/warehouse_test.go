@@ -177,7 +177,6 @@ func Test_GetWarehouseById(t *testing.T) {
 
 	})
 
-	//a chequear este test
 	t.Run("should handle internal server error", func(t *testing.T) {
 		mockService := new(service.MockWarehouseService)
 		serviceError := errors.New("unexpected error")
