@@ -27,9 +27,18 @@ func (s *ProductRecordServiceImpl) GetAllProductRecords() ([]models.ProductRecor
 func (s *ProductRecordServiceImpl) CreateProductRecord(productRecord models.ProductRecordRequest) (models.ProductRecord, error) {
 
 	// Validar formato de fecha
-	_, err := time.Parse("2006-01-02", *productRecord.Data.LastUpdateDate)
+	parsedDate, err := time.Parse("2006-01-02", *productRecord.Data.LastUpdateDate)
 	if err != nil {
 		return models.ProductRecord{}, &custom_errors.InvalidArgValueErr{Argument: "last_update_date", Value: *productRecord.Data.LastUpdateDate, ExtraInfo: "Date format must be YYYY-MM-DD"}
+	}
+
+	today := time.Now().Truncate(24 * time.Hour)
+	if parsedDate.After(today) {
+		return models.ProductRecord{}, &custom_errors.InvalidArgValueErr{
+			Argument:  "last_update_date",
+			Value:     *productRecord.Data.LastUpdateDate,
+			ExtraInfo: "Date cannot be in the future",
+		}
 	}
 
 	if *productRecord.Data.PurchasePrice <= 0.0 {
