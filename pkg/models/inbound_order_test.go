@@ -103,6 +103,52 @@ func TestInboundOrderPost_Verify(t *testing.T) {
 		})
 	}
 
+	t.Run("error, invalid date format", func(t *testing.T) {
+
+		wrongDate := "2020/12/06"
+
+		inboundOrderBody := InboundOrderRequestBody{
+			Data: &InboundOrderData{
+
+				OrderDate:      &wrongDate,
+				OrderNumber:    &inboundOrderDetails.OrderNumber,
+				EmployeeId:     &inboundOrderDetails.EmployeeId,
+				ProductBatchId: &inboundOrderDetails.ProductBatchId,
+				WarehouseId:    &inboundOrderDetails.WarehouseId,
+			},
+		}
+
+		err := inboundOrderBody.Verify()
+		require.Error(t, err)
+		require.Error(t, err)
+		require.Equal(t, &custom_errors.InvalidArgValueErr{
+			Argument: "data.order_date", Value: wrongDate, ExtraInfo: "Invalid date format.",
+		}, err)
+	})
+
+	t.Run("error, future date", func(t *testing.T) {
+
+		futureDate := "2030-12-06"
+
+		inboundOrderBody := InboundOrderRequestBody{
+			Data: &InboundOrderData{
+
+				OrderDate:      &futureDate,
+				OrderNumber:    &inboundOrderDetails.OrderNumber,
+				EmployeeId:     &inboundOrderDetails.EmployeeId,
+				ProductBatchId: &inboundOrderDetails.ProductBatchId,
+				WarehouseId:    &inboundOrderDetails.WarehouseId,
+			},
+		}
+
+		err := inboundOrderBody.Verify()
+		require.Error(t, err)
+		require.Error(t, err)
+		require.Equal(t, &custom_errors.InvalidArgValueErr{
+			Argument: "data.order_date", Value: futureDate, ExtraInfo: "Future date.",
+		}, err)
+	})
+
 	t.Run("should return nil if all fields are valid", func(t *testing.T) {
 		inboundOrderBody := InboundOrderRequestBody{
 			Data: &InboundOrderData{

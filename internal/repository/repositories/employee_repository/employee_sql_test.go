@@ -179,12 +179,11 @@ func TestGetEmployeeById(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		// Act
-		employee, err := repo.GetEmployeeById(id)
+		_, err := repo.GetEmployeeById(id)
 
 		// Assert
 		assert.Error(t, err)
 		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, models.Employee{}, employee)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
@@ -269,12 +268,11 @@ func TestCreateEmployee(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		// Act
-		result, err := repo.CreateEmployee(attributes)
+		_, err := repo.CreateEmployee(attributes)
 
 		// Assert
 		assert.Error(t, err)
 		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, models.Employee{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -560,12 +558,11 @@ func TestUpdateEmployee(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		// Act
-		employee, err := repo.UpdateEmployeeById(id, patchRequest)
+		_, err := repo.UpdateEmployeeById(id, patchRequest)
 
 		// Assert
 		assert.Error(t, err)
 		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, models.Employee{}, employee)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 

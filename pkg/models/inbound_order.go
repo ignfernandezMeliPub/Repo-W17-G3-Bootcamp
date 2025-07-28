@@ -1,6 +1,9 @@
 package models
 
-import "app/pkg/custom_errors"
+import (
+	"app/pkg/custom_errors"
+	"time"
+)
 
 type InboundOrderDetails struct {
 	OrderDate      string `json:"order_date" db:"order_date"`
@@ -49,6 +52,18 @@ func (c InboundOrderRequestBody) Verify() error {
 
 	if c.Data.WarehouseId == nil {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "data.warehouse_id"}
+	}
+
+	dateLayout := "2006-01-02"
+	formatedDate, err := time.Parse(dateLayout, *c.Data.OrderDate)
+	if err != nil {
+		return &custom_errors.InvalidArgValueErr{Argument: "data.order_date", Value: *c.Data.OrderDate, ExtraInfo: "Invalid date format."}
+	}
+
+	if formatedDate.After(time.Now()) {
+
+		return &custom_errors.InvalidArgValueErr{Argument: "data.order_date", Value: *c.Data.OrderDate, ExtraInfo: "Future date."}
+
 	}
 
 	return nil
