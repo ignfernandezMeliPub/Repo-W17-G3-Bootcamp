@@ -304,4 +304,65 @@ func TestLocalityRepositorySql_GetLocalitiesSellerCount(t *testing.T) {
 		assert.Empty(t, results)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
+
+}
+
+func TestLocalityRepositorySql_GetCarriesReport(t *testing.T) {
+	repo, mock, cleanup := setupLocalityRepository(t)
+	defer cleanup()
+	const queryGetCarriesReportById = `SELECT 
+			l.id AS locality_id, 
+			l.locality_name, 
+			COUNT(c.id) AS carries_count
+			FROM localities l 
+			LEFT JOIN carries c ON l.id = c.locality_id
+			WHERE l.id = ?
+			GROUP BY l.id, l.locality_name`
+
+	const queryGetCarriesReport = `SELECT 
+		l.id AS locality_id, 
+		l.locality_name, 
+		COUNT(c.id) AS carries_count
+		FROM localities l 
+		LEFT JOIN carries c ON l.id = c.locality_id
+		GROUP BY l.id, l.locality_name`
+
+	t.Run("GetCarriesReport with localityId specified", func(t *testing.T) {
+		mockRowsById := sqlmock.NewRows([]string{"locality_id", "locality_name", "carries_count"}).
+			AddRow("L001", "Locality One", 5)
+
+		mock.ExpectQuery(regexp.QuoteMeta(queryGetCarriesReportById)).
+			WithArgs("L001").
+			WillReturnRows(mockRowsById)
+
+		results, err := repo.GetCarriesReport("L001")
+		require.NoError(t, err)
+		require.Len(t, results, 1)
+
+		assert.Equal(t, "L001", results[0].LocalityId)
+		assert.Equal(t, "Locality One", results[0].LocalityName)
+		assert.Equal(t, 5, results[0].CarriesCount)
+	})
+
+	t.Run("GetCarriesReport with empty localityId", func(t *testing.T) {
+		mockRowsAll := sqlmock.NewRows([]string{"locality_id", "locality_name", "carries_count"}).
+			AddRow("L001", "Locality One", 5).
+			AddRow("L002", "Locality Two", 3)
+
+		mock.ExpectQuery(regexp.QuoteMeta(queryGetCarriesReport)).
+			WillReturnRows(mockRowsAll)
+
+		results, err := repo.GetCarriesReport("")
+		require.NoError(t, err)
+		require.Len(t, results, 2)
+	})
+
+	t.Run("GetCarriesReport returns sql error", func(t *testing.T) {
+		mock.ExpectQuery(regexp.QuoteMeta(queryGetCarriesReport)).
+			WillReturnError(sql.ErrConnDone)
+
+		results, err := repo.GetCarriesReport("")
+		require.Error(t, err)
+		require.Equal(t, 0, len(results))
+	})
 }
