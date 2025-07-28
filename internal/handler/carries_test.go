@@ -77,7 +77,7 @@ func Test_CreateCarrie(t *testing.T) {
 
 	t.Run("should return error for validateCarriesAttributes", func(t *testing.T) {
 		carrie := `{
-			"cid": "",
+			"cid": " ",
 			"company_name": "Company 1",
 			"address": "Street 123",
 			"telephone": "1234567890",
