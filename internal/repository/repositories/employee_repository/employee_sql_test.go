@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -65,8 +64,8 @@ func TestGetAllEmployees(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedEmployees, employees)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedEmployees, employees)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("error no rows", func(t *testing.T) {
@@ -84,8 +83,8 @@ func TestGetAllEmployees(t *testing.T) {
 		expectedEmployees := []models.Employee(nil)
 		expectedError := custom_errors.ErrNotFound
 
-		assert.Equal(t, expectedEmployees, employees)
-		assert.Equal(t, expectedError, err)
+		require.Equal(t, expectedEmployees, employees)
+		require.Equal(t, expectedError, err)
 
 	})
 
@@ -99,10 +98,10 @@ func TestGetAllEmployees(t *testing.T) {
 
 		// Assert
 
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Empty(t, employees)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.Empty(t, employees)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -141,8 +140,8 @@ func TestGetEmployeeById(t *testing.T) {
 		}
 
 		require.NoError(t, err)
-		assert.Equal(t, expectedEmployee, employee)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedEmployee, employee)
+		require.NoError(t, mock.ExpectationsWereMet())
 
 	})
 
@@ -164,10 +163,10 @@ func TestGetEmployeeById(t *testing.T) {
 		expectedEmployees := models.Employee{}
 		expectedError := custom_errors.ErrNotFound
 
-		assert.Error(t, err)
-		assert.Equal(t, expectedError, err)
-		assert.Equal(t, expectedEmployees, employee)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, expectedError, err)
+		require.Equal(t, expectedEmployees, employee)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database error", func(t *testing.T) {
@@ -182,9 +181,9 @@ func TestGetEmployeeById(t *testing.T) {
 		_, err := repo.GetEmployeeById(id)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -208,8 +207,8 @@ func TestCreateEmployee(t *testing.T) {
 		expectedEmployee := models.Employee{Id: 1, EmployeeAttributes: attributes}
 
 		require.NoError(t, err)
-		assert.Equal(t, expectedEmployee, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedEmployee, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Create employee error duplicated card number id", func(t *testing.T) {
@@ -233,7 +232,7 @@ func TestCreateEmployee(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, expectedEmployees, employee)
 		require.Equal(t, err, expectedError)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Create employee error warehouse id not found", func(t *testing.T) {
@@ -256,7 +255,7 @@ func TestCreateEmployee(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, expectedEmployees, employee)
 		require.Equal(t, expectedError, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Create employee database error", func(t *testing.T) {
@@ -271,9 +270,9 @@ func TestCreateEmployee(t *testing.T) {
 		_, err := repo.CreateEmployee(attributes)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -477,8 +476,8 @@ func TestUpdateEmployee(t *testing.T) {
 			expectedEmployee := models.Employee{Id: 1, EmployeeAttributes: employeeAttributes}
 
 			require.NoError(t, err)
-			assert.Equal(t, expectedEmployee, employee)
-			assert.NoError(t, mock.ExpectationsWereMet())
+			require.Equal(t, expectedEmployee, employee)
+			require.NoError(t, mock.ExpectationsWereMet())
 		})
 	}
 
@@ -504,8 +503,8 @@ func TestUpdateEmployee(t *testing.T) {
 		expectedEmployee := models.Employee{}
 
 		require.Error(t, err)
-		assert.Equal(t, expectedEmployee, employee)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedEmployee, employee)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Update error warehouse id not found", func(t *testing.T) {
@@ -538,7 +537,7 @@ func TestUpdateEmployee(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, expectedEmployees, employee)
 		require.Equal(t, expectedError, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 
 	})
 
@@ -561,9 +560,9 @@ func TestUpdateEmployee(t *testing.T) {
 		_, err := repo.UpdateEmployeeById(id, patchRequest)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -585,7 +584,7 @@ func TestDeleteEmployee(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Delete employee not found", func(t *testing.T) {
@@ -602,7 +601,7 @@ func TestDeleteEmployee(t *testing.T) {
 		expectedError := custom_errors.ErrNotFound
 		require.Error(t, err)
 		require.Equal(t, expectedError, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Delete employee database error", func(t *testing.T) {
@@ -616,9 +615,9 @@ func TestDeleteEmployee(t *testing.T) {
 		err := repo.DeleteEmployee(id)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -661,8 +660,8 @@ func TestGetReportInboundOrders(t *testing.T) {
 		}}
 
 		require.NoError(t, err)
-		assert.Equal(t, expectedReports, reports)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedReports, reports)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Success get report empty report", func(t *testing.T) {
@@ -711,8 +710,8 @@ func TestGetReportInboundOrders(t *testing.T) {
 		}
 
 		require.NoError(t, err)
-		assert.Equal(t, expectedReports, reports)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedReports, reports)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Employee report Not found id", func(t *testing.T) {
@@ -738,9 +737,9 @@ func TestGetReportInboundOrders(t *testing.T) {
 		expectedError := custom_errors.ErrNotFound
 
 		require.Error(t, err)
-		assert.Equal(t, expectedReports, reports)
-		assert.Equal(t, expectedError, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedReports, reports)
+		require.Equal(t, expectedError, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Employee report database_error", func(t *testing.T) {
@@ -756,10 +755,10 @@ func TestGetReportInboundOrders(t *testing.T) {
 		expectedReports := []models.InboundOrderEmployee(nil)
 
 		require.Error(t, err)
-		assert.Equal(t, expectedReports, reports)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Empty(t, reports)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedReports, reports)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.Empty(t, reports)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }

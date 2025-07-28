@@ -3,8 +3,9 @@ package dto
 import (
 	"app/pkg/custom_errors"
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestPatchSellerDto_Verify(t *testing.T) {
@@ -17,7 +18,7 @@ func TestPatchSellerDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("valid dto with only company_id", func(t *testing.T) {
@@ -29,7 +30,7 @@ func TestPatchSellerDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("all fields nil", func(t *testing.T) {
@@ -41,11 +42,11 @@ func TestPatchSellerDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var mandatoryErr *custom_errors.MandatoryArgMissingErr
 		ok := errors.As(err, &mandatoryErr)
-		assert.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
-		assert.Equal(t, "cid or company_name or address or telephone", mandatoryErr.Argument)
+		require.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
+		require.Equal(t, "cid or company_name or address or telephone", mandatoryErr.Argument)
 	})
 }

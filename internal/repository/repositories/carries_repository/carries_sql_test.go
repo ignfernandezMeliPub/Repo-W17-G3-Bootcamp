@@ -9,7 +9,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -79,6 +78,6 @@ func TestCarriesSQL_CreateCarrie(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, sql.ErrConnDone, err)
 		require.Equal(t, carrie, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }

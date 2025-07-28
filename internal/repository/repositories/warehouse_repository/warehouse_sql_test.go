@@ -9,7 +9,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -50,8 +49,8 @@ func TestWarehouseSQL_CreateWarehouse(t *testing.T) {
 
 		result, err := repo.CreateWarehouse(warehouse)
 		require.NoError(t, err)
-		assert.Equal(t, expectedWarehouse, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedWarehouse, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("duplicate warehouse code", func(t *testing.T) {
@@ -64,9 +63,9 @@ func TestWarehouseSQL_CreateWarehouse(t *testing.T) {
 			})
 
 		_, err := repo.CreateWarehouse(warehouse)
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database error", func(t *testing.T) {
@@ -76,9 +75,9 @@ func TestWarehouseSQL_CreateWarehouse(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		_, err := repo.CreateWarehouse(warehouse)
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -120,8 +119,8 @@ func TestWarehouseSQL_GetAllWarehouses(t *testing.T) {
 		result, err := repo.GetAllWarehouses()
 		require.NoError(t, err)
 		require.Len(t, result, 2)
-		assert.Equal(t, expectedWarehouses, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedWarehouses, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return not found error when no rows exist", func(t *testing.T) {
@@ -131,10 +130,10 @@ func TestWarehouseSQL_GetAllWarehouses(t *testing.T) {
 			WillReturnRows(rows)
 
 		result, err := repo.GetAllWarehouses()
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Empty(t, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.Empty(t, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return error when query fails", func(t *testing.T) {
@@ -142,10 +141,10 @@ func TestWarehouseSQL_GetAllWarehouses(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		result, err := repo.GetAllWarehouses()
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Empty(t, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.Empty(t, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -175,8 +174,8 @@ func TestWarehouseSQL_GetWarehouseById(t *testing.T) {
 
 		result, err := repo.GetWarehouseById(1)
 		require.NoError(t, err)
-		assert.Equal(t, warehouse, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, warehouse, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return not found error when no rows exist", func(t *testing.T) {
@@ -187,10 +186,10 @@ func TestWarehouseSQL_GetWarehouseById(t *testing.T) {
 			WillReturnRows(rows)
 
 		result, err := repo.GetWarehouseById(1)
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Empty(t, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.Empty(t, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return error when query fails", func(t *testing.T) {
@@ -199,10 +198,10 @@ func TestWarehouseSQL_GetWarehouseById(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		result, err := repo.GetWarehouseById(1)
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Empty(t, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.Empty(t, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -257,8 +256,8 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 
 		result, err := repo.UpdateWarehouseById(warehouse.Id, warehouse)
 		require.NoError(t, err)
-		assert.Equal(t, warehouse, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, warehouse, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("should return not found error when no rows exist", func(t *testing.T) {
 		warehouse := models.Warehouse{
@@ -280,10 +279,10 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 			WillReturnRows(rows)
 
 		result, err := repo.UpdateWarehouseById(warehouse.Id, warehouse)
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Empty(t, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.Empty(t, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("should return error when query fails", func(t *testing.T) {
 		warehouse := models.Warehouse{
@@ -299,9 +298,9 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		_, err := repo.UpdateWarehouseById(warehouse.Id, warehouse)
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("should return error when no fields are provided to update", func(t *testing.T) {
 		emptyWarehouse := models.Warehouse{
@@ -311,8 +310,8 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 		_, err := repo.UpdateWarehouseById(emptyWarehouse.Id, emptyWarehouse)
 
 		require.Error(t, err)
-		assert.IsType(t, &custom_errors.MandatoryArgMissingErr{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.IsType(t, &custom_errors.MandatoryArgMissingErr{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -330,7 +329,7 @@ func TestWarehouseSQL_DeleteWarehouseById(t *testing.T) {
 
 		err := repo.DeleteWarehouseById(1)
 		require.NoError(t, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("should return not found error when no rows exist", func(t *testing.T) {
 		mock.ExpectExec(regexp.QuoteMeta(query)).
@@ -338,9 +337,9 @@ func TestWarehouseSQL_DeleteWarehouseById(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(0, 0))
 
 		err := repo.DeleteWarehouseById(1)
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("should return error when query fails", func(t *testing.T) {
 		mock.ExpectExec(regexp.QuoteMeta(query)).
@@ -348,9 +347,9 @@ func TestWarehouseSQL_DeleteWarehouseById(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		err := repo.DeleteWarehouseById(1)
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }

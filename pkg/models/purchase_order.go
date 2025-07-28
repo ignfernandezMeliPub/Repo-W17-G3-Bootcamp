@@ -61,12 +61,20 @@ func (pr PurchaseOrderCreateRequest) Verify() error {
 		return &custom_errors.MandatoryArgMissingErr{Argument: "order_date"}
 	}
 
-	_, err := time.Parse("2006-01-02", *p.OrderDate)
+	orderDate, err := time.Parse("2006-01-02", *p.OrderDate)
 	if err != nil {
 		return &custom_errors.InvalidArgValueErr{
 			Argument:  "order_date",
 			Value:     *p.OrderDate,
 			ExtraInfo: "Value must be in the format YYYY-MM-DD",
+		}
+	}
+
+	if orderDate.After(time.Now()) {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "order_date",
+			Value:     *p.OrderDate,
+			ExtraInfo: "Future dates are not allowed.",
 		}
 	}
 

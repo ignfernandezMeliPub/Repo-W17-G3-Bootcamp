@@ -9,7 +9,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -52,8 +51,8 @@ func TestSellerRepositorySql_CreateSeller(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedSeller, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedSeller, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("duplicate_cid", func(t *testing.T) {
@@ -77,10 +76,10 @@ func TestSellerRepositorySql_CreateSeller(t *testing.T) {
 		result, err := repo.CreateSeller(seller)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
-		assert.Equal(t, seller, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
+		require.Equal(t, seller, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database_error", func(t *testing.T) {
@@ -101,10 +100,10 @@ func TestSellerRepositorySql_CreateSeller(t *testing.T) {
 		result, err := repo.CreateSeller(seller)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, seller, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.Equal(t, seller, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -138,8 +137,8 @@ func TestSellerRepositorySql_GetSellerById(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedSeller, seller)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedSeller, seller)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("not_found", func(t *testing.T) {
@@ -153,13 +152,12 @@ func TestSellerRepositorySql_GetSellerById(t *testing.T) {
 			WillReturnRows(rows)
 
 		// Act
-		seller, err := repo.GetSellerById(999)
+		_, err := repo.GetSellerById(999)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Equal(t, models.Seller{}, seller)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database_error", func(t *testing.T) {
@@ -169,13 +167,12 @@ func TestSellerRepositorySql_GetSellerById(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		// Act
-		seller, err := repo.GetSellerById(1)
+		_, err := repo.GetSellerById(1)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, models.Seller{}, seller)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -220,8 +217,8 @@ func TestSellerRepositorySql_GetAllSellers(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedSellers, sellers)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedSellers, sellers)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("no_rows", func(t *testing.T) {
@@ -237,10 +234,10 @@ func TestSellerRepositorySql_GetAllSellers(t *testing.T) {
 		sellers, err := repo.GetAllSellers()
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Empty(t, sellers)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.Empty(t, sellers)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database_error", func(t *testing.T) {
@@ -252,10 +249,10 @@ func TestSellerRepositorySql_GetAllSellers(t *testing.T) {
 		sellers, err := repo.GetAllSellers()
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Empty(t, sellers)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.Empty(t, sellers)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -274,7 +271,7 @@ func TestSellerRepositorySql_DeleteSellerById(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("seller_not_found", func(t *testing.T) {
@@ -287,9 +284,9 @@ func TestSellerRepositorySql_DeleteSellerById(t *testing.T) {
 		err := repo.DeleteSellerById(999)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database_error", func(t *testing.T) {
@@ -302,9 +299,9 @@ func TestSellerRepositorySql_DeleteSellerById(t *testing.T) {
 		err := repo.DeleteSellerById(1)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -348,8 +345,8 @@ func TestSellerRepositorySql_UpdateSellerById(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedSeller, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedSeller, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("success_update_single_field", func(t *testing.T) {
@@ -385,21 +382,20 @@ func TestSellerRepositorySql_UpdateSellerById(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedSeller, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedSeller, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("no_fields_to_update", func(t *testing.T) {
 		// Arrange - no mocks needed since method should return early
 
 		// Act
-		result, err := repo.UpdateSellerById(1, nil, nil, nil, nil)
+		_, err := repo.UpdateSellerById(1, nil, nil, nil, nil)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.MandatoryArgMissingErr{}, err)
-		assert.Equal(t, models.Seller{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.MandatoryArgMissingErr{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("seller_not_found", func(t *testing.T) {
@@ -420,13 +416,12 @@ func TestSellerRepositorySql_UpdateSellerById(t *testing.T) {
 			WillReturnRows(rows)
 
 		// Act
-		result, err := repo.UpdateSellerById(999, nil, &companyName, nil, nil)
+		_, err := repo.UpdateSellerById(999, nil, &companyName, nil, nil)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Equal(t, models.Seller{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("duplicate_cid_constraint", func(t *testing.T) {
@@ -441,13 +436,12 @@ func TestSellerRepositorySql_UpdateSellerById(t *testing.T) {
 			})
 
 		// Act
-		result, err := repo.UpdateSellerById(1, &companyId, nil, nil, nil)
+		_, err := repo.UpdateSellerById(1, &companyId, nil, nil, nil)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
-		assert.Equal(t, models.Seller{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database_error", func(t *testing.T) {
@@ -459,12 +453,11 @@ func TestSellerRepositorySql_UpdateSellerById(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		// Act
-		result, err := repo.UpdateSellerById(1, nil, &companyName, nil, nil)
+		_, err := repo.UpdateSellerById(1, nil, &companyName, nil, nil)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, models.Seller{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }

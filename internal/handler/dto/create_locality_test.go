@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func stringPtr(s string) *string {
@@ -24,19 +24,19 @@ func TestCreateLocalityDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("nil data", func(t *testing.T) {
 		dto := CreateLocalityDto{Data: nil}
 
 		err := dto.Verify()
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var mandatoryErr *custom_errors.MandatoryArgMissingErr
 		ok := errors.As(err, &mandatoryErr)
-		assert.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
-		assert.Equal(t, "data", mandatoryErr.Argument)
+		require.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
+		require.Equal(t, "data", mandatoryErr.Argument)
 	})
 
 	t.Run("nil id", func(t *testing.T) {
@@ -50,12 +50,12 @@ func TestCreateLocalityDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var mandatoryErr *custom_errors.MandatoryArgMissingErr
 		ok := errors.As(err, &mandatoryErr)
-		assert.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
-		assert.Equal(t, "data.id", mandatoryErr.Argument)
+		require.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
+		require.Equal(t, "data.id", mandatoryErr.Argument)
 	})
 
 	t.Run("empty strings are valid", func(t *testing.T) {
@@ -69,6 +69,6 @@ func TestCreateLocalityDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 }
