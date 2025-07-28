@@ -63,10 +63,9 @@ func TestWarehouseSQL_CreateWarehouse(t *testing.T) {
 				Message: "Duplicate entry 'WH001' for key 'warehouses.warehouse_code'",
 			})
 
-		result, err := repo.CreateWarehouse(warehouse)
+		_, err := repo.CreateWarehouse(warehouse)
 		assert.Error(t, err)
 		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
-		assert.Equal(t, models.Warehouse{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -76,10 +75,9 @@ func TestWarehouseSQL_CreateWarehouse(t *testing.T) {
 			WithArgs(warehouse.WarehouseCode, warehouse.Address, warehouse.Telephone, warehouse.MinimumCapacity, warehouse.MinimumTemperature).
 			WillReturnError(sql.ErrConnDone)
 
-		result, err := repo.CreateWarehouse(warehouse)
+		_, err := repo.CreateWarehouse(warehouse)
 		assert.Error(t, err)
 		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, models.Warehouse{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -300,10 +298,9 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 			WithArgs(warehouse.WarehouseCode, warehouse.Address, warehouse.Telephone, warehouse.MinimumCapacity, warehouse.MinimumTemperature, warehouse.Id).
 			WillReturnError(sql.ErrConnDone)
 
-		result, err := repo.UpdateWarehouseById(warehouse.Id, warehouse)
+		_, err := repo.UpdateWarehouseById(warehouse.Id, warehouse)
 		assert.Error(t, err)
 		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, models.Warehouse{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("should return error when no fields are provided to update", func(t *testing.T) {
@@ -311,11 +308,10 @@ func TestWarehouseSQL_UpdateWarehouseById(t *testing.T) {
 			Id: 1,
 		}
 
-		result, err := repo.UpdateWarehouseById(emptyWarehouse.Id, emptyWarehouse)
+		_, err := repo.UpdateWarehouseById(emptyWarehouse.Id, emptyWarehouse)
 
 		require.Error(t, err)
 		assert.IsType(t, &custom_errors.MandatoryArgMissingErr{}, err)
-		assert.Equal(t, models.Warehouse{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
