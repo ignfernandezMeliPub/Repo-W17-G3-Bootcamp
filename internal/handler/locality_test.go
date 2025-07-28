@@ -5,11 +5,13 @@ import (
 	"app/pkg/models"
 	"app/test/service"
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -350,4 +352,124 @@ func TestGetLocalitySellerCount(t *testing.T) {
 
 		mockService.AssertExpectations(t)
 	})
+}
+
+func TestLocalityHandler_GetCarriesReport(t *testing.T) {
+	t.Run("should return report by locality id successfully", func(t *testing.T) {
+		mockService := new(service.MockLocalityService)
+
+		expected := []models.CarriesReport{
+			{LocalityId: "L001", LocalityName: "Localidad 1", CarriesCount: 3},
+		}
+		mockService.
+			On("GetCarriesReport", "L001").
+			Return(expected, nil)
+
+		hd := NewLocalityHandler(mockService)
+
+		request := httptest.NewRequest(http.MethodGet, "/localities/reportCarries?id=L001", nil)
+		response := httptest.NewRecorder()
+
+		hd.GetCarriesReport(response, request)
+
+		res := response.Result()
+		defer res.Body.Close()
+
+		assert.Equal(t, http.StatusOK, response.Code)
+		assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
+
+		body := response.Body.String()
+		assert.Contains(t, body, "L001")
+		assert.Contains(t, body, "Localidad 1")
+		assert.Contains(t, body, "3")
+
+		mockService.AssertExpectations(t)
+	})
+	t.Run("should return all reports with empty id", func(t *testing.T) {
+		mockService := new(service.MockLocalityService)
+
+		expected := []models.CarriesReport{
+			{LocalityId: "L001", LocalityName: "Locality 1", CarriesCount: 3},
+			{LocalityId: "L002", LocalityName: "Locality 2", CarriesCount: 5},
+		}
+		mockService.
+			On("GetCarriesReport", "").
+			Return(expected, nil)
+
+		hd := NewLocalityHandler(mockService)
+
+		request := httptest.NewRequest(http.MethodGet, "/localities/reportCarries?id=", nil)
+		response := httptest.NewRecorder()
+
+		hd.GetCarriesReport(response, request)
+
+		res := response.Result()
+		defer res.Body.Close()
+
+		assert.Equal(t, http.StatusOK, response.Code)
+		assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
+
+		body := response.Body.String()
+		assert.Contains(t, body, "L001")
+		assert.Contains(t, body, "Locality 1")
+		assert.Contains(t, body, "3")
+		assert.Contains(t, body, "L002")
+		assert.Contains(t, body, "Locality 2")
+		assert.Contains(t, body, "5")
+
+		mockService.AssertExpectations(t)
+	})
+
+	t.Run("should return 404 when locality not found", func(t *testing.T) {
+		mockService := new(service.MockLocalityService)
+
+		mockService.
+			On("GetCarriesReport", "NONEXISTENT").
+			Return([]models.CarriesReport{}, custom_errors.ErrNotFound)
+
+		hd := NewLocalityHandler(mockService)
+
+		request := httptest.NewRequest(http.MethodGet, "/localities/reportCarries?id=NONEXISTENT", nil)
+		response := httptest.NewRecorder()
+
+		hd.GetCarriesReport(response, request)
+
+		res := response.Result()
+		defer res.Body.Close()
+
+		assert.Equal(t, http.StatusNotFound, response.Code)
+		assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
+
+		body := response.Body.String()
+		assert.Contains(t, body, "Not found")
+
+		mockService.AssertExpectations(t)
+	})
+
+	t.Run("should return 500 when database error occurs", func(t *testing.T) {
+		mockService := new(service.MockLocalityService)
+
+		mockService.
+			On("GetCarriesReport", "L001").
+			Return([]models.CarriesReport{}, sql.ErrConnDone)
+
+		hd := NewLocalityHandler(mockService)
+
+		request := httptest.NewRequest(http.MethodGet, "/localities/reportCarries?id=L001", nil)
+		response := httptest.NewRecorder()
+
+		hd.GetCarriesReport(response, request)
+
+		res := response.Result()
+		defer res.Body.Close()
+
+		assert.Equal(t, http.StatusInternalServerError, response.Code)
+		assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
+
+		body := response.Body.String()
+		assert.Contains(t, body, "Internal server error")
+
+		mockService.AssertExpectations(t)
+	})
+
 }
