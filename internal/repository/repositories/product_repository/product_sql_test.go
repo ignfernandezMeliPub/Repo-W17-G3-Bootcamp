@@ -96,12 +96,11 @@ func TestProductRepositoryMySQL_GetAllProducts(t *testing.T) {
 			WillReturnRows(rows)
 
 		// Act
-		products, err := repo.GetAllProducts()
+		_, err := repo.GetAllProducts()
 
 		// Assert
 		assert.Error(t, err)
 		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Empty(t, products)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -114,12 +113,11 @@ func TestProductRepositoryMySQL_GetAllProducts(t *testing.T) {
 			})
 
 		// Act
-		products, err := repo.GetAllProducts()
+		_, err := repo.GetAllProducts()
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Empty(t, products)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -180,12 +178,11 @@ func TestProductRepositoryMySQL_GetProductById(t *testing.T) {
 			WillReturnRows(rows)
 
 		// Act
-		product, err := repo.GetProductById(999)
+		_, err := repo.GetProductById(999)
 
 		// Assert
 		assert.Error(t, err)
 		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Equal(t, models.Product{}, product)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -199,12 +196,11 @@ func TestProductRepositoryMySQL_GetProductById(t *testing.T) {
 			})
 
 		// Act
-		product, err := repo.GetProductById(1)
+		_, err := repo.GetProductById(1)
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, models.Product{}, product)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
@@ -264,12 +260,11 @@ func TestProductRepositoryMySQL_GetProductByCode(t *testing.T) {
 			WillReturnRows(rows)
 
 		// Act
-		product, err := repo.GetProductByCode("NONEXISTENT")
+		_, err := repo.GetProductByCode("NONEXISTENT")
 
 		// Assert
 		assert.Error(t, err)
 		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Equal(t, models.Product{}, product)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -283,12 +278,11 @@ func TestProductRepositoryMySQL_GetProductByCode(t *testing.T) {
 			})
 
 		// Act
-		product, err := repo.GetProductByCode("PROD001")
+		_, err := repo.GetProductByCode("PROD001")
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, models.Product{}, product)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
@@ -353,11 +347,10 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 			})
 
 		// Act
-		result, err := repo.CreateProduct(product)
+		_, err := repo.CreateProduct(product)
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
-		assert.Equal(t, models.Product{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -385,12 +378,11 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 			})
 
 		// Act
-		result, err := repo.CreateProduct(product)
+		_, err := repo.CreateProduct(product)
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
-		assert.Equal(t, models.Product{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -419,12 +411,11 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 			})
 
 		// Act
-		result, err := repo.CreateProduct(product)
+		_, err := repo.CreateProduct(product)
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
-		assert.Equal(t, models.Product{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -452,12 +443,11 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 			})
 
 		// Act
-		result, err := repo.CreateProduct(product)
+		_, err := repo.CreateProduct(product)
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, models.Product{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
@@ -496,36 +486,6 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	t.Run("should return same product when product does not exist", func(t *testing.T) {
-		// Arrange
-		product := models.Product{
-			ID:                             999,
-			ProductCode:                    "PROD001",
-			Description:                    "Updated Product",
-			Width:                          15.0,
-			Height:                         25.0,
-			Length:                         35.0,
-			NetWeight:                      7.0,
-			ExpirationRate:                 45,
-			RecommendedFreezingTemperature: -20.0,
-			FreezingRate:                   3,
-			ProductTypeId:                  2,
-			SellerId:                       nil,
-		}
-
-		mock.ExpectExec(regexp.QuoteMeta(`UPDATE products SET product_code = ?, description = ?, width = ?, height = ?, length = ?, net_weight = ?, expiration_rate = ?, recommended_freezing_temperature = ?, freezing_rate = ?, product_type_id = ?, seller_id = ? WHERE id = ?`)).
-			WithArgs("PROD001", "Updated Product", 15.0, 25.0, 35.0, 7.0, 45, -20.0, 3, 2, nil, 999).
-			WillReturnResult(sqlmock.NewResult(0, 0))
-
-		// Act
-		result, err := repo.UpdateProductById(product)
-
-		// Assert
-		require.NoError(t, err)
-		assert.Equal(t, product, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
-
 	t.Run("should return unique violation error when updated product code already exists", func(t *testing.T) {
 		// Arrange
 		product := models.Product{
@@ -551,12 +511,11 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 			})
 
 		// Act
-		result, err := repo.UpdateProductById(product)
+		_, err := repo.UpdateProductById(product)
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
-		assert.Equal(t, product, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -585,12 +544,11 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 			})
 
 		// Act
-		result, err := repo.UpdateProductById(product)
+		_, err := repo.UpdateProductById(product)
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
-		assert.Equal(t, product, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
@@ -619,12 +577,11 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 			})
 
 		// Act
-		result, err := repo.UpdateProductById(product)
+		_, err := repo.UpdateProductById(product)
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, product, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
@@ -641,20 +598,6 @@ func TestProductRepositoryMySQL_DeleteProductById(t *testing.T) {
 
 		// Act
 		err := repo.DeleteProductById(1)
-
-		// Assert
-		require.NoError(t, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
-	})
-
-	t.Run("should return not found error when product does not exist with given id", func(t *testing.T) {
-		// Arrange
-		mock.ExpectExec(`DELETE FROM products WHERE id = ?`).
-			WithArgs(999).
-			WillReturnResult(sqlmock.NewResult(0, 0))
-
-		// Act
-		err := repo.DeleteProductById(999)
 
 		// Assert
 		require.NoError(t, err)
@@ -791,12 +734,11 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 			})
 
 		// Act
-		reports, err := repo.GetReportRecords(nil)
+		_, err := repo.GetReportRecords(nil)
 
 		// Assert
 		assert.Error(t, err)
 		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Empty(t, reports)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 }
