@@ -19,6 +19,7 @@ var purchaseOrder = PurchaseOrder{
 }
 
 var validOrderDate = "2024-01-15"
+var futureOrderDate = "9999-01-15"
 var invalidOrderDate = "invalid-date"
 var validProductRecordId = 1
 var validQuantity = 5
@@ -178,6 +179,27 @@ func TestPurchaseOrderCreateRequest_Verify(t *testing.T) {
 		})
 	}
 
+	t.Run("should return error if order_date is in the future", func(t *testing.T) {
+		patch := PurchaseOrderCreateRequest{
+			Data: &PurchaseOrderData{
+				OrderNumber:  &purchaseOrder.OrderNumber,
+				OrderDate:    &futureOrderDate,
+				TrackingCode: &purchaseOrder.TrackingCode,
+				BuyerId:      &purchaseOrder.BuyerId,
+				PurchaseOrderDetails: []PurchaseOrderDetailRequest{
+					{ProductRecordId: &validProductRecordId, Quantity: &validQuantity},
+				},
+			},
+		}
+
+		err := patch.Verify()
+		require.Error(t, err)
+		require.Equal(t, &custom_errors.InvalidArgValueErr{
+			Argument:  "order_date",
+			Value:     futureOrderDate,
+			ExtraInfo: "Future dates are not allowed.",
+		}, err)
+	})
 	t.Run("should return error if order_date has invalid format", func(t *testing.T) {
 		patch := PurchaseOrderCreateRequest{
 			Data: &PurchaseOrderData{
