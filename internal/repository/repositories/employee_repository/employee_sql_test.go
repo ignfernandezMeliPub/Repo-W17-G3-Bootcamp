@@ -28,7 +28,7 @@ func setupEmployeeRepository(t *testing.T) (EmployeeRepository, sqlmock.Sqlmock,
 	return repo, mock, cleanup
 }
 
-func TestSectionsServiceImpl_GetAllEmployees(t *testing.T) {
+func TestGetAllEmployees(t *testing.T) {
 
 	repo, mock, cleanup := setupEmployeeRepository(t)
 	defer cleanup()
