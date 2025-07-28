@@ -622,6 +622,20 @@ func TestProductRepositoryMySQL_DeleteProductById(t *testing.T) {
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
+	t.Run("should return not found error when product does not exist", func(t *testing.T) {
+		// Arrange
+		mock.ExpectExec(`DELETE FROM products WHERE id = ?`).
+			WithArgs(999).
+			WillReturnResult(sqlmock.NewResult(0, 0))
+		// Act
+		err := repo.DeleteProductById(999)
+
+		// Assert
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.ResourceNotFoundError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
 	t.Run("should return connection error when database connection fails", func(t *testing.T) {
 		// Arrange
 		mock.ExpectExec(`DELETE FROM products WHERE id = ?`).
@@ -635,9 +649,9 @@ func TestProductRepositoryMySQL_DeleteProductById(t *testing.T) {
 		err := repo.DeleteProductById(1)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
