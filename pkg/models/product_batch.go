@@ -60,11 +60,30 @@ func (p ProductBatchRequest) Verify() error {
 	}
 
 	dateLayout := "2006-01-02"
-	if _, err := time.Parse(dateLayout, *p.Data.DueDate); err != nil {
+
+	tempDate, err := time.Parse(dateLayout, *p.Data.DueDate)
+	if err != nil {
 		return &custom_errors.InvalidArgValueErr{Argument: "due_date", Value: *p.Data.DueDate, ExtraInfo: "Invalid date format."}
 	}
-	if _, err := time.Parse(dateLayout, *p.Data.ManufacturingDate); err != nil {
+	if !tempDate.After(time.Now()) {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "due_date",
+			Value:     *p.Data.DueDate,
+			ExtraInfo: "Past dates are not allowed.",
+		}
+	}
+
+	tempDate, err = time.Parse(dateLayout, *p.Data.ManufacturingDate)
+	if err != nil {
 		return &custom_errors.InvalidArgValueErr{Argument: "manufacturing_date", Value: *p.Data.ManufacturingDate, ExtraInfo: "Invalid date format."}
+	}
+
+	if tempDate.After(time.Now()) {
+		return &custom_errors.InvalidArgValueErr{
+			Argument:  "manufacturing_date",
+			Value:     *p.Data.ManufacturingDate,
+			ExtraInfo: "Future dates are not allowed.",
+		}
 	}
 
 	return nil

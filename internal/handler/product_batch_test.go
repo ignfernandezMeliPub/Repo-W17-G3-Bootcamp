@@ -18,13 +18,13 @@ func TestProductBatchController_CreateProductBatch(t *testing.T) {
 	hdPb := NewProductBatchController(svPb)
 
 	dbMock.On("CreateProductBatch", models.ProductBatch{
-		ID: 0, BatchNumber: 1, CurrentQuantity: 80, CurrentTemperature: 4, DueDate: "2024-07-31", InitialQuantity: 100, ManufacturingDate: "2024-06-20", ManufacturingHour: 9, MinimumTemperature: 2, ProductId: 25, SectionId: 3,
+		ID: 0, BatchNumber: 1, CurrentQuantity: 80, CurrentTemperature: 4, DueDate: "2030-07-31", InitialQuantity: 100, ManufacturingDate: "2024-06-20", ManufacturingHour: 9, MinimumTemperature: 2, ProductId: 25, SectionId: 3,
 	}).Return(models.ProductBatch{
-		ID: 1, BatchNumber: 1, CurrentQuantity: 80, CurrentTemperature: 4, DueDate: "2024-07-31", InitialQuantity: 100, ManufacturingDate: "2024-06-20", ManufacturingHour: 9, MinimumTemperature: 2, ProductId: 25, SectionId: 3,
+		ID: 1, BatchNumber: 1, CurrentQuantity: 80, CurrentTemperature: 4, DueDate: "2030-07-31", InitialQuantity: 100, ManufacturingDate: "2024-06-20", ManufacturingHour: 9, MinimumTemperature: 2, ProductId: 25, SectionId: 3,
 	}, nil)
 
 	dbMock.On("CreateProductBatch", models.ProductBatch{
-		ID: 0, BatchNumber: 2, CurrentQuantity: 80, CurrentTemperature: 4, DueDate: "2024-07-31", InitialQuantity: 100, ManufacturingDate: "2024-06-20", ManufacturingHour: 9, MinimumTemperature: 2, ProductId: 25, SectionId: 3,
+		ID: 0, BatchNumber: 2, CurrentQuantity: 80, CurrentTemperature: 4, DueDate: "2030-07-31", InitialQuantity: 100, ManufacturingDate: "2020-06-20", ManufacturingHour: 9, MinimumTemperature: 2, ProductId: 25, SectionId: 3,
 	}).Return(models.ProductBatch{}, &custom_errors.UniqueAttributeViolationErr{
 		AttributeName: "batch_number", Value: "2",
 	})
@@ -35,7 +35,7 @@ func TestProductBatchController_CreateProductBatch(t *testing.T) {
 				"batch_number": 1,
 				"current_quantity": 80,
 				"current_temperature": 4,
-				"due_date": "2024-07-31",
+				"due_date": "2030-07-31",
 				"initial_quantity": 100,
 				"manufacturing_date": "2024-06-20",
 				"manufacturing_hour": 9,
@@ -54,7 +54,7 @@ func TestProductBatchController_CreateProductBatch(t *testing.T) {
 				"batch_number": 1,
 				"current_quantity": 80,
 				"current_temperature": 4,
-				"due_date": "2024-07-31",
+				"due_date": "2030-07-31",
 				"initial_quantity": 100,
 				"manufacturing_date": "2024-06-20",
 				"manufacturing_hour": 9,
@@ -100,9 +100,9 @@ func TestProductBatchController_CreateProductBatch(t *testing.T) {
 				"batch_number": 2,
 				"current_quantity": 80,
 				"current_temperature": 4,
-				"due_date": "2024-07-31",
+				"due_date": "2030-07-31",
 				"initial_quantity": 100,
-				"manufacturing_date": "2024-06-20",
+				"manufacturing_date": "2020-06-20",
 				"manufacturing_hour": 9,
 				"minimum_temperature":2,
 				"product_id": 25,

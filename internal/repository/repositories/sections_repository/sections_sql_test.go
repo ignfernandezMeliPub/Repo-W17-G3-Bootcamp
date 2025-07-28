@@ -4,12 +4,11 @@ import (
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"database/sql"
-	"regexp"
-	"testing"
-
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/require"
+	"regexp"
+	"testing"
 )
 
 func setupSectionsRepository(t *testing.T) (*SectionsRepositorySQL, sqlmock.Sqlmock, func()) {
@@ -119,9 +118,9 @@ func TestSectionsServiceImpl_GetSectionById(t *testing.T) {
 			WithArgs(2).
 			WillReturnError(sql.ErrNoRows)
 
-		_, err := rp.GetSectionById(2)
-		require.Error(t, err)
-		require.NoError(t, mock.ExpectationsWereMet())
+		section, err := rp.GetSectionById(2)
+		require.ErrorIs(t, err, &custom_errors.ResourceNotFoundError{})
+		require.Equal(t, models.Section{}, section)
 	})
 }
 
@@ -170,11 +169,12 @@ func TestSectionsRepositorySQL_CreateSection(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(0, 0)).
 			WillReturnError(&mysql.MySQLError{Number: 1062, Message: "Duplicate entry 'section_number' for key '1'"})
 
-		_, err := rp.CreateSection(req)
+		section, err := rp.CreateSection(req)
 		resErr := &custom_errors.UniqueAttributeViolationErr{}
 
 		require.NotNil(t, err)
 		require.IsType(t, resErr, err)
+		require.Equal(t, models.Section{}, section)
 	})
 
 	t.Run("create_foreignKeyViolation", func(t *testing.T) {
@@ -195,10 +195,11 @@ func TestSectionsRepositorySQL_CreateSection(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(0, 0)).
 			WillReturnError(&mysql.MySQLError{Number: 1451, Message: "FOREIGN KEY \\(`warehouse_id`\\)"})
 
-		_, err := rp.CreateSection(req)
+		section, err := rp.CreateSection(req)
 		errExpected := &custom_errors.ForeignKeyViolationError{}
 		require.NotNil(t, err)
 		require.IsType(t, err, errExpected)
+		require.Equal(t, models.Section{}, section)
 	})
 }
 
@@ -267,10 +268,11 @@ func TestSectionsRepositorySQL_UpdateSection(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(0, 0)).
 			WillReturnError(&mysql.MySQLError{Number: 1451, Message: "FOREIGN KEY \\(`warehouse_id`\\)"})
 
-		_, err := rp.UpdateSectionById(req)
+		section, err := rp.UpdateSectionById(req)
 		errExpected := &custom_errors.ForeignKeyViolationError{}
 		require.NotNil(t, err)
 		require.IsType(t, err, errExpected)
+		require.Equal(t, models.Section{}, section)
 	})
 }
 
