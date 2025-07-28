@@ -69,4 +69,8 @@ func TestCarries_Verify(t *testing.T) {
 			require.Contains(t, err.Error(), test.errorExpected)
 		})
 	}
+	t.Run("should pass verification with all valid fields", func(t *testing.T) {
+		err := carrie.Verify()
+		require.NoError(t, err)
+	})
 }
