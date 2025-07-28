@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,9 +19,9 @@ func TestGetFields(t *testing.T) {
 		result, err := getFields(instance, fieldMap)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, "instance must be a pointer", err.Error())
-		assert.Empty(t, result)
+		require.Error(t, err)
+		require.Equal(t, "instance must be a pointer", err.Error())
+		require.Empty(t, result)
 	})
 
 	t.Run("should return error when instance is not a pointer to struct", func(t *testing.T) {
@@ -34,9 +33,9 @@ func TestGetFields(t *testing.T) {
 		result, err := getFields(&instance, fieldMap)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, "instance must be a pointer to a struct", err.Error())
-		assert.Empty(t, result)
+		require.Error(t, err)
+		require.Equal(t, "instance must be a pointer to a struct", err.Error())
+		require.Empty(t, result)
 	})
 
 	t.Run("should success with valid instance", func(t *testing.T) {
@@ -99,7 +98,7 @@ func TestInitInstanceWithRows(t *testing.T) {
 		err := initInstanceWithRows(&rows, instance)
 
 		// Assert
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 
 	t.Run("should return error when instance is not a pointer to struct", func(t *testing.T) {
@@ -119,7 +118,7 @@ func TestInitInstanceWithRows(t *testing.T) {
 		err = initInstanceWithRows(rows, instance)
 
 		// Assert
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 
 	t.Run("should fail if do not use rows.Next() before calling initInstanceWithRows", func(t *testing.T) {
@@ -139,7 +138,7 @@ func TestInitInstanceWithRows(t *testing.T) {
 		err = initInstanceWithRows(rows, instance)
 
 		// Assert
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 
 	t.Run("should success with struct with rows that have columns that are not in the struct", func(t *testing.T) {
@@ -163,7 +162,7 @@ func TestInitInstanceWithRows(t *testing.T) {
 		err = initInstanceWithRows(rows, instance)
 
 		// Assert
-		assert.NoError(t, err)
-		assert.EqualValues(t, expectedInstance, instance)
+		require.NoError(t, err)
+		require.EqualValues(t, expectedInstance, instance)
 	})
 }

@@ -9,7 +9,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -45,8 +44,8 @@ func TestCreateInboundOrder(t *testing.T) {
 		expectedInboundOrder := models.InboundOrder{Id: 1, InboundOrderDetails: attributes}
 
 		require.NoError(t, err)
-		assert.Equal(t, expectedInboundOrder, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedInboundOrder, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Create inbound order error duplicated order number", func(t *testing.T) {
@@ -70,7 +69,7 @@ func TestCreateInboundOrder(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, expectedInboundOrders, employee)
 		require.Equal(t, err, expectedError)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Create inbound order error product employee id not found", func(t *testing.T) {
@@ -93,7 +92,7 @@ func TestCreateInboundOrder(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, expectedInboundOrders, employee)
 		require.Equal(t, expectedError, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Create inbound order error product batch id not found", func(t *testing.T) {
@@ -116,7 +115,7 @@ func TestCreateInboundOrder(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, expectedInboundOrders, employee)
 		require.Equal(t, expectedError, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Create inbound order error warehouse id not found", func(t *testing.T) {
@@ -139,7 +138,7 @@ func TestCreateInboundOrder(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, expectedInboundOrders, employee)
 		require.Equal(t, expectedError, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("Create employee database error", func(t *testing.T) {
@@ -154,9 +153,9 @@ func TestCreateInboundOrder(t *testing.T) {
 		_, err := repo.CreateInboundOrder(attributes)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }

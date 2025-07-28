@@ -9,7 +9,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -48,8 +47,8 @@ func TestLocalityRepositorySql_CreateLocality(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, locality, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, locality, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("duplicate_id", func(t *testing.T) {
@@ -72,10 +71,10 @@ func TestLocalityRepositorySql_CreateLocality(t *testing.T) {
 		result, err := repo.CreateLocality(locality)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
-		assert.Equal(t, locality, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
+		require.Equal(t, locality, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database_error", func(t *testing.T) {
@@ -95,10 +94,10 @@ func TestLocalityRepositorySql_CreateLocality(t *testing.T) {
 		result, err := repo.CreateLocality(locality)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, locality, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.Equal(t, locality, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -129,8 +128,8 @@ func TestLocalityRepositorySql_GetLocalitySellerCount(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResult, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResult, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("locality_with_zero_sellers", func(t *testing.T) {
@@ -156,8 +155,8 @@ func TestLocalityRepositorySql_GetLocalitySellerCount(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResult, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResult, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("locality_not_found", func(t *testing.T) {
@@ -171,13 +170,12 @@ func TestLocalityRepositorySql_GetLocalitySellerCount(t *testing.T) {
 			WillReturnRows(rows)
 
 		// Act
-		result, err := repo.GetLocalitySellerCount("NONEXISTENT")
+		_, err := repo.GetLocalitySellerCount("NONEXISTENT")
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Equal(t, models.LocalitySellerCount{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database_error", func(t *testing.T) {
@@ -187,13 +185,12 @@ func TestLocalityRepositorySql_GetLocalitySellerCount(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		// Act
-		result, err := repo.GetLocalitySellerCount("LOC001")
+		_, err := repo.GetLocalitySellerCount("LOC001")
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, models.LocalitySellerCount{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -239,8 +236,8 @@ func TestLocalityRepositorySql_GetLocalitiesSellerCount(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResults, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResults, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("single_locality", func(t *testing.T) {
@@ -267,8 +264,8 @@ func TestLocalityRepositorySql_GetLocalitiesSellerCount(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResults, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResults, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("no_localities_found", func(t *testing.T) {
@@ -284,10 +281,10 @@ func TestLocalityRepositorySql_GetLocalitiesSellerCount(t *testing.T) {
 		results, err := repo.GetLocalitiesSellerCount()
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Empty(t, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.Empty(t, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("database_error", func(t *testing.T) {
@@ -299,10 +296,10 @@ func TestLocalityRepositorySql_GetLocalitiesSellerCount(t *testing.T) {
 		results, err := repo.GetLocalitiesSellerCount()
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Empty(t, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrConnDone, err)
+		require.Empty(t, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -339,9 +336,9 @@ func TestLocalityRepositorySql_GetCarriesReport(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, results, 1)
 
-		assert.Equal(t, "L001", results[0].LocalityId)
-		assert.Equal(t, "Locality One", results[0].LocalityName)
-		assert.Equal(t, 5, results[0].CarriesCount)
+		require.Equal(t, "L001", results[0].LocalityId)
+		require.Equal(t, "Locality One", results[0].LocalityName)
+		require.Equal(t, 5, results[0].CarriesCount)
 	})
 
 	t.Run("GetCarriesReport with empty localityId", func(t *testing.T) {

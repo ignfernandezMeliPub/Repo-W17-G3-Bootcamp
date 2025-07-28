@@ -8,7 +8,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -67,8 +66,8 @@ func TestQuery(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResults, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResults, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return empty slice and no rows error when query returns no data", func(t *testing.T) {
@@ -83,10 +82,10 @@ func TestQuery(t *testing.T) {
 		results, err := Query[TestStruct](db, `SELECT id, name, age FROM users WHERE id = ?`, []any{999})
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrNoRows, err)
-		assert.Empty(t, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrNoRows, err)
+		require.Empty(t, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should handle struct with embedded structs successfully", func(t *testing.T) {
@@ -106,8 +105,8 @@ func TestQuery(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResults, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResults, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should handle struct with fields without db tags", func(t *testing.T) {
@@ -127,8 +126,8 @@ func TestQuery(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResults, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResults, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return error when connection fails", func(t *testing.T) {
@@ -143,10 +142,10 @@ func TestQuery(t *testing.T) {
 		results, err := Query[TestStruct](db, `SELECT id, name, age FROM users`, []any{})
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Empty(t, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.Empty(t, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return error when initInstanceWithRows fails during iteration", func(t *testing.T) {
@@ -170,9 +169,9 @@ func TestQuery(t *testing.T) {
 		results, err := Query[InvalidStruct](db, `SELECT id, name, age FROM users`, []any{})
 
 		// Assert
-		assert.Error(t, err)
-		assert.Nil(t, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Nil(t, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return error when rows has error after scanning", func(t *testing.T) {
@@ -191,9 +190,9 @@ func TestQuery(t *testing.T) {
 		results, err := Query[TestStruct](db, `SELECT id, name, age FROM users`, []any{})
 
 		// Assert
-		assert.Error(t, err)
-		assert.Nil(t, results)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Nil(t, results)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -218,8 +217,8 @@ func TestQueryRow(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResult, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResult, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return no rows error when query returns no data", func(t *testing.T) {
@@ -234,10 +233,10 @@ func TestQueryRow(t *testing.T) {
 		result, err := QueryRow[TestStruct](db, `SELECT id, name, age FROM users WHERE id = ?`, []any{999})
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, sql.ErrNoRows, err)
-		assert.Equal(t, TestStruct{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, sql.ErrNoRows, err)
+		require.Equal(t, TestStruct{}, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should handle struct with embedded structs successfully", func(t *testing.T) {
@@ -256,8 +255,8 @@ func TestQueryRow(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResult, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResult, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return error when initInstanceWithRows fails during scanning", func(t *testing.T) {
@@ -282,10 +281,10 @@ func TestQueryRow(t *testing.T) {
 		result, err := QueryRow[TestStruct](db, `SELECT id, name, age FROM users WHERE id = ?`, []any{1})
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, TestStruct{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.Equal(t, TestStruct{}, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return error when connection fails", func(t *testing.T) {
@@ -301,10 +300,10 @@ func TestQueryRow(t *testing.T) {
 		result, err := QueryRow[TestStruct](db, `SELECT id, name, age FROM users WHERE id = ?`, []any{1})
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, TestStruct{}, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.Equal(t, TestStruct{}, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -325,8 +324,8 @@ func TestInsert(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedID, id)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedID, id)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return foreign key violation error when referenced record does not exist", func(t *testing.T) {
@@ -342,10 +341,10 @@ func TestInsert(t *testing.T) {
 		id, err := Insert(db, `INSERT INTO users (name, age, department_id) VALUES (?, ?, ?)`, []any{"John", 25, 999})
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, int64(0), id)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.Equal(t, int64(0), id)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -366,8 +365,8 @@ func TestUpdate(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedAffectedRows, affectedRows)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedAffectedRows, affectedRows)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return zero affected rows when no records match update criteria", func(t *testing.T) {
@@ -381,8 +380,8 @@ func TestUpdate(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, int64(0), affectedRows)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, int64(0), affectedRows)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return unique violation error when updated value violates unique constraint", func(t *testing.T) {
@@ -398,10 +397,10 @@ func TestUpdate(t *testing.T) {
 		affectedRows, err := Update(db, `UPDATE users SET name = ?, age = ? WHERE id = ?`, []any{"Existing Name", 30, 1})
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, int64(0), affectedRows)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.Equal(t, int64(0), affectedRows)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return foreign key violation error when updated reference does not exist", func(t *testing.T) {
@@ -417,10 +416,10 @@ func TestUpdate(t *testing.T) {
 		affectedRows, err := Update(db, `UPDATE users SET name = ?, age = ?, department_id = ? WHERE id = ?`, []any{"John Updated", 30, 999, 1})
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, int64(0), affectedRows)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.Equal(t, int64(0), affectedRows)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -441,8 +440,8 @@ func TestDelete(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedDeletedRows, deletedRows)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedDeletedRows, deletedRows)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return zero deleted rows when no records match delete criteria", func(t *testing.T) {
@@ -456,8 +455,8 @@ func TestDelete(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, int64(0), deletedRows)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, int64(0), deletedRows)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return foreign key violation error when deleted record has dependent records", func(t *testing.T) {
@@ -473,10 +472,10 @@ func TestDelete(t *testing.T) {
 		deletedRows, err := Delete(db, `DELETE FROM users WHERE id = ?`, []any{1})
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.Equal(t, int64(0), deletedRows)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.Equal(t, int64(0), deletedRows)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -500,8 +499,8 @@ func TestDBExecutorInterface(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResult, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedResult, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should work with sql tx instance", func(t *testing.T) {
@@ -527,13 +526,13 @@ func TestDBExecutorInterface(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedResult, result)
+		require.Equal(t, expectedResult, result)
 
 		// Rollback the transaction
 		err = tx.Rollback()
 		require.NoError(t, err)
 
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -543,7 +542,7 @@ func TestHandleSqlError(t *testing.T) {
 		result := HandleSqlError(nil)
 
 		// Assert
-		assert.Nil(t, result)
+		require.Nil(t, result)
 	})
 
 	t.Run("should return err not found when error is sql err no rows", func(t *testing.T) {
@@ -551,7 +550,7 @@ func TestHandleSqlError(t *testing.T) {
 		result := HandleSqlError(sql.ErrNoRows)
 
 		// Assert
-		assert.Equal(t, custom_errors.ErrNotFound, result)
+		require.Equal(t, custom_errors.ErrNotFound, result)
 	})
 
 	t.Run("should return original error when not mysql error", func(t *testing.T) {
@@ -562,7 +561,7 @@ func TestHandleSqlError(t *testing.T) {
 		result := HandleSqlError(originalError)
 
 		// Assert
-		assert.Equal(t, originalError, result)
+		require.Equal(t, originalError, result)
 	})
 
 	t.Run("should return unique violation error when mysql error 1062", func(t *testing.T) {
@@ -576,10 +575,10 @@ func TestHandleSqlError(t *testing.T) {
 		result := HandleSqlError(mysqlErr)
 
 		// Assert
-		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, result)
+		require.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, result)
 		uniqueErr := result.(*custom_errors.UniqueAttributeViolationErr)
-		assert.Equal(t, "email", uniqueErr.AttributeName)
-		assert.Equal(t, "test@example.com", uniqueErr.Value)
+		require.Equal(t, "email", uniqueErr.AttributeName)
+		require.Equal(t, "test@example.com", uniqueErr.Value)
 	})
 
 	t.Run("should return unique violation error when mysql error 1062 with simple key", func(t *testing.T) {
@@ -593,10 +592,10 @@ func TestHandleSqlError(t *testing.T) {
 		result := HandleSqlError(mysqlErr)
 
 		// Assert
-		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, result)
+		require.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, result)
 		uniqueErr := result.(*custom_errors.UniqueAttributeViolationErr)
-		assert.Equal(t, "unique_key", uniqueErr.AttributeName)
-		assert.Equal(t, "test", uniqueErr.Value)
+		require.Equal(t, "unique_key", uniqueErr.AttributeName)
+		require.Equal(t, "test", uniqueErr.Value)
 	})
 
 	t.Run("should return foreign key violation error when mysql error 1451", func(t *testing.T) {
@@ -610,11 +609,11 @@ func TestHandleSqlError(t *testing.T) {
 		result := HandleSqlError(mysqlErr)
 
 		// Assert
-		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, result)
+		require.IsType(t, &custom_errors.ForeignKeyViolationError{}, result)
 		fkErr := result.(*custom_errors.ForeignKeyViolationError)
-		assert.Equal(t, "department_id", fkErr.ConstraintName)
-		assert.True(t, fkErr.IsParentRow)
-		assert.Equal(t, mysqlErr.Message, fkErr.Details)
+		require.Equal(t, "department_id", fkErr.ConstraintName)
+		require.True(t, fkErr.IsParentRow)
+		require.Equal(t, mysqlErr.Message, fkErr.Details)
 	})
 
 	t.Run("should_return_foreign_key_violation_error_when_mysql_error_1452", func(t *testing.T) {
@@ -628,11 +627,11 @@ func TestHandleSqlError(t *testing.T) {
 		result := HandleSqlError(mysqlErr)
 
 		// Assert
-		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, result)
+		require.IsType(t, &custom_errors.ForeignKeyViolationError{}, result)
 		fkErr := result.(*custom_errors.ForeignKeyViolationError)
-		assert.Equal(t, "department_id", fkErr.ConstraintName)
-		assert.False(t, fkErr.IsParentRow)
-		assert.Equal(t, mysqlErr.Message, fkErr.Details)
+		require.Equal(t, "department_id", fkErr.ConstraintName)
+		require.False(t, fkErr.IsParentRow)
+		require.Equal(t, mysqlErr.Message, fkErr.Details)
 	})
 
 	t.Run("should_return_foreign_key_violation_error_when_mysql_error_1452_with_unknown_constraint", func(t *testing.T) {
@@ -646,11 +645,11 @@ func TestHandleSqlError(t *testing.T) {
 		result := HandleSqlError(mysqlErr)
 
 		// Assert
-		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, result)
+		require.IsType(t, &custom_errors.ForeignKeyViolationError{}, result)
 		fkErr := result.(*custom_errors.ForeignKeyViolationError)
-		assert.Equal(t, "unknown", fkErr.ConstraintName)
-		assert.False(t, fkErr.IsParentRow)
-		assert.Equal(t, mysqlErr.Message, fkErr.Details)
+		require.Equal(t, "unknown", fkErr.ConstraintName)
+		require.False(t, fkErr.IsParentRow)
+		require.Equal(t, mysqlErr.Message, fkErr.Details)
 	})
 
 	t.Run("should_return_original_error_when_mysql_error_number_not_handled", func(t *testing.T) {
@@ -664,6 +663,6 @@ func TestHandleSqlError(t *testing.T) {
 		result := HandleSqlError(mysqlErr)
 
 		// Assert
-		assert.Equal(t, mysqlErr, result)
+		require.Equal(t, mysqlErr, result)
 	})
 }

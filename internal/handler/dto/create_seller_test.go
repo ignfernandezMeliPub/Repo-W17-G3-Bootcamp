@@ -3,8 +3,9 @@ package dto
 import (
 	"app/pkg/custom_errors"
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func intPtr(i int) *int {
@@ -22,7 +23,7 @@ func TestCreateSellerDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("nil company_id", func(t *testing.T) {
@@ -35,12 +36,12 @@ func TestCreateSellerDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var mandatoryErr *custom_errors.MandatoryArgMissingErr
 		ok := errors.As(err, &mandatoryErr)
-		assert.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
-		assert.Equal(t, "cid", mandatoryErr.Argument)
+		require.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
+		require.Equal(t, "cid", mandatoryErr.Argument)
 	})
 
 	t.Run("nil company_name", func(t *testing.T) {
@@ -53,12 +54,12 @@ func TestCreateSellerDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var mandatoryErr *custom_errors.MandatoryArgMissingErr
 		ok := errors.As(err, &mandatoryErr)
-		assert.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
-		assert.Equal(t, "company_name", mandatoryErr.Argument)
+		require.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
+		require.Equal(t, "company_name", mandatoryErr.Argument)
 	})
 
 	t.Run("nil address", func(t *testing.T) {
@@ -71,12 +72,12 @@ func TestCreateSellerDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var mandatoryErr *custom_errors.MandatoryArgMissingErr
 		ok := errors.As(err, &mandatoryErr)
-		assert.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
-		assert.Equal(t, "address", mandatoryErr.Argument)
+		require.True(t, ok, "Expected *custom_errors.MandatoryArgMissingErr")
+		require.Equal(t, "address", mandatoryErr.Argument)
 	})
 
 	t.Run("empty strings and zero values are valid", func(t *testing.T) {
@@ -89,6 +90,6 @@ func TestCreateSellerDto_Verify(t *testing.T) {
 		}
 
 		err := dto.Verify()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 }

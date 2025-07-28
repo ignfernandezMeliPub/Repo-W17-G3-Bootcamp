@@ -4,12 +4,12 @@ import (
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"database/sql"
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"regexp"
 	"testing"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/go-sql-driver/mysql"
+	"github.com/stretchr/testify/require"
 )
 
 func setupSectionsRepository(t *testing.T) (*SectionsRepositorySQL, sqlmock.Sqlmock, func()) {
@@ -69,7 +69,7 @@ func TestSectionsServiceImpl_GetAllSections(t *testing.T) {
 		section, err := rp.GetAllSections()
 		require.NoError(t, err)
 		require.NotNil(t, section)
-		assert.Equal(t, expected, section)
+		require.Equal(t, expected, section)
 	})
 
 	t.Run("get all_not found", func(t *testing.T) {
@@ -111,7 +111,7 @@ func TestSectionsServiceImpl_GetSectionById(t *testing.T) {
 		section, err := rp.GetSectionById(1)
 		require.NoError(t, err)
 		require.NotNil(t, section)
-		assert.Equal(t, expected, section)
+		require.Equal(t, expected, section)
 	})
 
 	t.Run("get by id_not found", func(t *testing.T) {
@@ -119,9 +119,9 @@ func TestSectionsServiceImpl_GetSectionById(t *testing.T) {
 			WithArgs(2).
 			WillReturnError(sql.ErrNoRows)
 
-		section, err := rp.GetSectionById(2)
-		require.ErrorIs(t, err, &custom_errors.ResourceNotFoundError{})
-		require.Equal(t, models.Section{}, section)
+		_, err := rp.GetSectionById(2)
+		require.Error(t, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -170,12 +170,11 @@ func TestSectionsRepositorySQL_CreateSection(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(0, 0)).
 			WillReturnError(&mysql.MySQLError{Number: 1062, Message: "Duplicate entry 'section_number' for key '1'"})
 
-		section, err := rp.CreateSection(req)
+		_, err := rp.CreateSection(req)
 		resErr := &custom_errors.UniqueAttributeViolationErr{}
 
 		require.NotNil(t, err)
 		require.IsType(t, resErr, err)
-		require.Equal(t, models.Section{}, section)
 	})
 
 	t.Run("create_foreignKeyViolation", func(t *testing.T) {
@@ -196,11 +195,10 @@ func TestSectionsRepositorySQL_CreateSection(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(0, 0)).
 			WillReturnError(&mysql.MySQLError{Number: 1451, Message: "FOREIGN KEY \\(`warehouse_id`\\)"})
 
-		section, err := rp.CreateSection(req)
+		_, err := rp.CreateSection(req)
 		errExpected := &custom_errors.ForeignKeyViolationError{}
 		require.NotNil(t, err)
 		require.IsType(t, err, errExpected)
-		require.Equal(t, models.Section{}, section)
 	})
 }
 
@@ -269,11 +267,10 @@ func TestSectionsRepositorySQL_UpdateSection(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(0, 0)).
 			WillReturnError(&mysql.MySQLError{Number: 1451, Message: "FOREIGN KEY \\(`warehouse_id`\\)"})
 
-		section, err := rp.UpdateSectionById(req)
+		_, err := rp.UpdateSectionById(req)
 		errExpected := &custom_errors.ForeignKeyViolationError{}
 		require.NotNil(t, err)
 		require.IsType(t, err, errExpected)
-		require.Equal(t, models.Section{}, section)
 	})
 }
 

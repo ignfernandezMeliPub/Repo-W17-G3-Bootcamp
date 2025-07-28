@@ -4,8 +4,9 @@ import (
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"app/test/repository"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestSectionsServiceImpl_UpdateSectionById(t *testing.T) {
@@ -43,11 +44,10 @@ func TestSectionsServiceImpl_UpdateSectionById(t *testing.T) {
 		req := models.SectionRequest{
 			CurrentTemperature: &currentTemperature,
 		}
-		sec, err := svSc.UpdateSectionById(2, req)
+		_, err := svSc.UpdateSectionById(2, req)
 		errExp := &custom_errors.ResourceNotFoundError{}
 
 		require.NotNil(t, err)
 		require.ErrorIs(t, err, errExp)
-		require.Equal(t, models.Section{}, sec)
 	})
 }

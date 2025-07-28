@@ -8,7 +8,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-sql-driver/mysql"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -80,8 +79,8 @@ func TestProductRepositoryMySQL_GetAllProducts(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedProducts, products)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedProducts, products)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return not found error when database has no products", func(t *testing.T) {
@@ -99,9 +98,9 @@ func TestProductRepositoryMySQL_GetAllProducts(t *testing.T) {
 		_, err := repo.GetAllProducts()
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return connection error when database connection fails", func(t *testing.T) {
@@ -116,9 +115,9 @@ func TestProductRepositoryMySQL_GetAllProducts(t *testing.T) {
 		_, err := repo.GetAllProducts()
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 }
@@ -161,8 +160,8 @@ func TestProductRepositoryMySQL_GetProductById(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedProduct, product)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedProduct, product)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return not found error when product does not exist with given id", func(t *testing.T) {
@@ -181,9 +180,9 @@ func TestProductRepositoryMySQL_GetProductById(t *testing.T) {
 		_, err := repo.GetProductById(999)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return connection error when database connection fails", func(t *testing.T) {
@@ -199,9 +198,9 @@ func TestProductRepositoryMySQL_GetProductById(t *testing.T) {
 		_, err := repo.GetProductById(1)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -243,8 +242,8 @@ func TestProductRepositoryMySQL_GetProductByCode(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedProduct, product)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedProduct, product)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return not found error when product does not exist with given code", func(t *testing.T) {
@@ -263,9 +262,9 @@ func TestProductRepositoryMySQL_GetProductByCode(t *testing.T) {
 		_, err := repo.GetProductByCode("NONEXISTENT")
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return connection error when database connection fails", func(t *testing.T) {
@@ -281,9 +280,9 @@ func TestProductRepositoryMySQL_GetProductByCode(t *testing.T) {
 		_, err := repo.GetProductByCode("PROD001")
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -319,8 +318,8 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedProduct, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedProduct, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return unique violation error when product code already exists", func(t *testing.T) {
@@ -349,9 +348,9 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 		// Act
 		_, err := repo.CreateProduct(product)
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return foreign key violation error when product type id does not exist", func(t *testing.T) {
@@ -381,9 +380,9 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 		_, err := repo.CreateProduct(product)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return foreign key violation error when seller id does not exist", func(t *testing.T) {
@@ -414,9 +413,9 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 		_, err := repo.CreateProduct(product)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return connection error when database connection fails", func(t *testing.T) {
@@ -446,9 +445,9 @@ func TestProductRepositoryMySQL_CreateProduct(t *testing.T) {
 		_, err := repo.CreateProduct(product)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -482,8 +481,8 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, product, result)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, product, result)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return unique violation error when updated product code already exists", func(t *testing.T) {
@@ -514,9 +513,9 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 		_, err := repo.UpdateProductById(product)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.UniqueAttributeViolationErr{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return foreign key violation error when updated product type id does not exist", func(t *testing.T) {
@@ -547,9 +546,9 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 		_, err := repo.UpdateProductById(product)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return connection error when database connection fails", func(t *testing.T) {
@@ -580,9 +579,9 @@ func TestProductRepositoryMySQL_UpdateProductById(t *testing.T) {
 		_, err := repo.UpdateProductById(product)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -601,7 +600,7 @@ func TestProductRepositoryMySQL_DeleteProductById(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return foreign key violation error when product has related records", func(t *testing.T) {
@@ -617,9 +616,9 @@ func TestProductRepositoryMySQL_DeleteProductById(t *testing.T) {
 		err := repo.DeleteProductById(1)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &custom_errors.ForeignKeyViolationError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return not found error when product does not exist", func(t *testing.T) {
@@ -683,8 +682,8 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedReports, reports)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedReports, reports)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return all product records reports successfully when no product id filter", func(t *testing.T) {
@@ -716,8 +715,8 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 
 		// Assert
 		require.NoError(t, err)
-		assert.Equal(t, expectedReports, reports)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Equal(t, expectedReports, reports)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return not found error when no product records exist", func(t *testing.T) {
@@ -733,10 +732,10 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 		reports, err := repo.GetReportRecords(nil)
 
 		// Assert
-		assert.Error(t, err)
-		assert.Equal(t, custom_errors.ErrNotFound, err)
-		assert.Empty(t, reports)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.Equal(t, custom_errors.ErrNotFound, err)
+		require.Empty(t, reports)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 
 	t.Run("should return connection error when database connection fails", func(t *testing.T) {
@@ -751,8 +750,8 @@ func TestProductRepositoryMySQL_GetReportRecords(t *testing.T) {
 		_, err := repo.GetReportRecords(nil)
 
 		// Assert
-		assert.Error(t, err)
-		assert.IsType(t, &mysql.MySQLError{}, err)
-		assert.NoError(t, mock.ExpectationsWereMet())
+		require.Error(t, err)
+		require.IsType(t, &mysql.MySQLError{}, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
