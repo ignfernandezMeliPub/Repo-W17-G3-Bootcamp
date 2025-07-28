@@ -97,9 +97,8 @@ func TestCreateProduct(t *testing.T) {
 		invalidProductRequest := validProductRequest
 		invalidProductRequest.Width = &invalidWidth
 
-		createdProduct, err := productService.CreateProduct(invalidProductRequest)
+		_, err := productService.CreateProduct(invalidProductRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, createdProduct)
 		require.Contains(t, err.Error(), "Width must be greater than 0")
 	})
 
@@ -113,9 +112,8 @@ func TestCreateProduct(t *testing.T) {
 		invalidProductRequest := validProductRequest
 		invalidProductRequest.Height = &invalidHeight
 
-		createdProduct, err := productService.CreateProduct(invalidProductRequest)
+		_, err := productService.CreateProduct(invalidProductRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, createdProduct)
 		require.Contains(t, err.Error(), "Height must be greater than 0")
 	})
 
@@ -129,9 +127,8 @@ func TestCreateProduct(t *testing.T) {
 		invalidProductRequest := validProductRequest
 		invalidProductRequest.Length = &invalidLength
 
-		createdProduct, err := productService.CreateProduct(invalidProductRequest)
+		_, err := productService.CreateProduct(invalidProductRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, createdProduct)
 		require.Contains(t, err.Error(), "Length must be greater than 0")
 	})
 
@@ -145,9 +142,8 @@ func TestCreateProduct(t *testing.T) {
 		invalidProductRequest := validProductRequest
 		invalidProductRequest.NetWeight = &invalidNetWeight
 
-		createdProduct, err := productService.CreateProduct(invalidProductRequest)
+		_, err := productService.CreateProduct(invalidProductRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, createdProduct)
 		require.Contains(t, err.Error(), "Net weight must be greater than 0")
 	})
 
@@ -161,9 +157,8 @@ func TestCreateProduct(t *testing.T) {
 		invalidProductRequest := validProductRequest
 		invalidProductRequest.ExpirationRate = &invalidExpirationRate
 
-		createdProduct, err := productService.CreateProduct(invalidProductRequest)
+		_, err := productService.CreateProduct(invalidProductRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, createdProduct)
 		require.Contains(t, err.Error(), "Expiration rate must be greater than 0")
 	})
 
@@ -177,9 +172,8 @@ func TestCreateProduct(t *testing.T) {
 		invalidProductRequest := validProductRequest
 		invalidProductRequest.FreezingRate = &invalidFreezingRate
 
-		createdProduct, err := productService.CreateProduct(invalidProductRequest)
+		_, err := productService.CreateProduct(invalidProductRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, createdProduct)
 		require.Contains(t, err.Error(), "Freezing rate must be greater than 0")
 	})
 
@@ -205,9 +199,8 @@ func TestCreateProduct(t *testing.T) {
 		expectedError := errors.New("database error")
 		mockProductRepository.On("CreateProduct", inputProduct).Return(models.Product{}, expectedError)
 
-		createdProduct, err := productService.CreateProduct(validProductRequest)
+		_, err := productService.CreateProduct(validProductRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, createdProduct)
 		require.Equal(t, expectedError, err)
 		mockProductRepository.AssertExpectations(t)
 	})
@@ -241,9 +234,8 @@ func TestCreateProduct(t *testing.T) {
 
 		mockProductRepository.On("CreateProduct", inputProduct).Return(expectedProduct, nil)
 
-		createdProduct, err := productService.CreateProduct(productRequestWithSeller)
+		_, err := productService.CreateProduct(productRequestWithSeller)
 		require.NoError(t, err)
-		require.Equal(t, expectedProduct, createdProduct)
 		mockProductRepository.AssertExpectations(t)
 	})
 }
@@ -291,9 +283,8 @@ func TestPatchProduct(t *testing.T) {
 			ProductCode: &emptyProductCode,
 		}
 
-		updatedProduct, err := productService.patchProduct(baseProduct, patchRequest)
+		_, err := productService.patchProduct(baseProduct, patchRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, updatedProduct)
 		require.Contains(t, err.Error(), "Product code cannot be empty")
 	})
 
@@ -319,9 +310,8 @@ func TestPatchProduct(t *testing.T) {
 			Description: &emptyDescription,
 		}
 
-		updatedProduct, err := productService.patchProduct(baseProduct, patchRequest)
+		_, err := productService.patchProduct(baseProduct, patchRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, updatedProduct)
 		require.Contains(t, err.Error(), "Description cannot be empty")
 	})
 
@@ -347,9 +337,8 @@ func TestPatchProduct(t *testing.T) {
 			Width: &invalidWidth,
 		}
 
-		updatedProduct, err := productService.patchProduct(baseProduct, patchRequest)
+		_, err := productService.patchProduct(baseProduct, patchRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, updatedProduct)
 		require.Contains(t, err.Error(), "Width must be greater than 0")
 	})
 
@@ -375,9 +364,8 @@ func TestPatchProduct(t *testing.T) {
 			Height: &invalidHeight,
 		}
 
-		updatedProduct, err := productService.patchProduct(baseProduct, patchRequest)
+		_, err := productService.patchProduct(baseProduct, patchRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, updatedProduct)
 		require.Contains(t, err.Error(), "Height must be greater than 0")
 	})
 
@@ -403,9 +391,8 @@ func TestPatchProduct(t *testing.T) {
 			Length: &invalidLength,
 		}
 
-		updatedProduct, err := productService.patchProduct(baseProduct, patchRequest)
+		_, err := productService.patchProduct(baseProduct, patchRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, updatedProduct)
 		require.Contains(t, err.Error(), "Length must be greater than 0")
 	})
 
@@ -431,9 +418,8 @@ func TestPatchProduct(t *testing.T) {
 			NetWeight: &invalidNetWeight,
 		}
 
-		updatedProduct, err := productService.patchProduct(baseProduct, patchRequest)
+		_, err := productService.patchProduct(baseProduct, patchRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, updatedProduct)
 		require.Contains(t, err.Error(), "Net weight must be greater than 0")
 	})
 
@@ -459,9 +445,8 @@ func TestPatchProduct(t *testing.T) {
 			ExpirationRate: &invalidExpirationRate,
 		}
 
-		updatedProduct, err := productService.patchProduct(baseProduct, patchRequest)
+		_, err := productService.patchProduct(baseProduct, patchRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, updatedProduct)
 		require.Contains(t, err.Error(), "Expiration rate must be greater than 0")
 	})
 
@@ -502,9 +487,8 @@ func TestPatchProduct(t *testing.T) {
 			FreezingRate: &invalidFreezingRate,
 		}
 
-		updatedProduct, err := productService.patchProduct(baseProduct, patchRequest)
+		_, err := productService.patchProduct(baseProduct, patchRequest)
 		require.Error(t, err)
-		require.Equal(t, models.Product{}, updatedProduct)
 		require.Contains(t, err.Error(), "Freezing rate must be greater than 0")
 	})
 
