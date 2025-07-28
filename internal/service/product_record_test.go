@@ -13,7 +13,6 @@ func TestNewProductRecordService(t *testing.T) {
 	mockRepository := new(repository.MockProductRecordRepository)
 	service := NewProductRecordService(mockRepository)
 	require.NotNil(t, service)
-	mockRepository.AssertExpectations(t)
 }
 
 func TestProductRecordService_CreateProductRecord(t *testing.T) {
