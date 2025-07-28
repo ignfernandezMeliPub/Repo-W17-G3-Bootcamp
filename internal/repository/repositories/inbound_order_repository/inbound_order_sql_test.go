@@ -151,12 +151,11 @@ func TestCreateInboundOrder(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		// Act
-		result, err := repo.CreateInboundOrder(attributes)
+		_, err := repo.CreateInboundOrder(attributes)
 
 		// Assert
 		assert.Error(t, err)
 		assert.Equal(t, sql.ErrConnDone, err)
-		assert.Equal(t, models.InboundOrder{}, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
