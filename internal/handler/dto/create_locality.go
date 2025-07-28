@@ -2,6 +2,13 @@ package dto
 
 import "app/pkg/custom_errors"
 
+type CreateLocalityData struct {
+	Id           *string `json:"id"`
+	LocalityName *string `json:"locality_name"`
+	ProvinceName *string `json:"province_name"`
+	CountryName  *string `json:"country_name"`
+}
+
 type CreateLocalityDto struct {
 	Data *CreateLocalityData `json:"data"`
 }
@@ -28,11 +35,4 @@ func (c CreateLocalityDto) Verify() error {
 	}
 
 	return nil
-}
-
-type CreateLocalityData struct {
-	Id           *string `json:"id"`
-	LocalityName *string `json:"locality_name"`
-	ProvinceName *string `json:"province_name"`
-	CountryName  *string `json:"country_name"`
 }
