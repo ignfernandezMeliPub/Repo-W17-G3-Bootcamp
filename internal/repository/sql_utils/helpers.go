@@ -1,6 +1,7 @@
 package sql_utils
 
 import (
+	"app/internal/logger"
 	"app/pkg/custom_errors"
 	"database/sql"
 	"fmt"
@@ -230,4 +231,68 @@ func HandleSqlError(err error) error {
 	}
 
 	return err
+}
+
+func Log(action string, status logger.LogStatus, message string) {
+
+	logInfo := logger.LogInfo{
+		Layer:   logger.LogLayerRepository,
+		Action:  action,
+		Status:  status,
+		Message: message,
+	}
+
+	logger.Debug(logInfo)
+}
+
+func LogAudit(action string, status logger.LogStatus, message string) {
+
+	logInfo := logger.LogInfo{
+		Layer:   logger.LogLayerRepository,
+		Action:  action,
+		Status:  status,
+		Message: message,
+	}
+
+	logger.Audit(logInfo)
+}
+
+func LogError(action string, message string, err error) {
+
+	if err == nil {
+		return
+	}
+
+	logInfo := logger.LogInfo{
+		Layer:   logger.LogLayerRepository,
+		Action:  action,
+		Status:  logger.LogStatusError,
+		Message: message + " " + err.Error(),
+	}
+
+	if errors.As(err, &custom_errors.ErrNotFound) || errors.As(err, &custom_errors.ErrForeignKeyViolation) || errors.As(err, &custom_errors.ErrUniqueAttributeViolationError) {
+		logger.Error(logInfo)
+	} else {
+		logger.Debug(logInfo)
+	}
+}
+
+func LogAuditError(action string, message string, err error) {
+
+	if err == nil {
+		return
+	}
+
+	logInfo := logger.LogInfo{
+		Layer:   logger.LogLayerRepository,
+		Action:  action,
+		Status:  logger.LogStatusError,
+		Message: message + " " + err.Error(),
+	}
+
+	if errors.As(err, &custom_errors.ErrNotFound) || errors.As(err, &custom_errors.ErrForeignKeyViolation) || errors.As(err, &custom_errors.ErrUniqueAttributeViolationError) {
+		logger.Error(logInfo)
+	} else {
+		logger.Audit(logInfo)
+	}
 }

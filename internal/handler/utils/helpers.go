@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"app/internal/logger"
 	"app/pkg/custom_errors"
 	"encoding/json"
 	"errors"
@@ -75,4 +76,37 @@ func InstantiateVarFromBody[T BodyInstantiableStruct](body *io.ReadCloser, varia
 	}
 
 	return variable, variable.Verify()
+}
+
+func Log(r *http.Request, action string, status logger.LogStatus) {
+
+	logInfo := logger.LogInfo{
+		Layer:      logger.LogLayerHandler,
+		Action:     action,
+		Status:     status,
+		HttpMethod: r.Method,
+		Endpoint:   r.URL.Path,
+		Source:     r.RemoteAddr,
+	}
+
+	logger.Debug(logInfo)
+}
+
+func LogError(r *http.Request, action string, err error, httpStatus int) {
+
+	logInfo := logger.LogInfo{
+		Layer:      logger.LogLayerHandler,
+		Action:     action,
+		Status:     logger.LogStatusError,
+		Message:    err.Error(),
+		HttpMethod: r.Method,
+		Endpoint:   r.URL.Path,
+		Source:     r.RemoteAddr,
+	}
+
+	if httpStatus == http.StatusInternalServerError {
+		logger.Error(logInfo)
+	} else {
+		logger.Debug(logInfo)
+	}
 }

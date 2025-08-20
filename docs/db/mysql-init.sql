@@ -1,8 +1,25 @@
+
 DROP DATABASE IF EXISTS fresh_db;
 CREATE DATABASE fresh_db
     DEFAULT CHARACTER SET = 'utf8mb4';
 
 USE fresh_db;
+
+DROP TABLE IF EXISTS logs;
+
+CREATE TABLE logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    source VARCHAR(255) NOT NULL,
+    endpoint VARCHAR(255) NOT NULL,
+    http_method VARCHAR(255) NOT NULL,
+    layer VARCHAR(255) NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    level VARCHAR(255) NOT NULL,
+    time DATETIME NOT NULL
+);
+
 DROP TABLE IF EXISTS buyers;
 CREATE TABLE buyers (
     id INT AUTO_INCREMENT PRIMARY KEY,
