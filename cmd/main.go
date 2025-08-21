@@ -2,6 +2,7 @@ package main
 
 import (
 	"app/internal/application"
+	"app/internal/logger"
 	"fmt"
 
 	"github.com/go-sql-driver/mysql"
@@ -19,6 +20,8 @@ func main() {
 			DBName: application.DbName,
 		},
 	}
+
+	logger.SetLogLevel(logger.LogLevelDebug)
 
 	// - app
 	app := application.NewServerChi(cfg)

@@ -2,6 +2,7 @@ package application
 
 import (
 	"app/internal/handler"
+	"app/internal/logger"
 	"app/internal/repository/repositories/buyer_repository"
 	"app/internal/repository/repositories/carries_repository"
 	"app/internal/repository/repositories/employee_repository"
@@ -71,6 +72,8 @@ func (a *ServerChi) Run() (err error) {
 	if err != nil {
 		return err
 	}
+
+	logger.SetLogDb(db)
 
 	// Seller
 	sellerRepo := seller_repository.NewSellerRepositorySql(db)

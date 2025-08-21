@@ -9,7 +9,7 @@ import (
 	"github.com/bootcamp-go/web/response"
 )
 
-func ResponseHttpError(w http.ResponseWriter, err error) {
+func ResponseHttpError(w http.ResponseWriter, err error) int {
 	var status int
 	var message string
 
@@ -39,4 +39,6 @@ func ResponseHttpError(w http.ResponseWriter, err error) {
 		"message": message,
 		"error":   errorMsg,
 	})
+
+	return status
 }
