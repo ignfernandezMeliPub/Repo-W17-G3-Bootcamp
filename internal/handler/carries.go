@@ -2,6 +2,7 @@ package handler
 
 import (
 	"app/internal/handler/utils"
+	"app/internal/logger"
 	"app/internal/service"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
@@ -20,22 +21,29 @@ func NewCarriesHandler(sv service.CarriesService) *CarriesHandler {
 }
 
 func (h *CarriesHandler) CreateCarrie(w http.ResponseWriter, r *http.Request) {
+	utils.Log(r, "CreateCarrie", logger.LogStatusInProgress)
+
 	var c models.Carries
 	c, err := utils.InstantiateVarFromBody(&r.Body, c)
 	if err != nil {
-		utils.ResponseHttpError(w, err)
+		httpStatus := utils.ResponseHttpError(w, err)
+		utils.LogError(r, "CreateCarrie", err, httpStatus)
 		return
 	}
 	err = validateCarriesAttributes(c)
 	if err != nil {
-		utils.ResponseHttpError(w, err)
+		httpStatus := utils.ResponseHttpError(w, err)
+		utils.LogError(r, "CreateCarrie", err, httpStatus)
 		return
 	}
 	data, err := h.sv.CreateCarrie(c)
 	if err != nil {
-		utils.ResponseHttpError(w, err)
+		httpStatus := utils.ResponseHttpError(w, err)
+		utils.LogError(r, "CreateCarrie", err, httpStatus)
 		return
 	}
+
+	utils.Log(r, "CreateCarrie", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": data,

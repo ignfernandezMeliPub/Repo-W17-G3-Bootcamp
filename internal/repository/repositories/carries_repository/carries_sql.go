@@ -1,9 +1,11 @@
 package carries_repository
 
 import (
+	"app/internal/logger"
 	"app/internal/repository/sql_utils"
 	"app/pkg/models"
 	"database/sql"
+	"strconv"
 )
 
 func NewCarriesSql(db *sql.DB) *CarriesSql {
@@ -27,11 +29,17 @@ const queryCreateCarrie = `INSERT INTO carries (
 				) VALUES(?, ?, ?, ?, ?)`
 
 func (r *CarriesSql) CreateCarrie(c models.Carries) (models.Carries, error) {
+	sql_utils.LogAudit("CreateCarrie", logger.LogStatusInProgress, "Insert carrie")
+
 	args := []any{c.Cid, c.CompanyName, c.Address, c.Telephone, c.LocalityId}
 	newId, err := sql_utils.Insert(r.db, queryCreateCarrie, args)
 	if err != nil {
-		return c, sql_utils.HandleSqlError(err)
+		err = sql_utils.HandleSqlError(err)
+		sql_utils.LogAuditError("CreateCarrie", "Insert carrie", err)
+		return c, err
 	}
 	c.Id = int(newId)
+
+	sql_utils.LogAudit("CreateCarrie", logger.LogStatusSuccess, "Insert carrie. Id: "+strconv.Itoa(c.Id))
 	return c, nil
 }
