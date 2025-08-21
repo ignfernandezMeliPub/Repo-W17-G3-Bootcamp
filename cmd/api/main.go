@@ -9,6 +9,7 @@ import (
 
 	"app/internal"
 	"app/internal/handler"
+	"app/internal/logger"
 	"app/internal/repository/repositories/buyer_repository"
 	"app/internal/repository/repositories/carries_repository"
 	"app/internal/repository/repositories/employee_repository"
@@ -64,6 +65,9 @@ func run() error {
 	if err != nil {
 		return err
 	}
+
+	logger.SetLogDb(db)
+	logger.SetLogLevel(logger.LogLevelDebug)
 
 	// Seller
 	sellerRepo := seller_repository.NewSellerRepositorySql(db)
