@@ -27,7 +27,7 @@ func (h *SellerHandler) GetAllSellers(w http.ResponseWriter, r *http.Request) (e
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetAllSellers", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetAllSellers", logger.LogStatusSuccess)
@@ -35,7 +35,7 @@ func (h *SellerHandler) GetAllSellers(w http.ResponseWriter, r *http.Request) (e
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": all,
 	})
-	return
+	return nil
 }
 
 func (h *SellerHandler) GetSellerById(w http.ResponseWriter, r *http.Request) (err error) {
@@ -45,14 +45,14 @@ func (h *SellerHandler) GetSellerById(w http.ResponseWriter, r *http.Request) (e
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetSellerById", err, httpStatus)
-		return
+		return nil
 	}
 
 	seller, err := h.service.GetSellerById(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetSellerById", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetSellerById", logger.LogStatusSuccess)
@@ -60,7 +60,7 @@ func (h *SellerHandler) GetSellerById(w http.ResponseWriter, r *http.Request) (e
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": []models.Seller{seller},
 	})
-	return
+	return nil
 }
 
 func (h *SellerHandler) CreateSeller(w http.ResponseWriter, r *http.Request) (err error) {
@@ -71,14 +71,14 @@ func (h *SellerHandler) CreateSeller(w http.ResponseWriter, r *http.Request) (er
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateSeller", err, httpStatus)
-		return
+		return nil
 	}
 
 	newSeller, err := h.service.CreateSeller(*createSellerDto.CompanyId, *createSellerDto.CompanyName, *createSellerDto.Address, *createSellerDto.Telephone, *createSellerDto.LocalityId)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateSeller", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateSeller", logger.LogStatusSuccess)
@@ -86,7 +86,7 @@ func (h *SellerHandler) CreateSeller(w http.ResponseWriter, r *http.Request) (er
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": []models.Seller{newSeller},
 	})
-	return
+	return nil
 }
 
 func (h *SellerHandler) PatchSeller(w http.ResponseWriter, r *http.Request) (err error) {
@@ -96,7 +96,7 @@ func (h *SellerHandler) PatchSeller(w http.ResponseWriter, r *http.Request) (err
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchSeller", err, httpStatus)
-		return
+		return nil
 	}
 
 	var patchSellerDto dto.PatchSellerDto
@@ -104,14 +104,14 @@ func (h *SellerHandler) PatchSeller(w http.ResponseWriter, r *http.Request) (err
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchSeller", err, httpStatus)
-		return
+		return nil
 	}
 
 	seller, err := h.service.UpdateSellerById(id, patchSellerDto.CompanyId, patchSellerDto.CompanyName, patchSellerDto.Address, patchSellerDto.Telephone)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchSeller", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "PatchSeller", logger.LogStatusSuccess)
@@ -119,7 +119,7 @@ func (h *SellerHandler) PatchSeller(w http.ResponseWriter, r *http.Request) (err
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": []models.Seller{seller},
 	})
-	return
+	return nil
 }
 
 func (h *SellerHandler) DeleteSeller(w http.ResponseWriter, r *http.Request) (err error) {
@@ -129,18 +129,18 @@ func (h *SellerHandler) DeleteSeller(w http.ResponseWriter, r *http.Request) (er
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteSeller", err, httpStatus)
-		return
+		return nil
 	}
 
 	err = h.service.DeleteSellerById(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteSeller", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "DeleteSeller", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusNoContent, nil)
-	return
+	return nil
 }

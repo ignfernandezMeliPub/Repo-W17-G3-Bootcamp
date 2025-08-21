@@ -28,7 +28,7 @@ func (c *InboundOrderController) CreateInboundOrder(w http.ResponseWriter, r *ht
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateInboundOrder", err, httpStatus)
-		return
+		return nil
 	}
 
 	inboundOrder, err := c.svInboundOrder.CreateInboundOrder(newInboundOrder)
@@ -36,7 +36,7 @@ func (c *InboundOrderController) CreateInboundOrder(w http.ResponseWriter, r *ht
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateInboundOrder", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateInboundOrder", logger.LogStatusSuccess)
@@ -44,5 +44,5 @@ func (c *InboundOrderController) CreateInboundOrder(w http.ResponseWriter, r *ht
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": inboundOrder,
 	})
-	return
+	return nil
 }

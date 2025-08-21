@@ -27,13 +27,13 @@ func (c *SectionsController) GetSections(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetSections", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetSections", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
-	return
+	return nil
 }
 
 func (c *SectionsController) GetSectionById(w http.ResponseWriter, r *http.Request) (err error) {
@@ -43,19 +43,19 @@ func (c *SectionsController) GetSectionById(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetSectionById", err, httpStatus)
-		return
+		return nil
 	}
 	sec, err := c.sv.GetSectionById(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetSectionById", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetSectionById", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusOK, map[string]any{"data": sec})
-	return
+	return nil
 }
 
 func (c *SectionsController) CreateSection(w http.ResponseWriter, r *http.Request) (err error) {
@@ -66,19 +66,19 @@ func (c *SectionsController) CreateSection(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateSection", err, httpStatus)
-		return
+		return nil
 	}
 	res, err := c.sv.CreateSection(section)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateSection", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateSection", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusCreated, map[string]any{"data": res})
-	return
+	return nil
 }
 
 func (c *SectionsController) PatchSection(w http.ResponseWriter, r *http.Request) (err error) {
@@ -88,25 +88,25 @@ func (c *SectionsController) PatchSection(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchSection", err, httpStatus)
-		return
+		return nil
 	}
 	var section models.SectionRequest
 	if err = request.JSON(r, &section); err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchSection", err, httpStatus)
-		return
+		return nil
 	}
 	res, err := c.sv.UpdateSectionById(id, section)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchSection", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "PatchSection", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
-	return
+	return nil
 }
 
 func (c *SectionsController) DeleteSection(w http.ResponseWriter, r *http.Request) (err error) {
@@ -116,19 +116,19 @@ func (c *SectionsController) DeleteSection(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteSection", err, httpStatus)
-		return
+		return nil
 	}
 	err = c.sv.DeleteSectionById(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteSection", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "DeleteSection", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusNoContent, nil)
-	return
+	return nil
 }
 
 func (c *SectionsController) GetAllProductBatchesBySection(w http.ResponseWriter, r *http.Request) (err error) {
@@ -139,7 +139,7 @@ func (c *SectionsController) GetAllProductBatchesBySection(w http.ResponseWriter
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetAllProductBatchesBySection", err, httpStatus)
-		return
+		return nil
 	}
 
 	var data []models.ProductBatchResponse
@@ -147,7 +147,7 @@ func (c *SectionsController) GetAllProductBatchesBySection(w http.ResponseWriter
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetAllProductBatchesBySection", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetAllProductBatchesBySection", logger.LogStatusSuccess)
@@ -155,5 +155,5 @@ func (c *SectionsController) GetAllProductBatchesBySection(w http.ResponseWriter
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
-	return
+	return nil
 }

@@ -26,7 +26,7 @@ func (h *ProductController) GetAllProducts(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetAllProducts", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetAllProducts", logger.LogStatusSuccess)
@@ -34,7 +34,7 @@ func (h *ProductController) GetAllProducts(w http.ResponseWriter, r *http.Reques
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": products,
 	})
-	return
+	return nil
 }
 
 func (h *ProductController) GetProductById(w http.ResponseWriter, r *http.Request) (err error) {
@@ -44,14 +44,14 @@ func (h *ProductController) GetProductById(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetProductById", err, httpStatus)
-		return
+		return nil
 	}
 
 	product, err := h.sv.GetProductById(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetProductById", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetProductById", logger.LogStatusSuccess)
@@ -59,7 +59,7 @@ func (h *ProductController) GetProductById(w http.ResponseWriter, r *http.Reques
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": product,
 	})
-	return
+	return nil
 }
 
 func (h *ProductController) CreateProduct(w http.ResponseWriter, r *http.Request) (err error) {
@@ -71,14 +71,14 @@ func (h *ProductController) CreateProduct(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateProduct", err, httpStatus)
-		return
+		return nil
 	}
 
 	product, err := h.sv.CreateProduct(productRequest)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateProduct", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateProduct", logger.LogStatusSuccess)
@@ -86,7 +86,7 @@ func (h *ProductController) CreateProduct(w http.ResponseWriter, r *http.Request
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": product,
 	})
-	return
+	return nil
 }
 
 func (h *ProductController) PatchProduct(w http.ResponseWriter, r *http.Request) (err error) {
@@ -96,7 +96,7 @@ func (h *ProductController) PatchProduct(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchProduct", err, httpStatus)
-		return
+		return nil
 	}
 
 	var productPatchRequest models.ProductPatchRequest
@@ -104,7 +104,7 @@ func (h *ProductController) PatchProduct(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchProduct", err, httpStatus)
-		return
+		return nil
 	}
 
 	productPatchRequest.Id = id
@@ -113,7 +113,7 @@ func (h *ProductController) PatchProduct(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchProduct", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "PatchProduct", logger.LogStatusSuccess)
@@ -121,7 +121,7 @@ func (h *ProductController) PatchProduct(w http.ResponseWriter, r *http.Request)
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": product,
 	})
-	return
+	return nil
 }
 
 func (h *ProductController) DeleteProduct(w http.ResponseWriter, r *http.Request) (err error) {
@@ -131,20 +131,20 @@ func (h *ProductController) DeleteProduct(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteProduct", err, httpStatus)
-		return
+		return nil
 	}
 
 	err = h.sv.DeleteProductById(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteProduct", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "DeleteProduct", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusNoContent, map[string]any{})
-	return
+	return nil
 }
 
 func (h *ProductController) GetReportRecords(w http.ResponseWriter, r *http.Request) (err error) {
@@ -154,7 +154,7 @@ func (h *ProductController) GetReportRecords(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetReportRecords", err, httpStatus)
-		return
+		return nil
 	}
 
 	var reportRecords []models.ProductRecordReport
@@ -164,7 +164,7 @@ func (h *ProductController) GetReportRecords(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetReportRecords", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetReportRecords", logger.LogStatusSuccess)
@@ -172,5 +172,5 @@ func (h *ProductController) GetReportRecords(w http.ResponseWriter, r *http.Requ
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": reportRecords,
 	})
-	return
+	return nil
 }

@@ -26,17 +26,17 @@ func (p *ProductBatchController) CreateProductBatch(w http.ResponseWriter, r *ht
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateProductBatch", err, httpStatus)
-		return
+		return nil
 	}
 	res, err := p.sv.CreateProductBatch(prodBatch)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateProductBatch", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateProductBatch", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusCreated, map[string]any{"data": res})
-	return
+	return nil
 }

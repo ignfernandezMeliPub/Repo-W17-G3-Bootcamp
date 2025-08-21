@@ -25,7 +25,7 @@ func (h *ProductRecordHandler) GetAllProductRecords(w http.ResponseWriter, r *ht
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetAllProductRecords", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetAllProductRecords", logger.LogStatusSuccess)
@@ -33,7 +33,7 @@ func (h *ProductRecordHandler) GetAllProductRecords(w http.ResponseWriter, r *ht
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": productRecords,
 	})
-	return
+	return nil
 }
 
 func (h *ProductRecordHandler) CreateProductRecord(w http.ResponseWriter, r *http.Request) (err error) {
@@ -45,14 +45,14 @@ func (h *ProductRecordHandler) CreateProductRecord(w http.ResponseWriter, r *htt
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateProductRecord", err, httpStatus)
-		return
+		return nil
 	}
 
 	productRecordModel, err := h.service.CreateProductRecord(productRecordRequest)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateProductRecord", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateProductRecord", logger.LogStatusSuccess)
@@ -60,5 +60,5 @@ func (h *ProductRecordHandler) CreateProductRecord(w http.ResponseWriter, r *htt
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": productRecordModel,
 	})
-	return
+	return nil
 }

@@ -271,9 +271,9 @@ func LogError(action string, message string, err error) {
 	}
 
 	if errors.As(err, &custom_errors.ErrNotFound) || errors.As(err, &custom_errors.ErrForeignKeyViolation) || errors.As(err, &custom_errors.ErrUniqueAttributeViolationError) {
-		logger.Error(logInfo)
-	} else {
 		logger.Debug(logInfo)
+	} else {
+		logger.Error(logInfo)
 	}
 }
 
@@ -291,8 +291,8 @@ func LogAuditError(action string, message string, err error) {
 	}
 
 	if errors.As(err, &custom_errors.ErrNotFound) || errors.As(err, &custom_errors.ErrForeignKeyViolation) || errors.As(err, &custom_errors.ErrUniqueAttributeViolationError) {
-		logger.Error(logInfo)
-	} else {
 		logger.Audit(logInfo)
+	} else {
+		logger.Error(logInfo)
 	}
 }

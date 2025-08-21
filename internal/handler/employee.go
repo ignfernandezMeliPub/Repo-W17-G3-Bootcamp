@@ -26,13 +26,13 @@ func (c *EmployeesController) GetAllEmployees(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetAllEmployees", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetAllEmployees", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
-	return
+	return nil
 }
 
 func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Request) (err error) {
@@ -44,7 +44,7 @@ func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Req
 	if idError != nil {
 		httpStatus := utils.ResponseHttpError(w, idError)
 		utils.LogError(r, "GetEmployeeById", idError, httpStatus)
-		return
+		return nil
 	}
 
 	employee, err := c.svEmployee.GetEmployeeById(id)
@@ -52,7 +52,7 @@ func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetEmployeeById", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetEmployeeById", logger.LogStatusSuccess)
@@ -60,7 +60,7 @@ func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Req
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": employee,
 	})
-	return
+	return nil
 
 }
 
@@ -74,7 +74,7 @@ func (c *EmployeesController) CreateEmployee(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateEmployee", err, httpStatus)
-		return
+		return nil
 	}
 
 	employee, err := c.svEmployee.CreateEmployee(newEmployeeAttributes)
@@ -82,7 +82,7 @@ func (c *EmployeesController) CreateEmployee(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateEmployee", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateEmployee", logger.LogStatusSuccess)
@@ -90,7 +90,7 @@ func (c *EmployeesController) CreateEmployee(w http.ResponseWriter, r *http.Requ
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": employee,
 	})
-	return
+	return nil
 
 }
 
@@ -105,7 +105,7 @@ func (c *EmployeesController) PatchEmployee(w http.ResponseWriter, r *http.Reque
 	if idError != nil {
 		httpStatus := utils.ResponseHttpError(w, idError)
 		utils.LogError(r, "PatchEmployee", idError, httpStatus)
-		return
+		return nil
 	}
 
 	newEmployeeAttributes, err = utils.InstantiateVarFromBody(&r.Body, newEmployeeAttributes)
@@ -114,7 +114,7 @@ func (c *EmployeesController) PatchEmployee(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchEmployee", err, httpStatus)
-		return
+		return nil
 	}
 
 	employee, err := c.svEmployee.UpdateEmployeeById(id, newEmployeeAttributes)
@@ -122,7 +122,7 @@ func (c *EmployeesController) PatchEmployee(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchEmployee", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "PatchEmployee", logger.LogStatusSuccess)
@@ -130,7 +130,7 @@ func (c *EmployeesController) PatchEmployee(w http.ResponseWriter, r *http.Reque
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": employee,
 	})
-	return
+	return nil
 }
 
 func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Request) (err error) {
@@ -142,7 +142,7 @@ func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Requ
 	if idError != nil {
 		httpStatus := utils.ResponseHttpError(w, idError)
 		utils.LogError(r, "DeleteEmployee", idError, httpStatus)
-		return
+		return nil
 	}
 
 	err = c.svEmployee.DeleteEmployee(id)
@@ -150,7 +150,7 @@ func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteEmployee", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "DeleteEmployee", logger.LogStatusSuccess)
@@ -158,7 +158,7 @@ func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Requ
 	response.JSON(w, http.StatusNoContent, map[string]any{
 		"message": "Deleted succesfully",
 	})
-	return
+	return nil
 }
 
 func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *http.Request) (err error) {
@@ -169,7 +169,7 @@ func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *h
 	if idError != nil {
 		httpStatus := utils.ResponseHttpError(w, idError)
 		utils.LogError(r, "GetReportInboundOrders", idError, httpStatus)
-		return
+		return nil
 	}
 
 	res, err := c.svEmployee.GetReportInboundOrders(id)
@@ -177,11 +177,11 @@ func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *h
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetReportInboundOrders", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetReportInboundOrders", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
-	return
+	return nil
 }

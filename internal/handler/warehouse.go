@@ -30,7 +30,7 @@ func (h *WarehouseDefault) GetWarehouse(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetWarehouse", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetWarehouse", logger.LogStatusSuccess)
@@ -38,7 +38,7 @@ func (h *WarehouseDefault) GetWarehouse(w http.ResponseWriter, r *http.Request) 
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
-	return
+	return nil
 }
 
 func (h *WarehouseDefault) GetWarehouseById(w http.ResponseWriter, r *http.Request) (err error) {
@@ -48,14 +48,14 @@ func (h *WarehouseDefault) GetWarehouseById(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetWarehouseById", err, httpStatus)
-		return
+		return nil
 	}
 
 	data, err := h.sv.GetWarehouseById(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetWarehouseById", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetWarehouseById", logger.LogStatusSuccess)
@@ -63,7 +63,7 @@ func (h *WarehouseDefault) GetWarehouseById(w http.ResponseWriter, r *http.Reque
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
-	return
+	return nil
 }
 
 func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Request) (err error) {
@@ -75,20 +75,20 @@ func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateWarehouse", err, httpStatus)
-		return
+		return nil
 	}
 	err = validateWarehouseAttributes(wh)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateWarehouse", err, httpStatus)
-		return
+		return nil
 	}
 	// process
 	data, err := h.sv.CreateWarehouse(wh)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateWarehouse", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateWarehouse", logger.LogStatusSuccess)
@@ -97,7 +97,7 @@ func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Reques
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": data,
 	})
-	return
+	return nil
 }
 
 func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request) (err error) {
@@ -107,7 +107,7 @@ func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchWarehouse", err, httpStatus)
-		return
+		return nil
 	}
 
 	var wh models.Warehouse
@@ -115,14 +115,14 @@ func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchWarehouse", err, httpStatus)
-		return
+		return nil
 	}
 
 	data, err := h.sv.UpdateWarehouseById(id, wh)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchWarehouse", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "PatchWarehouse", logger.LogStatusSuccess)
@@ -130,7 +130,7 @@ func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
-	return
+	return nil
 }
 
 func (h *WarehouseDefault) DeleteWarehouse(w http.ResponseWriter, r *http.Request) (err error) {
@@ -140,20 +140,20 @@ func (h *WarehouseDefault) DeleteWarehouse(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteWarehouse", err, httpStatus)
-		return
+		return nil
 	}
 
 	err = h.sv.DeleteWarehouse(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteWarehouse", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "DeleteWarehouse", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusNoContent, map[string]any{})
-	return
+	return nil
 }
 
 func validateWarehouseAttributes(wh models.Warehouse) error {

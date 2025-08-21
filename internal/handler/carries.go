@@ -28,19 +28,19 @@ func (h *CarriesHandler) CreateCarrie(w http.ResponseWriter, r *http.Request) (e
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateCarrie", err, httpStatus)
-		return
+		return nil
 	}
 	err = validateCarriesAttributes(c)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateCarrie", err, httpStatus)
-		return
+		return nil
 	}
 	data, err := h.sv.CreateCarrie(c)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateCarrie", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateCarrie", logger.LogStatusSuccess)
@@ -48,7 +48,7 @@ func (h *CarriesHandler) CreateCarrie(w http.ResponseWriter, r *http.Request) (e
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": data,
 	})
-	return
+	return nil
 }
 
 func validateCarriesAttributes(c models.Carries) error {

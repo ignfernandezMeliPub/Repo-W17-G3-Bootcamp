@@ -28,7 +28,7 @@ func (h *PurchaseOrderDefault) CreatePurchaseOrder(w http.ResponseWriter, r *htt
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreatePurchaseOrder", err, httpStatus)
-		return
+		return nil
 	}
 
 	purchaseOrderFromRequest := purchaseOrderRequest.ToPurchaseOrder()
@@ -37,7 +37,7 @@ func (h *PurchaseOrderDefault) CreatePurchaseOrder(w http.ResponseWriter, r *htt
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreatePurchaseOrder", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreatePurchaseOrder", logger.LogStatusSuccess)
@@ -45,5 +45,5 @@ func (h *PurchaseOrderDefault) CreatePurchaseOrder(w http.ResponseWriter, r *htt
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": newPurchaseOrder,
 	})
-	return
+	return nil
 }

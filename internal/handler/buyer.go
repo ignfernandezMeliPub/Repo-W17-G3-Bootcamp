@@ -26,7 +26,7 @@ func (h *BuyerDefault) GetAllBuyers(w http.ResponseWriter, r *http.Request) (err
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetAllBuyers", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetAllBuyers", logger.LogStatusSuccess)
@@ -34,7 +34,7 @@ func (h *BuyerDefault) GetAllBuyers(w http.ResponseWriter, r *http.Request) (err
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": b,
 	})
-	return
+	return nil
 }
 
 func (h *BuyerDefault) GetBuyerById(w http.ResponseWriter, r *http.Request) (err error) {
@@ -44,14 +44,14 @@ func (h *BuyerDefault) GetBuyerById(w http.ResponseWriter, r *http.Request) (err
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetBuyerById", err, httpStatus)
-		return
+		return nil
 	}
 
 	b, err := h.sv.GetBuyerById(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetBuyerById", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetBuyerById", logger.LogStatusSuccess)
@@ -59,7 +59,7 @@ func (h *BuyerDefault) GetBuyerById(w http.ResponseWriter, r *http.Request) (err
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": b,
 	})
-	return
+	return nil
 }
 
 func (h *BuyerDefault) CreateBuyer(w http.ResponseWriter, r *http.Request) (err error) {
@@ -71,7 +71,7 @@ func (h *BuyerDefault) CreateBuyer(w http.ResponseWriter, r *http.Request) (err 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateBuyer", err, httpStatus)
-		return
+		return nil
 	}
 
 	buyerFromRequest := buyerRequest.ToBuyer()
@@ -80,7 +80,7 @@ func (h *BuyerDefault) CreateBuyer(w http.ResponseWriter, r *http.Request) (err 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateBuyer", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "CreateBuyer", logger.LogStatusSuccess)
@@ -88,7 +88,7 @@ func (h *BuyerDefault) CreateBuyer(w http.ResponseWriter, r *http.Request) (err 
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": newBuyer,
 	})
-	return
+	return nil
 }
 
 func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) (err error) {
@@ -98,7 +98,7 @@ func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) (err e
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchBuyer", err, httpStatus)
-		return
+		return nil
 	}
 
 	var buyerPatch models.BuyerPatch
@@ -108,14 +108,14 @@ func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) (err e
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchBuyer", err, httpStatus)
-		return
+		return nil
 	}
 
 	updatedBuyer, err := h.sv.UpdateBuyerById(id, buyerPatch)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "PatchBuyer", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "PatchBuyer", logger.LogStatusSuccess)
@@ -123,7 +123,7 @@ func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) (err e
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": updatedBuyer,
 	})
-	return
+	return nil
 }
 
 func (h *BuyerDefault) DeleteBuyer(w http.ResponseWriter, r *http.Request) (err error) {
@@ -133,7 +133,7 @@ func (h *BuyerDefault) DeleteBuyer(w http.ResponseWriter, r *http.Request) (err 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteBuyer", err, httpStatus)
-		return
+		return nil
 	}
 
 	err = h.sv.DeleteBuyerById(id)
@@ -141,13 +141,13 @@ func (h *BuyerDefault) DeleteBuyer(w http.ResponseWriter, r *http.Request) (err 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "DeleteBuyer", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "DeleteBuyer", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusNoContent, nil)
-	return
+	return nil
 }
 
 func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *http.Request) (err error) {
@@ -157,14 +157,14 @@ func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *ht
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetBuyersPurchaseOrdersCount", err, httpStatus)
-		return
+		return nil
 	}
 
 	b, err := h.sv.GetBuyersPurchaseOrdersCount(id)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "GetBuyersPurchaseOrdersCount", err, httpStatus)
-		return
+		return nil
 	}
 
 	utils.Log(r, "GetBuyersPurchaseOrdersCount", logger.LogStatusSuccess)
@@ -172,5 +172,5 @@ func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *ht
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": b,
 	})
-	return
+	return nil
 }
