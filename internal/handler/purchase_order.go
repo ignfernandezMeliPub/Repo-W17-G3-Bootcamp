@@ -2,6 +2,7 @@ package handler
 
 import (
 	"app/internal/handler/utils"
+	"app/internal/logger"
 	"app/internal/service"
 	"app/pkg/models"
 	"net/http"
@@ -18,12 +19,15 @@ type PurchaseOrderDefault struct {
 }
 
 func (h *PurchaseOrderDefault) CreatePurchaseOrder(w http.ResponseWriter, r *http.Request) {
+	utils.Log(r, "CreatePurchaseOrder", logger.LogStatusInProgress)
+
 	var purchaseOrderRequest models.PurchaseOrderCreateRequest
 
 	purchaseOrderRequest, err := utils.InstantiateVarFromBody(&r.Body, purchaseOrderRequest)
 
 	if err != nil {
-		utils.ResponseHttpError(w, err)
+		httpStatus := utils.ResponseHttpError(w, err)
+		utils.LogError(r, "CreatePurchaseOrder", err, httpStatus)
 		return
 	}
 
@@ -31,9 +35,12 @@ func (h *PurchaseOrderDefault) CreatePurchaseOrder(w http.ResponseWriter, r *htt
 
 	newPurchaseOrder, err := h.sv.CreatePurchaseOrder(purchaseOrderFromRequest)
 	if err != nil {
-		utils.ResponseHttpError(w, err)
+		httpStatus := utils.ResponseHttpError(w, err)
+		utils.LogError(r, "CreatePurchaseOrder", err, httpStatus)
 		return
 	}
+
+	utils.Log(r, "CreatePurchaseOrder", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": newPurchaseOrder,

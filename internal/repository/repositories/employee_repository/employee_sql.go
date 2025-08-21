@@ -1,10 +1,12 @@
 package employee_repository
 
 import (
+	"app/internal/logger"
 	"app/internal/repository/sql_utils"
 	"app/pkg/custom_errors"
 	"app/pkg/models"
 	"database/sql"
+	"strconv"
 )
 
 func NewEmployeeDb(db *sql.DB) EmployeeRepository {
@@ -18,29 +20,42 @@ type EmployeeDb struct {
 }
 
 func (r *EmployeeDb) GetAllEmployees() (employees []models.Employee, err error) {
+	sql_utils.Log("GetAllEmployees", logger.LogStatusInProgress, "Select all employees")
 
 	employees, err = sql_utils.Query[models.Employee](r.db, "SELECT id, card_number_id, first_name, last_name, warehouse_id FROM employees", nil)
 
-	err = sql_utils.HandleSqlError(err)
+	if err != nil {
+		err = sql_utils.HandleSqlError(err)
+		sql_utils.LogError("GetAllEmployees", "Select all employees", err)
+		return
+	}
 
+	sql_utils.Log("GetAllEmployees", logger.LogStatusSuccess, "Select all employees")
 	return
 
 }
 
 func (r *EmployeeDb) GetEmployeeById(id int) (employee models.Employee, err error) {
+	sql_utils.Log("GetEmployeeById", logger.LogStatusInProgress, "Select employee by id "+strconv.Itoa(id))
 
 	args := make([]any, 1)
 	args[0] = id
 
 	employee, err = sql_utils.QueryRow[models.Employee](r.db, "SELECT id, card_number_id, first_name, last_name, warehouse_id FROM employees WHERE id = ?", args)
 
-	err = sql_utils.HandleSqlError(err)
+	if err != nil {
+		err = sql_utils.HandleSqlError(err)
+		sql_utils.LogError("GetEmployeeById", "Select employee by id "+strconv.Itoa(id), err)
+		return
+	}
 
+	sql_utils.Log("GetEmployeeById", logger.LogStatusSuccess, "Select employee by id "+strconv.Itoa(id))
 	return
 
 }
 
 func (r *EmployeeDb) CreateEmployee(attributes models.EmployeeAttributes) (newEmployee models.Employee, err error) {
+	sql_utils.LogAudit("CreateEmployee", logger.LogStatusInProgress, "Insert employee")
 
 	args := []any{attributes.CardNumberId, attributes.FirstName, attributes.LastName, attributes.WarehouseId}
 
@@ -48,6 +63,7 @@ func (r *EmployeeDb) CreateEmployee(attributes models.EmployeeAttributes) (newEm
 
 	if err != nil {
 		err = sql_utils.HandleSqlError(err)
+		sql_utils.LogAuditError("CreateEmployee", "Insert employee", err)
 		return
 	}
 
@@ -57,11 +73,13 @@ func (r *EmployeeDb) CreateEmployee(attributes models.EmployeeAttributes) (newEm
 		EmployeeAttributes: attributes,
 	}
 
+	sql_utils.LogAudit("CreateEmployee", logger.LogStatusSuccess, "Insert employee. Id: "+strconv.Itoa(newEmployee.Id))
 	return
 
 }
 
 func (r *EmployeeDb) UpdateEmployeeById(id int, attributes models.EmployeePatchRequestBody) (updatedEmployee models.Employee, err error) {
+	sql_utils.LogAudit("UpdateEmployeeById", logger.LogStatusInProgress, "Update employee by id: "+strconv.Itoa(id))
 
 	query := "UPDATE employees SET "
 	var args []any
@@ -91,16 +109,22 @@ func (r *EmployeeDb) UpdateEmployeeById(id int, attributes models.EmployeePatchR
 
 	if err != nil {
 		err = sql_utils.HandleSqlError(err)
+		sql_utils.LogAuditError("UpdateEmployeeById", "Update employee by id: "+strconv.Itoa(id), err)
 		return
 	}
 
 	updatedEmployee, err = r.GetEmployeeById(id)
+
+	if err == nil {
+		sql_utils.LogAudit("UpdateEmployeeById", logger.LogStatusSuccess, "Update employee by id: "+strconv.Itoa(id))
+	}
 
 	return
 
 }
 
 func (r *EmployeeDb) DeleteEmployee(id int) (err error) {
+	sql_utils.LogAudit("DeleteEmployee", logger.LogStatusInProgress, "Delete employee by id: "+strconv.Itoa(id))
 
 	args := make([]any, 1)
 	args[0] = id
@@ -109,18 +133,28 @@ func (r *EmployeeDb) DeleteEmployee(id int) (err error) {
 
 	if err != nil {
 		err = sql_utils.HandleSqlError(err)
+		sql_utils.LogAuditError("DeleteEmployee", "Delete employee by id: "+strconv.Itoa(id), err)
 		return
 	}
 
 	if rowsAffected == 0 {
 		err = custom_errors.ErrNotFound
+		sql_utils.LogAuditError("DeleteEmployee", "Delete employee by id: "+strconv.Itoa(id), err)
+		return
 	}
 
+	sql_utils.LogAudit("DeleteEmployee", logger.LogStatusSuccess, "Delete employee by id: "+strconv.Itoa(id))
 	return
 
 }
 
 func (r *EmployeeDb) GetReportInboundOrders(id *int) (inboundOrders []models.InboundOrderEmployee, err error) {
+
+	if id != nil {
+		sql_utils.Log("GetReportInboundOrders", logger.LogStatusInProgress, "Select employee inbound orders report by id: "+strconv.Itoa(*id))
+	} else {
+		sql_utils.Log("GetReportInboundOrders", logger.LogStatusInProgress, "Select employee inbound orders report")
+	}
 
 	query := "SELECT e.id as id, e.card_number_id as card_number_id, e.first_name as first_name, e.last_name as last_name, e.warehouse_id as warehouse_id, COUNT(io.id) as inbound_orders_count FROM employees e LEFT JOIN inbound_orders io ON e.id = io.employee_id"
 
@@ -136,6 +170,18 @@ func (r *EmployeeDb) GetReportInboundOrders(id *int) (inboundOrders []models.Inb
 
 	}
 
-	return inboundOrders, sql_utils.HandleSqlError(err)
+	err = sql_utils.HandleSqlError(err)
+	if err != nil {
+		sql_utils.LogError("GetReportInboundOrders", "Select employee inbound orders report", err)
+		return
+	}
+
+	if id != nil {
+		sql_utils.Log("GetReportInboundOrders", logger.LogStatusSuccess, "Select employee inbound orders report by id: "+strconv.Itoa(*id))
+	} else {
+		sql_utils.Log("GetReportInboundOrders", logger.LogStatusSuccess, "Select employee inbound orders report")
+	}
+
+	return
 
 }
