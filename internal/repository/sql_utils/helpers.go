@@ -228,7 +228,7 @@ func HandleSqlError(err error) error {
 			IsParentRow:    false,
 			Details:        mysqlErr.Message,
 		}
-	case 1216: // Cannot delete or update a parent row: a foreign key constraint fails
+	case 1217: // Cannot delete or update a parent row: a foreign key constraint fails
 		var fkConstraintRegex = regexp.MustCompile("FOREIGN KEY \\(`([^`]*)`\\)")
 		matches := fkConstraintRegex.FindStringSubmatch(mysqlErr.Message)
 		constraintName := ""
@@ -240,7 +240,7 @@ func HandleSqlError(err error) error {
 			IsParentRow:    true,
 			Details:        mysqlErr.Message,
 		}
-	case 1217: // Cannot delete or update a child or parent row: a foreign key constraint fails
+	case 1216: // Cannot delete or update a child or parent row: a foreign key constraint fails
 		var fkConstraintRegex = regexp.MustCompile("FOREIGN KEY \\(`([^`]*)`\\)")
 		matches := fkConstraintRegex.FindStringSubmatch(mysqlErr.Message)
 		constraintName := ""
