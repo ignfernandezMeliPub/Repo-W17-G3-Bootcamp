@@ -20,11 +20,11 @@ func NewCarriesHandler(sv service.CarriesService) *CarriesHandler {
 	return &CarriesHandler{sv: sv}
 }
 
-func (h *CarriesHandler) CreateCarrie(w http.ResponseWriter, r *http.Request) {
+func (h *CarriesHandler) CreateCarrie(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateCarrie", logger.LogStatusInProgress)
 
 	var c models.Carries
-	c, err := utils.InstantiateVarFromBody(&r.Body, c)
+	c, err = utils.InstantiateVarFromBody(&r.Body, c)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateCarrie", err, httpStatus)
@@ -48,6 +48,7 @@ func (h *CarriesHandler) CreateCarrie(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": data,
 	})
+	return
 }
 
 func validateCarriesAttributes(c models.Carries) error {

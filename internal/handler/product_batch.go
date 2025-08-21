@@ -18,11 +18,11 @@ func NewProductBatchController(sv service.ProductBatchService) *ProductBatchCont
 	return &ProductBatchController{sv}
 }
 
-func (p *ProductBatchController) CreateProductBatch(w http.ResponseWriter, r *http.Request) {
+func (p *ProductBatchController) CreateProductBatch(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateProductBatch", logger.LogStatusInProgress)
 
 	var prodBatch models.ProductBatchRequest
-	prodBatch, err := utils.InstantiateVarFromBody(&r.Body, prodBatch)
+	prodBatch, err = utils.InstantiateVarFromBody(&r.Body, prodBatch)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateProductBatch", err, httpStatus)
@@ -38,4 +38,5 @@ func (p *ProductBatchController) CreateProductBatch(w http.ResponseWriter, r *ht
 	utils.Log(r, "CreateProductBatch", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusCreated, map[string]any{"data": res})
+	return
 }

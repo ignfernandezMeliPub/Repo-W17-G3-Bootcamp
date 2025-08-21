@@ -18,7 +18,7 @@ func NewProductRecordHandler(service service.ProductRecordService) ProductRecord
 	return ProductRecordHandler{service: service}
 }
 
-func (h *ProductRecordHandler) GetAllProductRecords(w http.ResponseWriter, r *http.Request) {
+func (h *ProductRecordHandler) GetAllProductRecords(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetAllProductRecords", logger.LogStatusInProgress)
 
 	productRecords, err := h.service.GetAllProductRecords()
@@ -33,14 +33,15 @@ func (h *ProductRecordHandler) GetAllProductRecords(w http.ResponseWriter, r *ht
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": productRecords,
 	})
+	return
 }
 
-func (h *ProductRecordHandler) CreateProductRecord(w http.ResponseWriter, r *http.Request) {
+func (h *ProductRecordHandler) CreateProductRecord(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateProductRecord", logger.LogStatusInProgress)
 
 	var productRecordRequest models.ProductRecordRequest
 
-	productRecordRequest, err := utils.InstantiateVarFromBody(&r.Body, productRecordRequest)
+	productRecordRequest, err = utils.InstantiateVarFromBody(&r.Body, productRecordRequest)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateProductRecord", err, httpStatus)
@@ -59,5 +60,5 @@ func (h *ProductRecordHandler) CreateProductRecord(w http.ResponseWriter, r *htt
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": productRecordModel,
 	})
-
+	return
 }

@@ -18,12 +18,12 @@ func NewInboundOrderController(svInboundOrder service.InboundOrderServiceInterfa
 	return &InboundOrderController{svInboundOrder: svInboundOrder}
 }
 
-func (c *InboundOrderController) CreateInboundOrder(w http.ResponseWriter, r *http.Request) {
+func (c *InboundOrderController) CreateInboundOrder(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateInboundOrder", logger.LogStatusInProgress)
 
 	var newInboundOrder models.InboundOrderRequestBody
 
-	newInboundOrder, err := utils.InstantiateVarFromBody(&r.Body, newInboundOrder)
+	newInboundOrder, err = utils.InstantiateVarFromBody(&r.Body, newInboundOrder)
 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
@@ -44,5 +44,5 @@ func (c *InboundOrderController) CreateInboundOrder(w http.ResponseWriter, r *ht
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": inboundOrder,
 	})
-
+	return
 }

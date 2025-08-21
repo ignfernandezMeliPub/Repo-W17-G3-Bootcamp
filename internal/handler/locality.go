@@ -20,11 +20,11 @@ func NewLocalityHandler(service service.LocalityService) LocalityHandler {
 }
 
 // CreateLocality Creates a new locality
-func (h *LocalityHandler) CreateLocality(w http.ResponseWriter, r *http.Request) {
+func (h *LocalityHandler) CreateLocality(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateLocality", logger.LogStatusInProgress)
 
 	var createLocalityDto dto.CreateLocalityDto
-	createLocalityDto, err := utils.InstantiateVarFromBody(&r.Body, createLocalityDto)
+	createLocalityDto, err = utils.InstantiateVarFromBody(&r.Body, createLocalityDto)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateLocality", err, httpStatus)
@@ -43,9 +43,10 @@ func (h *LocalityHandler) CreateLocality(w http.ResponseWriter, r *http.Request)
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": []models.Locality{newLocality},
 	})
+	return
 }
 
-func (h *LocalityHandler) GetCarriesReport(w http.ResponseWriter, r *http.Request) {
+func (h *LocalityHandler) GetCarriesReport(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetCarriesReport", logger.LogStatusInProgress)
 
 	id := r.URL.Query().Get("id")
@@ -62,18 +63,19 @@ func (h *LocalityHandler) GetCarriesReport(w http.ResponseWriter, r *http.Reques
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": report,
 	})
-
+	return
 }
 
 // GetLocalitySellerCount retrieves seller count statistics for localities.
-func (h *LocalityHandler) GetLocalitySellerCount(w http.ResponseWriter, r *http.Request) {
+func (h *LocalityHandler) GetLocalitySellerCount(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetLocalitySellerCount", logger.LogStatusInProgress)
 
 	id := r.URL.Query().Get("id")
 
 	// ? LocalitySellerCount de una locality en particular
 	if id != "" {
-		result, err := h.service.GetLocalitySellerCount(id)
+		var result models.LocalitySellerCount
+		result, err = h.service.GetLocalitySellerCount(id)
 		if err != nil {
 			httpStatus := utils.ResponseHttpError(w, err)
 			utils.LogError(r, "GetLocalitySellerCount", err, httpStatus)
@@ -87,7 +89,8 @@ func (h *LocalityHandler) GetLocalitySellerCount(w http.ResponseWriter, r *http.
 		})
 		// ? LocalitySellerCount de cada una de las localities
 	} else {
-		result, err := h.service.GetLocalitiesSellerCount()
+		var result []models.LocalitySellerCount
+		result, err = h.service.GetLocalitiesSellerCount()
 		if err != nil {
 			httpStatus := utils.ResponseHttpError(w, err)
 			utils.LogError(r, "GetLocalitySellerCount", err, httpStatus)
@@ -100,4 +103,5 @@ func (h *LocalityHandler) GetLocalitySellerCount(w http.ResponseWriter, r *http.
 			"data": result,
 		})
 	}
+	return
 }

@@ -18,12 +18,12 @@ type PurchaseOrderDefault struct {
 	sv service.PurchaseOrderService
 }
 
-func (h *PurchaseOrderDefault) CreatePurchaseOrder(w http.ResponseWriter, r *http.Request) {
+func (h *PurchaseOrderDefault) CreatePurchaseOrder(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreatePurchaseOrder", logger.LogStatusInProgress)
 
 	var purchaseOrderRequest models.PurchaseOrderCreateRequest
 
-	purchaseOrderRequest, err := utils.InstantiateVarFromBody(&r.Body, purchaseOrderRequest)
+	purchaseOrderRequest, err = utils.InstantiateVarFromBody(&r.Body, purchaseOrderRequest)
 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
@@ -45,4 +45,5 @@ func (h *PurchaseOrderDefault) CreatePurchaseOrder(w http.ResponseWriter, r *htt
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": newPurchaseOrder,
 	})
+	return
 }

@@ -19,7 +19,7 @@ func NewProductController(service service.ProductServiceI) *ProductController {
 	return &ProductController{sv: service}
 }
 
-func (h *ProductController) GetAllProducts(w http.ResponseWriter, r *http.Request) {
+func (h *ProductController) GetAllProducts(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetAllProducts", logger.LogStatusInProgress)
 
 	products, err := h.sv.GetAllProducts()
@@ -34,9 +34,10 @@ func (h *ProductController) GetAllProducts(w http.ResponseWriter, r *http.Reques
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": products,
 	})
+	return
 }
 
-func (h *ProductController) GetProductById(w http.ResponseWriter, r *http.Request) {
+func (h *ProductController) GetProductById(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetProductById", logger.LogStatusInProgress)
 
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -58,14 +59,15 @@ func (h *ProductController) GetProductById(w http.ResponseWriter, r *http.Reques
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": product,
 	})
+	return
 }
 
-func (h *ProductController) CreateProduct(w http.ResponseWriter, r *http.Request) {
+func (h *ProductController) CreateProduct(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateProduct", logger.LogStatusInProgress)
 
 	var productRequest models.ProductRequest
 
-	productRequest, err := utils.InstantiateVarFromBody(&r.Body, productRequest)
+	productRequest, err = utils.InstantiateVarFromBody(&r.Body, productRequest)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateProduct", err, httpStatus)
@@ -84,9 +86,10 @@ func (h *ProductController) CreateProduct(w http.ResponseWriter, r *http.Request
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": product,
 	})
+	return
 }
 
-func (h *ProductController) PatchProduct(w http.ResponseWriter, r *http.Request) {
+func (h *ProductController) PatchProduct(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "PatchProduct", logger.LogStatusInProgress)
 
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -118,9 +121,10 @@ func (h *ProductController) PatchProduct(w http.ResponseWriter, r *http.Request)
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": product,
 	})
+	return
 }
 
-func (h *ProductController) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+func (h *ProductController) DeleteProduct(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "DeleteProduct", logger.LogStatusInProgress)
 
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -140,9 +144,10 @@ func (h *ProductController) DeleteProduct(w http.ResponseWriter, r *http.Request
 	utils.Log(r, "DeleteProduct", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusNoContent, map[string]any{})
+	return
 }
 
-func (h *ProductController) GetReportRecords(w http.ResponseWriter, r *http.Request) {
+func (h *ProductController) GetReportRecords(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetReportRecords", logger.LogStatusInProgress)
 
 	id, err := utils.GetQueryParamAs(r, "id", strconv.Atoi)
@@ -167,4 +172,5 @@ func (h *ProductController) GetReportRecords(w http.ResponseWriter, r *http.Requ
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": reportRecords,
 	})
+	return
 }

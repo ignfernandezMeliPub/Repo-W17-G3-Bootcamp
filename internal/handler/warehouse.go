@@ -21,11 +21,11 @@ type WarehouseDefault struct {
 	sv service.IWarehouseService
 }
 
-func (h *WarehouseDefault) GetWarehouse(w http.ResponseWriter, r *http.Request) {
+func (h *WarehouseDefault) GetWarehouse(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetWarehouse", logger.LogStatusInProgress)
 
 	var data []models.Warehouse
-	data, err := h.sv.GetAllWarehouses()
+	data, err = h.sv.GetAllWarehouses()
 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
@@ -38,9 +38,10 @@ func (h *WarehouseDefault) GetWarehouse(w http.ResponseWriter, r *http.Request) 
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
+	return
 }
 
-func (h *WarehouseDefault) GetWarehouseById(w http.ResponseWriter, r *http.Request) {
+func (h *WarehouseDefault) GetWarehouseById(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetWarehouseById", logger.LogStatusInProgress)
 
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -62,14 +63,15 @@ func (h *WarehouseDefault) GetWarehouseById(w http.ResponseWriter, r *http.Reque
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
+	return
 }
 
-func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Request) {
+func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateWarehouse", logger.LogStatusInProgress)
 
 	// request
 	var wh models.Warehouse
-	wh, err := utils.InstantiateVarFromBody(&r.Body, wh)
+	wh, err = utils.InstantiateVarFromBody(&r.Body, wh)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateWarehouse", err, httpStatus)
@@ -95,9 +97,10 @@ func (h *WarehouseDefault) CreateWarehouse(w http.ResponseWriter, r *http.Reques
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": data,
 	})
+	return
 }
 
-func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request) {
+func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "PatchWarehouse", logger.LogStatusInProgress)
 
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -127,9 +130,10 @@ func (h *WarehouseDefault) PatchWarehouse(w http.ResponseWriter, r *http.Request
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": data,
 	})
+	return
 }
 
-func (h *WarehouseDefault) DeleteWarehouse(w http.ResponseWriter, r *http.Request) {
+func (h *WarehouseDefault) DeleteWarehouse(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "DeleteWarehouse", logger.LogStatusInProgress)
 
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -149,6 +153,7 @@ func (h *WarehouseDefault) DeleteWarehouse(w http.ResponseWriter, r *http.Reques
 	utils.Log(r, "DeleteWarehouse", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusNoContent, map[string]any{})
+	return
 }
 
 func validateWarehouseAttributes(wh models.Warehouse) error {

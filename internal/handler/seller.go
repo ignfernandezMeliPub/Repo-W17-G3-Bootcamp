@@ -20,7 +20,7 @@ func NewSellerHandler(service service.SellerService) SellerHandler {
 	return SellerHandler{service: service}
 }
 
-func (h *SellerHandler) GetAllSellers(w http.ResponseWriter, r *http.Request) {
+func (h *SellerHandler) GetAllSellers(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetAllSellers", logger.LogStatusInProgress)
 
 	all, err := h.service.GetAllSellers()
@@ -35,9 +35,10 @@ func (h *SellerHandler) GetAllSellers(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": all,
 	})
+	return
 }
 
-func (h *SellerHandler) GetSellerById(w http.ResponseWriter, r *http.Request) {
+func (h *SellerHandler) GetSellerById(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetSellerById", logger.LogStatusInProgress)
 
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -59,13 +60,14 @@ func (h *SellerHandler) GetSellerById(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": []models.Seller{seller},
 	})
+	return
 }
 
-func (h *SellerHandler) CreateSeller(w http.ResponseWriter, r *http.Request) {
+func (h *SellerHandler) CreateSeller(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateSeller", logger.LogStatusInProgress)
 
 	var createSellerDto dto.CreateSellerDto
-	createSellerDto, err := utils.InstantiateVarFromBody(&r.Body, createSellerDto)
+	createSellerDto, err = utils.InstantiateVarFromBody(&r.Body, createSellerDto)
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
 		utils.LogError(r, "CreateSeller", err, httpStatus)
@@ -84,9 +86,10 @@ func (h *SellerHandler) CreateSeller(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": []models.Seller{newSeller},
 	})
+	return
 }
 
-func (h *SellerHandler) PatchSeller(w http.ResponseWriter, r *http.Request) {
+func (h *SellerHandler) PatchSeller(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "PatchSeller", logger.LogStatusInProgress)
 
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -116,9 +119,10 @@ func (h *SellerHandler) PatchSeller(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": []models.Seller{seller},
 	})
+	return
 }
 
-func (h *SellerHandler) DeleteSeller(w http.ResponseWriter, r *http.Request) {
+func (h *SellerHandler) DeleteSeller(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "DeleteSeller", logger.LogStatusInProgress)
 
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -138,4 +142,5 @@ func (h *SellerHandler) DeleteSeller(w http.ResponseWriter, r *http.Request) {
 	utils.Log(r, "DeleteSeller", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusNoContent, nil)
+	return
 }

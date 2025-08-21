@@ -19,7 +19,7 @@ func NewEmployeeController(svEmployee service.EmployeeServiceInterface) *Employe
 	return &EmployeesController{svEmployee: svEmployee}
 }
 
-func (c *EmployeesController) GetAllEmployees(w http.ResponseWriter, r *http.Request) {
+func (c *EmployeesController) GetAllEmployees(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetAllEmployees", logger.LogStatusInProgress)
 
 	res, err := c.svEmployee.GetAllEmployees()
@@ -32,9 +32,10 @@ func (c *EmployeesController) GetAllEmployees(w http.ResponseWriter, r *http.Req
 	utils.Log(r, "GetAllEmployees", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
+	return
 }
 
-func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Request) {
+func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetEmployeeById", logger.LogStatusInProgress)
 
 	id, idError := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -59,15 +60,16 @@ func (c *EmployeesController) GetEmployeeById(w http.ResponseWriter, r *http.Req
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": employee,
 	})
+	return
 
 }
 
-func (c *EmployeesController) CreateEmployee(w http.ResponseWriter, r *http.Request) {
+func (c *EmployeesController) CreateEmployee(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateEmployee", logger.LogStatusInProgress)
 
 	var newEmployeeAttributes models.EmployeePostRequestBody
 
-	newEmployeeAttributes, err := utils.InstantiateVarFromBody(&r.Body, newEmployeeAttributes)
+	newEmployeeAttributes, err = utils.InstantiateVarFromBody(&r.Body, newEmployeeAttributes)
 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
@@ -88,10 +90,11 @@ func (c *EmployeesController) CreateEmployee(w http.ResponseWriter, r *http.Requ
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": employee,
 	})
+	return
 
 }
 
-func (c *EmployeesController) PatchEmployee(w http.ResponseWriter, r *http.Request) {
+func (c *EmployeesController) PatchEmployee(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "PatchEmployee", logger.LogStatusInProgress)
 
 	var newEmployeeAttributes models.EmployeePatchRequestBody
@@ -105,7 +108,7 @@ func (c *EmployeesController) PatchEmployee(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	newEmployeeAttributes, err := utils.InstantiateVarFromBody(&r.Body, newEmployeeAttributes)
+	newEmployeeAttributes, err = utils.InstantiateVarFromBody(&r.Body, newEmployeeAttributes)
 
 	// Some of the fields sent have the wrong type
 	if err != nil {
@@ -127,10 +130,10 @@ func (c *EmployeesController) PatchEmployee(w http.ResponseWriter, r *http.Reque
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": employee,
 	})
-
+	return
 }
 
-func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Request) {
+func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "DeleteEmployee", logger.LogStatusInProgress)
 
 	id, idError := utils.GetURLParamAs(r, "id", strconv.Atoi)
@@ -142,7 +145,7 @@ func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	err := c.svEmployee.DeleteEmployee(id)
+	err = c.svEmployee.DeleteEmployee(id)
 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
@@ -155,10 +158,10 @@ func (c *EmployeesController) DeleteEmployee(w http.ResponseWriter, r *http.Requ
 	response.JSON(w, http.StatusNoContent, map[string]any{
 		"message": "Deleted succesfully",
 	})
-
+	return
 }
 
-func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *http.Request) {
+func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetReportInboundOrders", logger.LogStatusInProgress)
 
 	id, idError := utils.GetQueryParamAs(r, "id", strconv.Atoi)
@@ -180,5 +183,5 @@ func (c *EmployeesController) GetReportInboundOrders(w http.ResponseWriter, r *h
 	utils.Log(r, "GetReportInboundOrders", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusOK, map[string]any{"data": res})
-
+	return
 }

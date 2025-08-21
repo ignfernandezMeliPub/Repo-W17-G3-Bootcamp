@@ -19,7 +19,7 @@ type BuyerDefault struct {
 	sv service.BuyerService
 }
 
-func (h *BuyerDefault) GetAllBuyers(w http.ResponseWriter, r *http.Request) {
+func (h *BuyerDefault) GetAllBuyers(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetAllBuyers", logger.LogStatusInProgress)
 
 	b, err := h.sv.GetAllBuyers()
@@ -34,9 +34,10 @@ func (h *BuyerDefault) GetAllBuyers(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": b,
 	})
+	return
 }
 
-func (h *BuyerDefault) GetBuyerById(w http.ResponseWriter, r *http.Request) {
+func (h *BuyerDefault) GetBuyerById(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetBuyerById", logger.LogStatusInProgress)
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
@@ -58,13 +59,14 @@ func (h *BuyerDefault) GetBuyerById(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": b,
 	})
+	return
 }
 
-func (h *BuyerDefault) CreateBuyer(w http.ResponseWriter, r *http.Request) {
+func (h *BuyerDefault) CreateBuyer(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "CreateBuyer", logger.LogStatusInProgress)
 	var buyerRequest models.BuyerCreateRequest
 
-	buyerRequest, err := utils.InstantiateVarFromBody(&r.Body, buyerRequest)
+	buyerRequest, err = utils.InstantiateVarFromBody(&r.Body, buyerRequest)
 
 	if err != nil {
 		httpStatus := utils.ResponseHttpError(w, err)
@@ -86,9 +88,10 @@ func (h *BuyerDefault) CreateBuyer(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusCreated, map[string]any{
 		"data": newBuyer,
 	})
+	return
 }
 
-func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) {
+func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "PatchBuyer", logger.LogStatusInProgress)
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
@@ -120,9 +123,10 @@ func (h *BuyerDefault) PatchBuyer(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": updatedBuyer,
 	})
+	return
 }
 
-func (h *BuyerDefault) DeleteBuyer(w http.ResponseWriter, r *http.Request) {
+func (h *BuyerDefault) DeleteBuyer(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "DeleteBuyer", logger.LogStatusInProgress)
 	id, err := utils.GetURLParamAs(r, "id", strconv.Atoi)
 
@@ -143,9 +147,10 @@ func (h *BuyerDefault) DeleteBuyer(w http.ResponseWriter, r *http.Request) {
 	utils.Log(r, "DeleteBuyer", logger.LogStatusSuccess)
 
 	response.JSON(w, http.StatusNoContent, nil)
+	return
 }
 
-func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *http.Request) {
+func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *http.Request) (err error) {
 	utils.Log(r, "GetBuyersPurchaseOrdersCount", logger.LogStatusInProgress)
 	id, err := utils.GetQueryParamAs(r, "id", strconv.Atoi)
 
@@ -167,4 +172,5 @@ func (h *BuyerDefault) GetBuyersPurchaseOrdersCount(w http.ResponseWriter, r *ht
 	response.JSON(w, http.StatusOK, map[string]any{
 		"data": b,
 	})
+	return
 }
